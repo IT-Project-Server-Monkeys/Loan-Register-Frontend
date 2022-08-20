@@ -1,14 +1,15 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Header, Footer } from './components';
-import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDetails, ItemHistory, Stats } from './pages';
+import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDetails, ItemHistory, Stats, Account } from './pages';
 
 import './styles/Global.scss'
 
 function App() {
+  // TODO: get login session & pass to components
   return (
     <div className="App">
-      <Header />
+      <Header loginSession={true} />
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -20,6 +21,7 @@ function App() {
           <Route path="/item-history" element={<ItemHistory />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </Router>
       <Footer />
