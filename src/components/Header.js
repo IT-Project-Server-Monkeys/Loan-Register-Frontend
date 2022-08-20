@@ -4,13 +4,8 @@ import logo from '../images/logo.svg';
 
 const Header = (props) => {
 
-  // TODO
-  const logOut = () => {
-    console.log("logged out");
-  }
-
-  const Nav = (navProps) => {
-    if (navProps.loggedIn) {
+  const Nav = () => {
+    if (props.loginSession != null) {
       return (
         <div>
           <button>
@@ -19,7 +14,7 @@ const Header = (props) => {
           <button>
             <a href="/account">Account</a>
           </button>
-          <button onClick={logOut}>Log Out</button>
+          <button onClick={props.onLogout}>Log Out</button>
         </div>
       );
     } else {
@@ -36,7 +31,7 @@ const Header = (props) => {
       <a href="/">
         <img src={logo} alt="Loan Register logo"></img>
       </a>
-      <Nav loggedIn={props.loginSession != null} />
+      <Nav />
     </div>
   );
 };

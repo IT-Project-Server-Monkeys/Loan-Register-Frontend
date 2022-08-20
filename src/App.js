@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Header, Footer } from './components';
@@ -6,14 +7,31 @@ import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDet
 import './styles/Global.scss'
 
 function App() {
-  // TODO: get login session & pass to components
+  
+  // TODO: get login session from login
+  const [loginSession, setLoginSession] = useState();
+  const loginHandler = (session) => {
+    setLoginSession(session);
+    window.sessionStorage.setItem("loginSession", session);
+    console.log("user has logged in");
+  }
+  const logoutHandler = () => {
+    setLoginSession(null);
+    window.sessionStorage.removeItem("userId");
+    console.log("user has logged out");
+  }
+
+  useEffect(() => {
+    setLoginSession(window.sessionStorage.getItem("loginSession"));
+  })
+
   return (
     <div className="App">
-      <Header loginSession={true} />
+      <Header loginSession={loginSession} onLogout={logoutHandler} />
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} onLogin={loginHandler} />
           <Route path="/dashboard/loaner" element={<LoanerDashboard />} />
           <Route path="/dashboard/loanee" element={<LoaneeDashboard />} />
           <Route path="/add-item" element={<AddItem />} />
