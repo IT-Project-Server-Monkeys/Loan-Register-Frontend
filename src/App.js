@@ -8,26 +8,32 @@ import './styles/Global.scss'
 
 function App() {
   
-  // TODO: get login session from login
+  // Get/Set login session
   const [loginSession, setLoginSession] = useState();
   const loginHandler = (session) => {
-    setLoginSession(session);
+
+    // TODO: STORING IN SESSIONSTORAGE IS VERY UNSAFE, STORE SESSION INFO ELSEWHERE
     window.sessionStorage.setItem("loginSession", session);
+
+    setLoginSession(session);
     console.log("user has logged in");
   }
   const logoutHandler = () => {
+
+    // TODO: SEE ABOVE, MAKE SAFER
+    window.sessionStorage.removeItem("loginSession"); 
+
     setLoginSession(null);
-    window.sessionStorage.removeItem("loginSession");
     console.log("user has logged out");
   }
-
   useEffect(() => {
+    // TODO: SEE ABOVE, GET SESSION INFO FROM ELSEWHERE
     setLoginSession(window.sessionStorage.getItem("loginSession"));
-  })
+  }, [])
 
   return (
     <div className="App">
-      <Header loginSession={loginSession} onLogout={logoutHandler}/* onLogin={loginHandler}*/ />
+      <Header loginSession={loginSession} onLogout={logoutHandler} onLogin={loginHandler} />
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
