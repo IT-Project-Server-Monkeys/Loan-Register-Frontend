@@ -4,6 +4,10 @@ import logo from '../images/logo.svg';
 
 const Header = (props) => {
 
+  /*const handleLogin = () => {
+    props.onLogin({userId: 1234});
+  }*/
+
   const Nav = () => {
     if (props.loginSession != null) {
       return (
@@ -19,7 +23,7 @@ const Header = (props) => {
       );
     } else {
       return (
-        <button>
+        <button/* onClick={handleLogin}*/>
           <a href="/login">Log In</a>
         </button>
       );

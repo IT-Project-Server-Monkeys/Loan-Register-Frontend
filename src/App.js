@@ -17,7 +17,7 @@ function App() {
   }
   const logoutHandler = () => {
     setLoginSession(null);
-    window.sessionStorage.removeItem("userId");
+    window.sessionStorage.removeItem("loginSession");
     console.log("user has logged out");
   }
 
@@ -27,7 +27,7 @@ function App() {
 
   return (
     <div className="App">
-      <Header loginSession={loginSession} onLogout={logoutHandler} />
+      <Header loginSession={loginSession} onLogout={logoutHandler}/* onLogin={loginHandler}*/ />
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
