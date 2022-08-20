@@ -16,9 +16,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard/loaner" element={<LoanerDashboard />} />
           <Route path="/dashboard/loanee" element={<LoaneeDashboard />} />
-          <Route path="/addItem" element={<AddItem />} />
-          <Route path="/itemDetails" element={<ItemDetails />} />
-          <Route path="/itemHistory" element={<ItemHistory />} />
+          <Route path="/add-item" element={<AddItem />} />
+          <Route path="/item-details" element={<ItemDetails />} />
+          <Route path="/item-history" element={<ItemHistory />} />
           <Route path="/stats" element={<Stats />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/account" element={<Account />} />
