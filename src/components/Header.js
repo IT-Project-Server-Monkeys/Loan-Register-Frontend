@@ -1,20 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../styles/Header.module.scss"; // component scoped style
 import logo from "../images/logo.svg";
 
 const Header = (props) => {
-  useEffect(() => {
-    console.log(window.location.pathname);
-  }, []);
 
   const handleLogin = () => {
     props.onLogin({ userId: 1234 });
   };
 
   const NavLink = (navProps) => {
+    const [linkStyle, setLinkStyle] = useState(null);
+
+    useEffect(() => {
+      let curPath = window.location.pathname.split("/")[1];
+      if (curPath && navProps.href.includes(curPath)) {
+        setLinkStyle({backgroundColor: "var(--blue-color)", color: "white"});
+      }
+    }, [navProps])
+
     return (
-      <a href={navProps.href} className={`${styles.a}`}>
-        <button className={`${styles.button}`} onClick={navProps.onClick}>{navProps.children}</button>
+      <a href={navProps.href}>
+        <button style={linkStyle} className={`${styles.button}`} onClick={navProps.onClick}>{navProps.children}</button>
       </a>
     );
   }
