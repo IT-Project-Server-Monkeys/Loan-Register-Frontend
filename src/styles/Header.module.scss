@@ -6,8 +6,41 @@
   color: var(--blue-color);
   display: flex;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  padding: 0rem 5rem 0rem 5rem;
+  box-sizing: border-box;
 }
 
 .nav {
+  display: block;
+  height: fit-content;
 
+  .button {
+    height: var(--nav-height-offset);
+    color: var(--blue-color);
+    background-color: var(--light-blue-color);
+    font-weight: bold;
+    font-size: 1rem;
+    border: 0;
+    padding: 1rem;
+    cursor: pointer;
+
+    .a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    &:hover {
+      background-color: var(--blue-color);
+      color: white;
+    }
+  }
+}
+
+.logo {
+  height: 2rem;
+  display: block;
+  margin: 0.5rem 0 0.5rem 0;
 }
