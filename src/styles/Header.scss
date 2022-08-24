@@ -1,0 +1,57 @@
+// overall header style
+.top-header {
+  background-color: var(--light-blue-color);
+  color: var(--blue-color);
+  display: flex;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  box-shadow: 0 0 5px var(--dark-grey-color);
+  padding: 0 0 0 5%;
+  z-index: 10;
+
+  // nav & navlink styling
+  nav {
+    display: block;
+    height: fit-content;
+
+    .navlink {
+      height: var(--nav-height-offset);
+      color: var(--blue-color);
+      background-color: var(--light-blue-color);
+      font-weight: bold;
+      font-size: 1rem;
+      border: 0;
+      padding: 1rem;
+      cursor: pointer;
+
+      // hovered/active navlink
+      &:hover {
+        background-color: var(--blue-color);
+        color: white;
+      }
+    }
+    
+    // hidden dropdown menu
+    .dropdown {
+      display: none;
+      right: 0;
+      position: fixed;
+    }
+    &:hover > .dropdown {
+      display: flex;
+      flex-direction: column;
+
+      .navlink {
+        width: 100%;
+      }
+    }
+  }
+
+  .logo {
+    height: 2rem;
+    display: block;
+  }
+}

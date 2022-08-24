@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import styles from "../styles/Header.module.scss"; // component scoped style
+import "../styles/Header.scss"; // component scoped style
 import logo from "../images/logo.svg";
 
 const Header = (props) => {
   // check for mobile view
   const isMobile = useMediaQuery(
-    { maxDeviceWidth: 375 }
+    { maxDeviceWidth: 576 }
  )
 
  // temporary login handler. generates random data,
@@ -19,7 +19,8 @@ const Header = (props) => {
   // individual nav link component, consisting of button with href
   const NavLink = (navProps) => {
 
-    // set active style when current page is on link
+    // set component inline style to linkStyle (default value null)
+    // upon first render, if link page is current page, set linkStyle to active style 
     const [linkStyle, setLinkStyle] = useState(null);
     useEffect(() => {
       let curPath = window.location.pathname.split("/")[1];
@@ -30,7 +31,7 @@ const Header = (props) => {
 
     return (
       <a href={navProps.href}>
-        <button style={linkStyle} className={`${styles.navlink}`} onClick={navProps.onClick}>{navProps.children}</button>
+        <button style={linkStyle} className="navlink" onClick={navProps.onClick}>{navProps.children}</button>
       </a>
     );
   }
@@ -41,53 +42,53 @@ const Header = (props) => {
     // mobile view, show dropdown menu of navlinks or login navlink
     if (isMobile) {
       if (props.loginSession != null) return (
-        <div className={`${styles.nav}`}>
-          <button className={`${styles.navlink}`}>=</button>
-          <div className={`${styles.dropdown}`}>
+        <nav>
+          <button className="navlink">=</button>
+          <div className="dropdown">
             <NavLink href="/dashboard/loaner">Dashboard</NavLink>
             <NavLink href="/account">Account</NavLink>
             <NavLink href="/" onClick={props.onLogout}>Log Out</NavLink>
           </div>
-        </div>
+        </nav>
       );
       else return (
-        <div className={`${styles.nav}`}>
+        <nav>
           {/* note temporary login handler, TODO remove */}
           <NavLink href="/login" onClick={handleLogin}>Log In</NavLink>
-        </div>
+        </nav>
       );
     }
 
     // desktop view, show applicable navlinks
     else {
       if (props.loginSession != null) return (
-        <div className={`${styles.nav}`}>
+        <nav>
           <NavLink href="/dashboard/loaner">Dashboard</NavLink>
           <NavLink href="/account">Account</NavLink>
           <NavLink href="/" onClick={props.onLogout}>Log Out</NavLink>
-        </div>
+        </nav>
       );
       else return (
-        <div className={`${styles.nav}`}>
+        <nav>
           {/* note temporary login handler, TODO remove */}
           <NavLink href="/login" onClick={handleLogin}>Log In</NavLink>
-        </div>
+        </nav>
       );
     }
   };
 
   // return Header component, consisting of clickable logo + nav
   return (
-    <div className={`${styles.header}`}>
+    <header className={"top-header"}>
       <a href="/" style={{margin: "0.75rem 0 0.75rem 0"}}>
         <img
-          className={`${styles.logo}`}
+          className="logo"
           src={logo}
           alt="Loan Register logo"
         ></img>
       </a>
       <Nav />
-    </div>
+    </header>
   );
 };
 
