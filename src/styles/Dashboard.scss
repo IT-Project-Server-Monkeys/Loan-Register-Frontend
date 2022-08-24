@@ -1,0 +1,32 @@
+
+.dashboard {
+  
+  .dashboard-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    margin: auto;
+
+    div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+  }
+
+  .icon-plus {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  input {
+    padding: 5px;
+    width: 15rem;
+  }
+
+
+}
+

@@ -11,5 +11,27 @@
   --green-color: #2faa26;
 }
 
+.bg-blue {
+  background-color: var(--blue-color);
+}
 
+.bg-light-blue {
+  background-color: var(--light-blue-color);
+}
 
+.page-margin {
+  width: 90%;
+  margin: 5rem auto;
+}
+
+.icon-blue {
+  padding: 5px;
+  background-color: var(--blue-color);
+  height: fit-content;
+  svg {
+    color: white;
+  }
+  &:hover {
+    cursor: pointer;
+  }
+}
