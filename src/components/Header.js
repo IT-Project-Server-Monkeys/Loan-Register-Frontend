@@ -23,7 +23,7 @@ const Header = (props) => {
     }, [navProps])
 
     return (
-      <a href={navProps.href}>
+      <a>
         <button style={linkStyle} className={`${styles.button}`} onClick={navProps.onClick}>{navProps.children}</button>
       </a>
     );
@@ -76,7 +76,7 @@ const Header = (props) => {
 
   return (
     <div className={`${styles.header}`}>
-      <a href="/" style={{margin: "0.5rem 0 0.5rem 0"}}>
+      <a href="/" style={{margin: "0.75rem 0 0.75rem 0"}}>
         <img
           className={`${styles.logo}`}
           src={logo}
