@@ -36,7 +36,7 @@ function App() {
   return (
     <div className="App">
       <Header loginSession={loginSession} onLogout={logoutHandler} onLogin={loginHandler} />
-      <main style={{minHeight: '95vh'}}>
+      <main style={{minHeight: 'var(--main-height)'}}>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />

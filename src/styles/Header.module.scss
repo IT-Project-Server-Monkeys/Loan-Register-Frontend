@@ -1,6 +1,4 @@
-
-/* Cannot directly use tag name such as h1 and div */
-
+// overall header style
 .header {
   background-color: var(--light-blue-color);
   color: var(--blue-color);
@@ -9,16 +7,17 @@
   position: sticky;
   top: 0;
   width: 100%;
-  padding: 0rem 5rem 0rem 5rem;
   box-sizing: border-box;
   box-shadow: 0 0 5px var(--dark-grey-color);
+  padding: 0 0 0 5%;
 }
 
+// nav & navlink styling
 .nav {
   display: block;
   height: fit-content;
 
-  .button {
+  .navlink {
     height: var(--nav-height-offset);
     color: var(--blue-color);
     background-color: var(--light-blue-color);
@@ -28,9 +27,25 @@
     padding: 1rem;
     cursor: pointer;
 
+    // hovered/active navlink
     &:hover {
       background-color: var(--blue-color);
       color: white;
+    }
+  }
+  
+  // hidden dropdown menu
+  .dropdown {
+    display: none;
+    right: 0;
+    position: fixed;
+  }
+  &:hover > .dropdown {
+    display: flex;
+    flex-direction: column;
+
+    .navlink {
+      width: 100%;
     }
   }
 }

@@ -1,11 +1,8 @@
-
-/* Cannot directly use tag name such as h1 and div */
-
 .footer {
   background-color: var(--light-blue-color);
   color: var(--blue-color);
   width: 100%;
-  height: 45px;
+  padding: 1rem;
   font-weight: bold;
   font-size: 1rem;
   display: flex;
