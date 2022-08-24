@@ -4,7 +4,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Header, Footer } from './components';
 import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDetails, ItemHistory, Stats, Account } from './pages';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
+
 
 function App() {
   
