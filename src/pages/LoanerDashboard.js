@@ -3,15 +3,26 @@ import { Row, Col } from 'reactstrap';
 import '../styles/Dashboard.scss'
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai'
 import { MdQueryStats } from 'react-icons/md'
+import { ItemCard } from '../components';
 
 const LoanerDashboard = (props) => {
+
+
+  const items = [
+    <ItemCard />,
+    <ItemCard />,
+    <ItemCard />,
+    <ItemCard />,
+    <ItemCard />,
+  ]
+
+
   return (
     <div className='page-margin dashboard'>
       <Row>
-        <Col md='3' className='bg-light-blue' style={{minHeight: '30rem'}}>
-          <div>
-            Filters
-          </div>
+        <Col md='3' className='bg-light-blue filter-box' style={{height: '30rem'}}>
+          <h3>Sort by</h3>
+          <h3>Filter by</h3>
         </Col>
         <Col style={{marginLeft: '4rem'}}>
           <Row className='bg-light-blue' style={{height: '5rem'}}>
@@ -23,7 +34,7 @@ const LoanerDashboard = (props) => {
                 <div>
                   <input type="search" placeholder='Search for items' />
                 </div>
-                <span className='icon-plus' style={{borderRadius: '50%'}}>
+                <span className='icon-plus'>
                   <AiFillPlusCircle size={45} color='#0073e6' />
                 </span>
               </div>             
@@ -37,6 +48,11 @@ const LoanerDashboard = (props) => {
               </div>
               
             </div>
+          </Row>
+          <Row>
+            {
+              items.map((item) => <Col md='4'>{item}</Col>)
+            }
           </Row>
         </Col>
       </Row>
