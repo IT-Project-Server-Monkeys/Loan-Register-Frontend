@@ -9,7 +9,7 @@
   width: 100%;
   box-sizing: border-box;
   box-shadow: 0 0 5px var(--dark-grey-color);
-  padding: 0 0 0 5%;
+  padding: 0 5% 0 5%;
   z-index: 10;
 
   // nav & navlink styling
@@ -26,18 +26,24 @@
       border: 0;
       padding: 1rem;
       cursor: pointer;
+      svg {
+        color: var(--blue-color);
+      }
 
       // hovered/active navlink
       &:hover {
         background-color: var(--blue-color);
         color: white;
+        svg {
+          color: white;
+        }
       }
     }
     
     // hidden dropdown menu
     .dropdown {
       display: none;
-      right: 0;
+      right: 5%;
       position: fixed;
     }
     &:hover > .dropdown {

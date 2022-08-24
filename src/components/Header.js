@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
-import "../styles/Header.scss"; // component scoped style
+import "../styles/Header.scss";
+import { GiHamburgerMenu } from "react-icons/gi";
 import logo from "../images/logo.svg";
 
 const Header = (props) => {
@@ -43,7 +44,9 @@ const Header = (props) => {
     if (isMobile) {
       if (props.loginSession != null) return (
         <nav>
-          <button className="navlink">=</button>
+          <button className="navlink">
+              <GiHamburgerMenu size={20} />
+          </button>
           <div className="dropdown">
             <NavLink href="/dashboard/loaner">Dashboard</NavLink>
             <NavLink href="/account">Account</NavLink>
