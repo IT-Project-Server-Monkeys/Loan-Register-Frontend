@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 import styles from "../styles/Header.module.scss"; // component scoped style
 import logo from "../images/logo.svg";
 
 const Header = (props) => {
+  const isMobile = useMediaQuery(
+    { maxDeviceWidth: 375 }
+ )
 
   const handleLogin = () => {
     props.onLogin({ userId: 1234 });
@@ -26,20 +30,38 @@ const Header = (props) => {
   }
 
   const Nav = () => {
-    if (props.loginSession != null) {
-      return (
-        <div className={`${styles.nav}`}>
-          <NavLink href="/dashboard/loaner">Dashboard</NavLink>
-          <NavLink href="/account">Account</NavLink>
-          <NavLink href="/" onClick={props.onLogout}>Log Out</NavLink>
-        </div>
-      );
-    } else {
-      return (
-        <div className={`${styles.nav}`}>
-          <NavLink href="/login" onClick={handleLogin}>Log In</NavLink>
-        </div>
-      );
+    if (isMobile) {
+      if (props.loginSession != null) {
+        return (
+          <div className={`${styles.nav}`}>
+            <button>==</button>
+          </div>
+        );
+      } else {
+        return (
+          <div className={`${styles.nav}`}>
+            <NavLink href="/login" onClick={handleLogin}>Log In</NavLink>
+          </div>
+        );
+      }
+    }
+
+    else { // desktop view
+      if (props.loginSession != null) {
+        return (
+          <div className={`${styles.nav}`}>
+            <NavLink href="/dashboard/loaner">Dashboard</NavLink>
+            <NavLink href="/account">Account</NavLink>
+            <NavLink href="/" onClick={props.onLogout}>Log Out</NavLink>
+          </div>
+        );
+      } else {
+        return (
+          <div className={`${styles.nav}`}>
+            <NavLink href="/login" onClick={handleLogin}>Log In</NavLink>
+          </div>
+        );
+      }
     }
   };
 
