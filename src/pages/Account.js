@@ -6,8 +6,9 @@ const Account = () => {
 
   // basic get request. TODO move to helper functions?
   const fetchUser = async () => {
-    await axios.get("http://webcode.me")
-    // await axios.get("https://server-monkeys-backend-test.herokuapp.com/users", {params: {_id: "62fd8a9df04410afbc6df31f"}})
+    // await axios.get("http://localhost:3001/users/")
+    await axios.get("https://server-monkeys-backend-test.herokuapp.com/users/62fd8a9df04410afbc6df31f")
+    // await axios.get("http://webcode.me")
       .then((res) => {setUserInfo(res.data);})
       .catch((err) => {setUserInfo(JSON.stringify(err));})
   }
