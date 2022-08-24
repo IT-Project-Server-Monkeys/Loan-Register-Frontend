@@ -9,9 +9,9 @@
   position: sticky;
   top: 0;
   width: 100%;
-  padding: 0rem 5rem 0rem 5rem;
   box-sizing: border-box;
   box-shadow: 0 0 5px var(--dark-grey-color);
+  padding: 0rem 0rem 0rem 5%;
 }
 
 .nav {
@@ -31,6 +31,20 @@
     &:hover {
       background-color: var(--blue-color);
       color: white;
+    }
+  }
+  
+  .dropdown {
+    display: none;
+    right: 0;
+    position: fixed;
+  }
+  &:hover > .dropdown {
+    display: flex;
+    flex-direction: column;
+
+    .button {
+      width: 100%;
     }
   }
 }

@@ -28,13 +28,22 @@ const Header = (props) => {
       </a>
     );
   }
+  
+  const navDropdown = () => {
+    console.log("show dropdown contents");
+  }
 
   const Nav = () => {
     if (isMobile) {
       if (props.loginSession != null) {
         return (
           <div className={`${styles.nav}`}>
-            <button>==</button>
+            <button className={`${styles.button}`} onHover={navDropdown}>=</button>
+            <div className={`${styles.dropdown}`}>
+              <NavLink href="/dashboard/loaner">Dashboard</NavLink>
+              <NavLink href="/account">Account</NavLink>
+              <NavLink href="/" onClick={props.onLogout}>Log Out</NavLink>
+            </div>
           </div>
         );
       } else {
