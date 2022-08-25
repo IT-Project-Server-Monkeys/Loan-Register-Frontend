@@ -14,7 +14,7 @@ const Header = (props) => {
  // then passes it onto parent via the onLogin provided by parent
  // TODO remove
   const handleLogin = () => {
-    props.onLogin({ userId: 1234 });
+    props.onLogin({ userId: "62fd8a9df04410afbc6df31f" });
   };
 
   // individual nav link component, consisting of button with href

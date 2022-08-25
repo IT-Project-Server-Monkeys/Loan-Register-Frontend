@@ -27,6 +27,7 @@ const Account = () => {
   };
 
   useEffect(() => {
+    // TODO get user id from app
     fetchUser();
     console.log("fetch");
   }, []);
