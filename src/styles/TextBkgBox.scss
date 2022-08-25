@@ -20,21 +20,28 @@
         font-size: 25px;
     }
 
-    .h1{
+    h1, .h1{
         font-size: 56px;
         font-weight: bold;
     }
 
-    .h2{
+    h2, .h2{
         font-size: 48px;
     }
 
-    .h3{
+    h3, .h3{
         font-size: 30px;
         font-weight: bold;
     }
 
-    .a{
+    p {
+        font-size: 30px;
+        height: 50px;
+        margin: 0.5rem 20px;
+        line-height: 1.2;
+    }
+
+    a, .a{
         font-size: 30px;
         font-weight: bold;
         color: var(--blue-color);
