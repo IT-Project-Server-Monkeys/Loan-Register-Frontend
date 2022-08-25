@@ -21,7 +21,7 @@ const Login = () => {
           </div>
           <input type="text" placeholder="Enter password" className={`${styles["input-box"]}`}/>
         </div>
-        <a href="" className={`${styles.a}`}>Forgot password?</a>
+        <a href="/signup" className={`${styles.a}`}>Forgot password?</a>
         <a href="/signup" className={`${styles.a}`}>New user?</a>
         <button onClick="" className={`${styles.button}`}>Login</button>
       </TextBkgBox>
