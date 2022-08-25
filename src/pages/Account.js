@@ -6,29 +6,27 @@ import axios from "axios";
 const Account = (props) => {
   const [userInfo, setUserInfo] = useState({});
 
+  // get user data from server, querying using userId recorded in the app's loginSession
   useEffect(() => {
+    const fetchUser = async () => {
+      let fetchedData = null;
+      // await axios.get(
+      //   `https://server-monkeys-backend-test.herokuapp.com/users/${props.loginSession.userId}`
+      //   )
+      // await axios.get("http://www.columbia.edu/~fdc/sample.html")
+      // await axios.get("http://webcode.me") // TODO make axios get from https sites
+      //   .then((res) => {fetchedData = res.data; console.log(res.data)})
+      //   .catch((err) => {console.log(err);});
 
-  // basic GET request. has to be kept within useEffect for some reason
-  const fetchUser = async () => {
-    let fetchedData = null;
-
-    await axios.get(
-      `https://server-monkeys-backend-test.herokuapp.com/users/${props.loginSession.userId}`
-      )
-    // await axios.get("http://webcode.me") // TODO make axios get from https sites
-      .then((res) => {fetchedData = res.data; console.log(res.data)})
-      .catch((err) => {console.log(err);});
-
-    if (fetchedData == null) fetchedData = [{
-      _id: props.loginSession.userId,
-      display_name: "retrieval failed",
-      login_email: "placeholder@mail",
-      hashed_password: "thisisapassword",
-    }];
-    
-    setUserInfo(fetchedData[0]);
-  };
-
+      if (fetchedData == null) fetchedData = [{
+        _id: props.loginSession.userId,
+        display_name: "retrieval failed",
+        login_email: "placeholder@mail",
+        hashed_password: "thisisapassword",
+      }]; else console.log(fetchedData);
+      
+      setUserInfo(fetchedData[0]);
+    };
     fetchUser();
   }, [props.loginSession]);
 
