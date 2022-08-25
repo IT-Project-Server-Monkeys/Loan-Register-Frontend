@@ -3,34 +3,34 @@ import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput } from '../components';
 import axios from "axios";
 
-const Account = () => {
-  const [userInfo, setUserInfo] = useState("aaaa");
+const Account = (props) => {
+  const [userInfo, setUserInfo] = useState({});
 
-  // basic get request. TODO move to helper functions?
+  useEffect(() => {
+
+  // basic GET request. has to be kept within useEffect for some reason
   const fetchUser = async () => {
-    let fetchedData;
+    let fetchedData = null;
 
-    await axios.get("https://server-monkeys-backend-test.herokuapp.com/users/62fd8a9df04410afbc6df31f")
-    // await axios.get("http://webcode.me")
-      .then((res) => {fetchedData = res.data;})
-      .catch((err) => {console.log(err);})
+    await axios.get(
+      `https://server-monkeys-backend-test.herokuapp.com/users/${props.loginSession.userId}`
+      )
+    // await axios.get("http://webcode.me") // TODO make axios get from https sites
+      .then((res) => {fetchedData = res.data; console.log(res.data)})
+      .catch((err) => {console.log(err);});
+
+    if (fetchedData == null) fetchedData = [{
+      _id: props.loginSession.userId,
+      display_name: "retrieval failed",
+      login_email: "placeholder@mail",
+      hashed_password: "thisisapassword",
+    }];
     
-    fetchedData = [
-      { // TODO FIX AXIOS
-        _id: "62fd8a9df04410afbc6df31f",
-        display_name: "Test User 3",
-        login_email: "test_user3@gmail.com",
-        hashed_password: "thisisapassword",
-      },
-    ];
     setUserInfo(fetchedData[0]);
   };
 
-  useEffect(() => {
-    // TODO get user id from app
     fetchUser();
-    console.log("fetch");
-  }, []);
+  }, [props.loginSession]);
 
   return (
     <div className={"account-page"}>

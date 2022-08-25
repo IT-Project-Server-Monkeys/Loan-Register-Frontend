@@ -12,27 +12,25 @@ function App() {
   
   // Get/Set login session
   const [loginSession, setLoginSession] = useState();
-  const loginHandler = (session) => {
-
-    // TODO: STORING IN SESSIONSTORAGE IS VERY UNSAFE, STORE SESSION INFO ELSEWHERE
-    window.sessionStorage.setItem("loginSession", session);
-
-    setLoginSession(session);
-    console.log("user has logged in");
-  }
-  const logoutHandler = () => {
-
-    // TODO: SEE ABOVE, MAKE SAFER
-    window.sessionStorage.removeItem("loginSession"); 
-
-    setLoginSession(null);
-    console.log("user has logged out");
-  }
   useEffect(() => {
     // TODO: SEE ABOVE, GET SESSION INFO FROM ELSEWHERE
-    setLoginSession(window.sessionStorage.getItem("loginSession"));
+    setLoginSession(
+      JSON.parse(window.sessionStorage.getItem("loginSession"))
+    );
   }, [])
 
+  const loginHandler = (session) => {
+    // TODO: STORING IN SESSIONSTORAGE IS VERY UNSAFE, STORE SESSION INFO ELSEWHERE
+    window.sessionStorage.setItem("loginSession", JSON.stringify(session));
+    setLoginSession(session);
+  }
+  
+  const logoutHandler = () => {
+    // TODO: SEE ABOVE, MAKE SAFER
+    window.sessionStorage.removeItem("loginSession"); 
+    setLoginSession(null);
+  }
+  
   return (
     <div className="App">
       <Header loginSession={loginSession} onLogout={logoutHandler} onLogin={loginHandler} />
@@ -48,7 +46,7 @@ function App() {
             <Route path="/item-history" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/account" element={<Account />} />
+            <Route path="/account" element={<Account loginSession={loginSession} />} />
           </Routes>
         </Router>
       </main>
