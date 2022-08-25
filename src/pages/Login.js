@@ -6,23 +6,23 @@ const Login = () => {
   return (
     <div className={`${styles.background}`}>
       <TextBkgBox>
-        <div className={`${styles.h1}`}>
+        <div className="h1">
           Log in to LR!
         </div>
-        <div className={`${styles["inline-flex"]}`}>
-          <div className={`${styles.h3}`}>
+        <div className={"inline-flex"}>
+          <div className="h3">
             Username:
           </div>
-          <input type="text" placeholder="Enter username" className={`${styles["input-box"]}`}/>
+          <input type="text" placeholder="Enter username" className={"input-box"}/>
         </div>
-        <div className={`${styles["inline-flex"]}`}>
-          <div className={`${styles.h3}`}>
+        <div className={"inline-flex"}>
+          <div className="h3">
               Password:
           </div>
-          <input type="text" placeholder="Enter password" className={`${styles["input-box"]}`}/>
+          <input type="text" placeholder="Enter password" className={"input-box"}/>
         </div>
-        <a href="/signup" className={`${styles.a}`}>Forgot password?</a>
-        <a href="/signup" className={`${styles.a}`}>New user?</a>
+        <a href="/signup" className="a">Forgot password?</a>
+        <a href="/signup" className="a">New user?</a>
         <button onClick="" className={`${styles.button}`}>Login</button>
       </TextBkgBox>
     </div>
