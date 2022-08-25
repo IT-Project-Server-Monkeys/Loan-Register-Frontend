@@ -1,11 +1,11 @@
 import React from "react";
-import styles from "../styles/Footer.module.scss"; // component scoped style
+import "../styles/Footer.scss"; // component scoped style
 
 const Footer = () => {
   return (
-    <div className={`${styles.footer}`}>
+    <footer className="bottom-footer">
       Loan Register © Server Monkeys, 2022
-    </div>
+    </footer>
   );
 };
 

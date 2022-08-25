@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from "../styles/Login.module.scss";
+import { TextBkgBox } from '../components';
 
 const Login = () => {
   return (
     <div className={`${styles.background}`}>
-      <div className={`${styles.box}`}>
+      <TextBkgBox>
         <div className={`${styles.h1}`}>
           Log in to LR!
         </div>
@@ -23,7 +24,7 @@ const Login = () => {
         <a href="" className={`${styles.a}`}>Forgot password?</a>
         <a href="/signup" className={`${styles.a}`}>New user?</a>
         <button onClick="" className={`${styles.button}`}>Login</button>
-      </div>
+      </TextBkgBox>
     </div>
   );
 };
