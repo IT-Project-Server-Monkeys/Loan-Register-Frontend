@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput } from '../components';
-import axios from "axios";
+// import axios from "axios";
 
 const Account = (props) => {
   const [userInfo, setUserInfo] = useState({});
