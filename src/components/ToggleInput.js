@@ -16,10 +16,12 @@ const ToggleInput = (props) => {
     let valPattern;
     switch (props.type) {
       case "email":
+        // eslint-disable-next-line no-useless-escape
         valPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         break;
       case "text":
       default:
+        // eslint-disable-next-line no-useless-escape
         valPattern = /.+/
     }
 
