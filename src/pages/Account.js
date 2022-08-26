@@ -18,7 +18,7 @@ const Account = (props) => {
       //   .then((res) => {fetchedData = res.data; console.log(res.data)})
       //   .catch((err) => {console.log(err);});
 
-      if (fetchedData == null) fetchedData = [{
+      if (fetchedData == null && props.loginSession) fetchedData = [{
         _id: props.loginSession.userId,
         display_name: "retrieval failed",
         login_email: "placeholder@mail.com",
@@ -42,7 +42,7 @@ const Account = (props) => {
           <h3>Email:</h3>
           <ToggleInput type="email" field="login_email" initVal={userInfo.login_email} />
         </div>
-        <a href="/signup">
+        <a href="/change-password">
           <button>Change password</button>
         </a>
       </TextBkgBox>
