@@ -19,7 +19,7 @@ const ChangePassword = () => {
     }
   };
 
-  return (
+  return ( // TODO: consider bootstrap form
     <div className={"change-password"}>
       <TextBkgBox>
         <h1>Change password</h1>

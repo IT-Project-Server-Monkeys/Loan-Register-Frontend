@@ -42,8 +42,8 @@ function App() {
             <Route path="/dashboard/loaner" element={<LoanerDashboard />} />
             <Route path="/dashboard/loanee" element={<LoaneeDashboard />} />
             <Route path="/add-item" element={<AddItem />} />
-            <Route path="/item-details" element={<ItemDetails />} />
-            <Route path="/item-history" element={<ItemHistory />} />
+            <Route path="/item-details/:id" element={<ItemDetails />} />
+            <Route path="/item-history/:id" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/account" element={<Account loginSession={loginSession} />} />

@@ -1,0 +1,41 @@
+.item-page {
+
+  .btn-list {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .item-details {
+    display: grid;
+    grid-template-areas:
+      "img inf inf"
+      "img inf inf"
+      "sta inf inf";
+  }
+
+  .item-image {
+    grid-area: img;
+
+    span {
+      float: right;
+      border-radius: 50%;
+      height: 1.5rem;
+      width: 1.5rem;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 0.5rem;
+      right: 5px;
+      bottom: 5px;
+      background-color: var(--white-color);
+      color: var(--black-color);
+    }
+  }
+
+  .item-status {
+    grid-area: sta;
+  }
+
+  .item-info {
+    grid-area: inf;
+  }
+}

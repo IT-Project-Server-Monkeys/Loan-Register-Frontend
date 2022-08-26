@@ -30,7 +30,7 @@ const Account = (props) => {
     fetchUser();
   }, [props.loginSession]);
 
-  return (
+  return ( // TODO: consider bootstrap form
     <div className={"account-page"}>
       <TextBkgBox>
         <h1>Account</h1>
