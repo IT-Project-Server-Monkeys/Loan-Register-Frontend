@@ -21,7 +21,7 @@ const Account = (props) => {
       if (fetchedData == null) fetchedData = [{
         _id: props.loginSession.userId,
         display_name: "retrieval failed",
-        login_email: "placeholder@mail",
+        login_email: "placeholder@mail.com",
         hashed_password: "thisisapassword",
       }]; else console.log(fetchedData);
       
@@ -36,11 +36,11 @@ const Account = (props) => {
         <h1>Account</h1>
         <div className={"inline-flex"}>
           <h3>Display name:</h3>
-          <ToggleInput field="display_name" initVal={userInfo.display_name} />
+          <ToggleInput type="text" field="display_name" initVal={userInfo.display_name} />
         </div>
         <div className={"inline-flex"}>
           <h3>Email:</h3>
-          <ToggleInput field="login_email" initVal={userInfo.login_email} />
+          <ToggleInput type="email" field="login_email" initVal={userInfo.login_email} />
         </div>
         <a href="/signup">
           <button>Change password</button>

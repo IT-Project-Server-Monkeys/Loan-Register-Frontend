@@ -12,28 +12,29 @@ const ToggleInput = (props) => {
   }, [props]);
 
   // upon save, update field & switch back to display mode
-  const saveInput = async () => {
+  const saveInput = async (event) => {
+    let valPattern;
+    switch (props.type) {
+      case "email":
+        valPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        break;
+      case "text":
+      default:
+        valPattern = /.+/
+    }
+
     console.log(curVal);
-    // TODO axios post request to server
+
+    if (valPattern.test(curVal)) {
+      // TODO axios post request to server
+    }
+    else {
+      setCurVal(props.initVal);
+      alert(`Please enter a valid ${props.field.replace("_", " ")}!`);
+    }
     setEditMode(false);
+    
   }
-  
-  // if (editMode) return ( // editable field + save button
-  //   <>
-  //     <input
-  //       type="text" className={"input-box"}
-  //       value={curVal} onChange={event => setCurVal(event.target.value)}
-  //       placeholder={`New ${props.field.replace("_", " ")}`}
-  //     />
-  //     <button className="toggle" onClick={saveInput}>Save</button>
-  //   </>
-  // );
-  // else return ( // display field + edit button
-  //   <>
-  //     <p>{curVal}</p>
-  //     <button className="toggle" onClick={() => {setEditMode(true)}}>Change</button>
-  //   </>
-  // );
 
   return (
     <>
@@ -41,7 +42,7 @@ const ToggleInput = (props) => {
         editMode ?
           <>
             <input
-              type="text" className={"input-box"}
+              type={props.type} className={"input-box"}
               value={curVal} onChange={event => setCurVal(event.target.value)}
               placeholder={`New ${props.field.replace("_", " ")}`}
             />
