@@ -18,22 +18,43 @@ const ToggleInput = (props) => {
     setEditMode(false);
   }
   
-  if (editMode) return ( // editable field + save button
+  // if (editMode) return ( // editable field + save button
+  //   <>
+  //     <input
+  //       type="text" className={"input-box"}
+  //       value={curVal} onChange={event => setCurVal(event.target.value)}
+  //       placeholder={`New ${props.field.replace("_", " ")}`}
+  //     />
+  //     <button className="toggle" onClick={saveInput}>Save</button>
+  //   </>
+  // );
+  // else return ( // display field + edit button
+  //   <>
+  //     <p>{curVal}</p>
+  //     <button className="toggle" onClick={() => {setEditMode(true)}}>Change</button>
+  //   </>
+  // );
+
+  return (
     <>
-      <input
-        type="text" className={"input-box"}
-        value={curVal} onChange={event => setCurVal(event.target.value)}
-        placeholder={`New ${props.field.replace("_", " ")}`}
-      />
-      <button className="toggle" onClick={saveInput}>Save</button>
+      {
+        editMode ?
+          <>
+            <input
+              type="text" className={"input-box"}
+              value={curVal} onChange={event => setCurVal(event.target.value)}
+              placeholder={`New ${props.field.replace("_", " ")}`}
+            />
+            <button className="toggle" onClick={saveInput}>Save</button>
+          </>
+        :
+          <>
+            <p>{curVal}</p>
+            <button className="toggle" onClick={() => {setEditMode(true)}}>Change</button>
+          </>
+      }
     </>
-  );
-  else return ( // display field + edit button
-    <>
-      <p>{curVal}</p>
-      <button className="toggle" onClick={() => {setEditMode(true)}}>Change</button>
-    </>
-  );
+  )
 };
 
 export default ToggleInput;
