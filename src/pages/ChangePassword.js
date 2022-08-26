@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../styles/ChangePassword.scss";
-import { TextBkgBox } from "../components";
+import { TextBkgBox, TextButton } from "../components";
 
 const ChangePassword = () => {
   const [submitStyle, setSubmitStyle] = useState({
@@ -44,9 +44,9 @@ const ChangePassword = () => {
               className={"input-box"}
             />
           </div>
-          <button style={submitStyle} disabled id="submitPwd" type="submit">
+          <TextButton style={submitStyle} disabled id="submitPwd" type="submit">
             Confirm
-          </button>
+          </TextButton>
         </form>
       </TextBkgBox>
     </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from "../styles/Login.module.scss";
-import { TextBkgBox } from '../components';
+import { TextBkgBox, TextButton } from '../components';
 
 const Login = () => {
   return (
@@ -23,7 +23,7 @@ const Login = () => {
         </div>
         <a href="/signup" className="a">Forgot password?</a>
         <a href="/signup" className="a">New user?</a>
-        <button onClick="" className={`${styles.button}`}>Login</button>
+        <TextButton onClick="" className={`${styles.button}`}>Login</TextButton>
       </TextBkgBox>
     </div>
   );

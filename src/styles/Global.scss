@@ -39,3 +39,28 @@
   }
 }
 
+.text-btn-default {
+  background-color: var(--blue-color);
+  width: 290px;
+  height: 106px;
+  border: 2px solid var(--white-color);
+  border-radius: 15px;
+  box-shadow: none;
+  color: var(--white-color);
+  font-size: 48px;
+  font-weight: bold;
+  margin: 10px;
+}
+
+.text-btn-alt {
+  background-color: var(--white-color);
+  width: 290px;
+  height: 106px;
+  border: 2px solid var(--blue-color);
+  border-radius: 15px;
+  box-shadow: none;
+  color: var(--blue-color);
+  font-size: 48px;
+  font-weight: bold;
+  margin: 10px;
+}

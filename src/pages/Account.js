@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
-import { TextBkgBox, ToggleInput } from '../components';
+import { TextBkgBox, ToggleInput, TextButton } from '../components';
 // import axios from "axios";
 
 const Account = (props) => {
@@ -43,7 +43,7 @@ const Account = (props) => {
           <ToggleInput type="email" field="login_email" initVal={userInfo.login_email} />
         </div>
         <a href="/change-password">
-          <button>Change password</button>
+          <TextButton>Change password</TextButton>
         </a>
       </TextBkgBox>
     </div>
