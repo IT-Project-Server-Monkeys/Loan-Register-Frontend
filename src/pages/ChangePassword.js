@@ -1,28 +1,21 @@
 import React, { useState } from "react";
-import "../styles/Account.scss";
-// note: used inline styling for specifics since most styles, TODO change?
+import "../styles/ChangePassword.scss";
 import { TextBkgBox } from "../components";
 
 const ChangePassword = () => {
-  const defaultSubStyle = {
-    height: 106,
-    marginTop: "1rem",
-    fontSize: 48,
+  const [submitStyle, setSubmitStyle] = useState({
     backgroundColor: "var(--dark-grey-color)",
-  }
-  const [submitStyle, setSubmitStyle] = useState(defaultSubStyle);
+  });
 
   const confirmPwd = (event) => {
+    const submitBtn = document.getElementById("submitPwd");
     const newPwd = document.getElementById("newPwd").value;
-    if (
-      newPwd &&
-      event.target.value === document.getElementById("newPwd").value
-    ) {
-      document.getElementById("submitPwd").disabled = false;
-      setSubmitStyle({ ...defaultSubStyle, backgroundColor: "var(--blue-color)" });
+    if (newPwd && event.target.value === newPwd) {
+      submitBtn.disabled = false;
+      setSubmitStyle({ backgroundColor: "var(--blue-color)" });
     } else {
-      document.getElementById("submitPwd").disabled = true;
-      setSubmitStyle({ ...defaultSubStyle, backgroundColor: "var(--dark-grey-color)" });
+      submitBtn.disabled = true;
+      setSubmitStyle({ backgroundColor: "var(--dark-grey-color)" });
     }
   };
 
@@ -30,9 +23,9 @@ const ChangePassword = () => {
     <div className={"change-password"}>
       <TextBkgBox>
         <h1>Change password</h1>
-        <form>
+        <form> {/* TODO post route*/}
           <div className={"inline-flex"}>
-            <h3 style={{ width: 265 }}>New password:</h3>
+            <h3>New password:</h3>
             {/* TODO onchange confirm check here too? */}
             <input
               id="newPwd"
@@ -43,7 +36,7 @@ const ChangePassword = () => {
             />
           </div>
           <div className={"inline-flex"}>
-            <h3 style={{ width: 265 }}>Confirm password:</h3>
+            <h3>Confirm password:</h3>
             <input
               onChange={confirmPwd}
               type="password"
