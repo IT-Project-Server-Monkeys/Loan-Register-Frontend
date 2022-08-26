@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import '../styles/ItemDetails.scss'
 import { TextButton } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import { Modal } from 'reactstrap'
+// import { Modal } from 'reactstrap'
 
 
 // temporary data. TODO get real data from server
