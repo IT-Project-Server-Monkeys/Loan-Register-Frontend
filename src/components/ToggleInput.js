@@ -29,12 +29,12 @@ const ToggleInput = (props) => {
 
     if (valPattern.test(curVal)) {
       // TODO axios post request to server
+      setEditMode(false);
     }
     else {
       setCurVal(props.initVal);
       alert(`Please enter a valid ${props.field.replace("_", " ")}!`);
     }
-    setEditMode(false);
     
   }
 
