@@ -20,6 +20,10 @@
     align-items: center;
   }
 
+  form.inline-form {
+    flex-direction: row;
+  }
+
   .input-box {
     width: 363px;
     height: 50px;

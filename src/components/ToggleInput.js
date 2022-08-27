@@ -13,43 +13,25 @@ const ToggleInput = (props) => {
 
   // upon save, update field & switch back to display mode
   const saveInput = async (event) => {
-    let valPattern;
-    switch (props.type) {
-      case "email":
-        // eslint-disable-next-line no-useless-escape
-        valPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-        break;
-      case "text":
-      default:
-        // eslint-disable-next-line no-useless-escape
-        valPattern = /.+/
-    }
+    event.preventDefault();
 
     console.log(curVal);
+    // TODO axios patch request to server
 
-    if (valPattern.test(curVal)) {
-      // TODO axios post request to server
-      setEditMode(false);
-    }
-    else {
-      setCurVal(props.initVal);
-      alert(`Please enter a valid ${props.field.replace("_", " ")}!`);
-    }
-    
+    setEditMode(false);
   }
 
   return (
     <>
       {
         editMode ?
-          <>
-            <input
-              type={props.type} className={"input-box"}
+          <form className={"inline-form"} onSubmit={saveInput}>
+            <input required type={props.type} className={"input-box"}
               value={curVal} onChange={event => setCurVal(event.target.value)}
               placeholder={`New ${props.field.replace("_", " ")}`}
             />
-            <button className="toggle" onClick={saveInput}>Save</button>
-          </>
+            <button className="toggle" type="submit">Save</button>
+          </form>
         :
           <>
             <p>{curVal}</p>
