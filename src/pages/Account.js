@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput, TextButton } from '../components';
-// import axios from "axios";
+import axios from "axios";
 
 const Account = (props) => {
   const [userInfo, setUserInfo] = useState({});
@@ -10,13 +10,11 @@ const Account = (props) => {
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
-      // await axios.get(
-      //   `https://server-monkeys-backend-test.herokuapp.com/users/${props.loginSession.userId}`
-      //   )
-      // await axios.get("http://www.columbia.edu/~fdc/sample.html")
-      // await axios.get("http://webcode.me") // TODO make axios get from https sites
-      //   .then((res) => {fetchedData = res.data; console.log(res.data)})
-      //   .catch((err) => {console.log(err);});
+      await axios.get(
+        `https://server-monkeys-backend-test.herokuapp.com/users/${props.loginSession.userId}`
+        )
+        .then((res) => fetchedData = res.data)
+        .catch((err) => console.log(err));
 
       if (fetchedData == null && props.loginSession) fetchedData = [{
         _id: props.loginSession.userId,
@@ -36,11 +34,17 @@ const Account = (props) => {
         <h1>Account</h1>
         <div className={"inline-flex"}>
           <h3>Display name:</h3>
-          <ToggleInput type="text" field="display_name" initVal={userInfo.display_name} />
+          <ToggleInput
+            type="text" initVal={userInfo.display_name}
+            field="display_name" uid={userInfo._id}
+          />
         </div>
         <div className={"inline-flex"}>
           <h3>Email:</h3>
-          <ToggleInput type="email" field="login_email" initVal={userInfo.login_email} />
+          <ToggleInput
+            type="email" initVal={userInfo.login_email}
+            field="login_email" uid={userInfo._id}
+          />
         </div>
         <a href="/change-password">
           <TextButton>Change password</TextButton>
