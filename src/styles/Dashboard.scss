@@ -44,7 +44,7 @@
 
   &:hover {
     cursor: pointer;
-    transform: scale(1.05);
+    transform: scale(1.02);
     transition: ease-in-out 0.2s;
   }
 
@@ -67,4 +67,31 @@
   .row {
     align-items: center;
   }
+}
+
+.item-card-long {
+  border: 1px solid black;
+  border-radius: 20px;
+  height: 13rem;
+  width: inherit;
+  margin: auto !important;
+  margin-top: 1.5rem !important;
+
+  &:hover {
+    cursor: pointer;
+    transform: scale(1.01);
+    transition: ease-in-out 0.2s;
+  }
+
+  img {
+    border-radius: 20px 0 0 20px;
+    object-fit: cover;
+  }
+  p {
+    margin-bottom: 0;
+  }
+  .card-subtitle {
+    font-weight: 500;
+  }
+
 }

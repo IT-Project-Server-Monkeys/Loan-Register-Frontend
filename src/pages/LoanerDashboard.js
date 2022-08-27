@@ -1,20 +1,40 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Row, Col } from 'reactstrap';
 import '../styles/Dashboard.scss'
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai'
+import { TbLayoutGrid } from 'react-icons/tb'
 import { MdQueryStats } from 'react-icons/md'
 import { ItemCard } from '../components';
+import axios from 'axios';
+
+const image='https://picsum.photos/300/200';
 
 const LoanerDashboard = (props) => {
 
+  const [gridView, setGridView] = useState(true);
+
+
 
   const items = [
-    <ItemCard />,
-    <ItemCard />,
-    <ItemCard />,
-    <ItemCard />,
-    <ItemCard />,
+    <ItemCard image={image} title="Card Title" category="Plant" loanee="Bruce" startDate='01/01/2022' endDate="31/12/2022" gridView={gridView} />,
+    <ItemCard image={image} title="Card Title" category="Plant" loanee="Bruce" startDate='01/01/2022' endDate="31/12/2022" gridView={gridView} />,
+    <ItemCard image={image} title="Card Title" category="Plant" loanee="Bruce" startDate='01/01/2022' endDate="31/12/2022" gridView={gridView} />,
+    <ItemCard image={image} title="Card Title" category="Plant" loanee="Bruce" startDate='01/01/2022' endDate="31/12/2022" gridView={gridView} />,
+    <ItemCard image={image} title="Card Title" category="Plant" loanee="Bruce" startDate='01/01/2022' endDate="31/12/2022" gridView={gridView} />,
+    <ItemCard image={image} title="Card Title" category="Plant" loanee="Bruce" startDate='01/01/2022' endDate="31/12/2022" gridView={gridView} />,
   ]
+
+
+  useEffect(() => {
+    axios.get('https://server-monkeys-backend-test.herokuapp.com/users')
+    .then(res => {
+      console.log(res)
+    }).catch(e => {
+      console.log(e)
+    })
+
+  }, [])
+  
 
 
   return (
@@ -28,8 +48,8 @@ const LoanerDashboard = (props) => {
           <Row className='bg-light-blue' style={{height: '5rem'}}>
             <div className='dashboard-nav'>
               <div style={{width: '40%', maxWidth: '25rem'}}>
-                <span className='icon-blue'>
-                  <AiOutlineUnorderedList size={30} />
+                <span className='icon-blue' onClick={() => setGridView(!gridView)}>
+                  { gridView ? <AiOutlineUnorderedList size={30} /> : <TbLayoutGrid size={30} /> }
                 </span>
                 <div>
                   <input type="search" placeholder='Search for items' />
@@ -51,7 +71,7 @@ const LoanerDashboard = (props) => {
           </Row>
           <Row>
             {
-              items.map((item) => <Col md='4'>{item}</Col>)
+              items.map((item, i) => <Col md={gridView ? 3 : 12} key={i}>{item}</Col>)
             }
           </Row>
         </Col>
