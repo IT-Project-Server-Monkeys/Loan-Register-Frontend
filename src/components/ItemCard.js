@@ -10,7 +10,7 @@ const ItemCard = (props) => {
       {
         gridView ?
           <Card className='item-card'>
-            <img alt="Image" src={image} />
+            <img alt="item-img" src={image} />
             <CardBody>
               <CardTitle tag="h3" style={{marginBottom: '0.5rem'}}>{title}</CardTitle>
               <div>
@@ -53,7 +53,7 @@ const ItemCard = (props) => {
           <Row className='item-card-long'>
             <Col md='4' style={{paddingLeft: '0', height: '100%'}}>
               <div style={{height: '100%'}}>
-                <img alt="Image" src={image} height='100%' width='100%' />
+                <img alt="item-img" src={image} height='100%' width='100%' />
               </div>
             </Col>
             <Col>
