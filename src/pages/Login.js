@@ -2,7 +2,16 @@ import React from 'react';
 import styles from "../styles/Login.module.scss";
 import { TextBkgBox, TextButton } from '../components';
 
-const Login = () => {
+const Login = (props) => {
+
+  // temporary login handler. generates random data,
+  // then passes it onto parent via the onLogin provided by parent
+  // TODO remove
+  const handleLogin = () => {
+    props.onLogin({ userId: "62fd8a9df04410afbc6df31f" });
+    window.location.href='/dashboard/loaner';
+  };
+
   return (
     <div className={`${styles.background}`}>
       <TextBkgBox>
@@ -23,7 +32,7 @@ const Login = () => {
         </div>
         <a href="/signup" className="a">Forgot password?</a>
         <a href="/signup" className="a">New user?</a>
-        <TextButton onClick="" className={`${styles.button}`}>Login</TextButton>
+        <TextButton onClick={handleLogin} className={`${styles.button}`}>Login</TextButton>
       </TextBkgBox>
     </div>
   );

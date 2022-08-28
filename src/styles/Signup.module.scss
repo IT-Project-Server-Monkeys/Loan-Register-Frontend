@@ -1,4 +1,4 @@
-// for login page
+// for signup page
 
 .background{
     text-align: center;
@@ -8,4 +8,11 @@
     background-repeat: repeat-y;
     min-height: var(--main-height);
     align-items: center;
+}
+
+.wrap{
+    font-size: 30px;
+    font-weight: bold;
+    width: 150px;
+    text-align: initial;
 }
