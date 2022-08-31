@@ -13,7 +13,7 @@
   }
 
   .item-details {
-    margin: 5rem 5rem 3rem 5rem;
+    margin: 5rem 15% 3rem 15%;
     display: grid;
     grid-template-areas:
       "img inf inf"
@@ -22,7 +22,6 @@
 
     .item-image {
       grid-area: img;
-      margin: auto;
       position: relative;
       width: 300px;
       height: 375px;
@@ -57,11 +56,25 @@
       grid-area: sta;
       font-weight: bold;
       width: 300px;
-      margin: 1rem auto auto auto;
+      margin-top: 1rem;
     }
 
     .item-info {
       grid-area: inf;
+  
+      .input-box {
+        width: 250px;
+      }
+
+      textarea {
+        resize: none;
+        width: -webkit-fill-available;
+        height: 240px;
+      }
+
+      .input-dropdown {
+        width: 250px;
+      }
     }
   }
 

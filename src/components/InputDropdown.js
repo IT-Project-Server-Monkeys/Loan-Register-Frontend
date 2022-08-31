@@ -3,7 +3,7 @@ import "../styles/InputDropdown.scss"; // component scoped style
 
 const Footer = (props) => {
   return (
-    <div className={"input-dropdown"}>{props.children}</div>
+    <div id={props.id} className={"input-dropdown"}>{props.children}</div>
   );
 };
 

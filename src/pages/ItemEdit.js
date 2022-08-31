@@ -26,7 +26,6 @@ const ItemEdit = (props) => {
   const itemId = useParams().id;
   const [item, setItem] = useState({});
   const [categList, setCategList] = useState([]);
-
   const [newCateg, setNewCateg] = useState("");
 
   useEffect(() => {
@@ -109,7 +108,7 @@ const ItemEdit = (props) => {
               </tr>
               </tbody></table>
             <p>Description:<br />
-              <input placeholder={item.description} className={"input-box"} type="text"/>
+              <textarea style={{width: "-webkit-fill-available"}} placeholder={item.description} />
             </p>
           </form>
         </div>
