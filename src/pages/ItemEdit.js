@@ -23,9 +23,11 @@ const tempItem = {
   }
 }
 
-const ItemDetails = (props) => {
+const ItemEdit = () => {
   const itemId = useParams().id;
   const [item, setItem] = useState({});
+
+  const [category, setCategory] = useState();
 
   useEffect(() => {
     
@@ -42,8 +44,10 @@ const ItemDetails = (props) => {
         else setItem(tempItem);
     }
     fetchItem();
+
+    setCategory(item.category);
     
-  }, [itemId])
+  }, [itemId, item])
 
   return (
     <div className={"item-page"}>
@@ -61,7 +65,7 @@ const ItemDetails = (props) => {
         <div className={"item-info"}>
           <table><tbody>
             <tr>
-              <td>Name:</td><td>{item.item_name}</td>
+              <td>Name:</td><td><input value={item.item_name} className={"input-box"} type="text" /></td>
             </tr>
             <tr>
               <td>Category:</td><td>{item.category}</td>
@@ -97,4 +101,4 @@ const ItemDetails = (props) => {
   );
 };
 
-export default ItemDetails;
+export default ItemEdit;
