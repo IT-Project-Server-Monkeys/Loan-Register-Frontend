@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton } from '../components';
 import { MdEdit } from 'react-icons/md';
+import axios from "axios";
 // import { Modal } from 'reactstrap'
 
 
@@ -11,9 +12,9 @@ const tempItem = {
   "_id": {
       "$oid": "63084e1ebb2f12d6134fe1a4"
   },
-  "item_name": "Harry Potter",
-  "category": "Books",
-  "description": "The Philosopher's Stone.",
+  "item_name": "failed retrieval",
+  "category": "uwu",
+  "description": "fake data.",
   "item_owner": {
       "$oid": "62fd8a9df04410afbc6df31d"
   },
@@ -23,35 +24,47 @@ const tempItem = {
   }
 }
 
-const ItemDetails = (props) => {
-  const [itemId, setItemId] = useState(useParams().id);
+const ItemDetails = () => {
+  const itemId = useParams().id;
+  const [item, setItem] = useState({});
 
-  // TODO get item from server
-  const item = tempItem;
+  useEffect(() => {
+    
+    const fetchItem = async () => {
+      let fetchedData = null;
+  
+      await axios.get(
+        `https://server-monkeys-backend-test.herokuapp.com/testingItem?id=${itemId}`
+        )
+        .then((res) => fetchedData = res.data)
+        .catch((err) => console.log(err));
+  
+        if (fetchedData != null) setItem(fetchedData);
+        else setItem(tempItem);
+    }
+    fetchItem();
 
-
+  }, [itemId])
 
   return (
     <div className={"item-page"}>
 
       <a href={`/item-details/${itemId}/edit`}><button className={"edit-item icon-blue"}>
-        <MdEdit size={48} />
+        <MdEdit size={40} />
       </button></a>
       
       <div className={"item-details"}>
 
-        <div className={"item-image"}>
-          <img alt="Sample" src="https://picsum.photos/300/200" />
-        </div>
+        <div className={"item-image"} style={{backgroundImage: "url('https://picsum.photos/400/400')" }} />
         
         <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
         <div className={"item-info"}>
           <table><tbody>
             <tr>
-              <td>Name:</td> <td>{item.item_name}</td>
+              <td>Name:</td><td>{item.item_name}</td>
             </tr>
             <tr>
-              <td>Category:</td> <td>{item.category}</td>
+              <td>Category:</td><td>{item.category}</td>
             </tr>
             <tr>
               <td>&nbsp;</td>

@@ -9,11 +9,7 @@
     height: 72px;
     width: 72px;
     right: 10%;
-  }
-
-  .btn-list {
-    display: flex;
-    justify-content: space-around;
+    box-shadow: 2.5px 2.5px 5px var(--dark-grey-color);
   }
 
   .item-details {
@@ -23,43 +19,54 @@
       "img inf inf"
       "img inf inf"
       "sta inf inf";
-  }
 
-  .item-image {
-    grid-area: img;
-    margin: auto;
-    position: relative;
+    .item-image {
+      grid-area: img;
+      margin: auto;
+      position: relative;
+      width: 300px;
+      height: 375px;
+      border-radius: 15px;
+      border: 1px solid var(--black-color);
+      background-color: white;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: contain;
 
-    .add-img {
-      position: absolute;
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      border: 2px solid var(--dark-grey-color);
-      font-weight: bold;
-      font-size: 1rem;
-      padding: 0.5rem;
-      right: 5px;
-      bottom: 5px;
-      background-color: var(--white-color);
-      color: var(--black-color);
-
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
-
-      svg {
-        
+      .add-img {
+        position: absolute;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        border: 2px solid var(--dark-grey-color);
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 0.5rem;
+        right: -18px;
+        bottom: -18px;
+        background-color: var(--white-color);
+        color: var(--black-color);
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
       }
+    }
+
+    .item-status {
+      grid-area: sta;
+      font-weight: bold;
+      width: 300px;
+      margin: 1rem auto auto auto;
+    }
+
+    .item-info {
+      grid-area: inf;
     }
   }
 
-  .item-status {
-    grid-area: sta;
-  }
-
-  .item-info {
-    grid-area: inf;
+  .btn-list {
+    display: flex;
+    justify-content: space-around;
   }
 }

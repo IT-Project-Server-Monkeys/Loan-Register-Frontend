@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-// import { Modal } from 'reactstrap'
+import axios from "axios";
 
 
 // temporary data. TODO get real data from server
@@ -11,9 +11,9 @@ const tempItem = {
   "_id": {
       "$oid": "63084e1ebb2f12d6134fe1a4"
   },
-  "item_name": "Harry Potter",
+  "item_name": "failed retrieval",
   "category": "Books",
-  "description": "The Philosopher's Stone.",
+  "description": "hohoho.",
   "item_owner": {
       "$oid": "62fd8a9df04410afbc6df31d"
   },
@@ -24,22 +24,35 @@ const tempItem = {
 }
 
 const ItemDetails = (props) => {
-  const [itemId, setItemId] = useState(useParams().id);
-  console.log(itemId);
-  // TODO get item from server
-  const item = tempItem;
+  const itemId = useParams().id;
+  const [item, setItem] = useState({});
 
-
+  useEffect(() => {
+    
+    const fetchItem = async () => {
+      let fetchedData = null;
+  
+      await axios.get(
+        `https://server-monkeys-backend-test.herokuapp.com/testingItem?id=${itemId}`
+        )
+        .then((res) => fetchedData = res.data)
+        .catch((err) => console.log(err));
+  
+        if (fetchedData != null) setItem(fetchedData);
+        else setItem(tempItem);
+    }
+    fetchItem();
+    
+  }, [itemId])
 
   return (
     <div className={"item-page"}>
       
       <div className={"item-details"}>
 
-        <div className={"item-image"}>
-          <img alt="Sample" src="https://picsum.photos/300/200" />
+        <div className={"item-image"} style={{backgroundImage: "url('https://picsum.photos/100/100')" }}>
           <label className={"add-img"}>
-            <RiImageAddFill size={30} />
+            <RiImageAddFill size={40} />
             <input type="file" accept="image/*" style={{display: "none"}} />
           </label>
         </div>
@@ -48,10 +61,10 @@ const ItemDetails = (props) => {
         <div className={"item-info"}>
           <table><tbody>
             <tr>
-              <td>Name:</td> <td>{item.item_name}</td>
+              <td>Name:</td><td>{item.item_name}</td>
             </tr>
             <tr>
-              <td>Category:</td> <td>{item.category}</td>
+              <td>Category:</td><td>{item.category}</td>
             </tr>
             <tr>
               <td>&nbsp;</td>
