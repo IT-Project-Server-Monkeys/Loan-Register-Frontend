@@ -1,6 +1,7 @@
 export  { default as Home} from './Home'
 export  { default as AddItem} from './AddItem'
 export  { default as ItemDetails} from './ItemDetails'
+export  { default as ItemEdit} from './ItemEdit'
 export  { default as ItemHistory} from './ItemHistory'
 export  { default as LoaneeDashboard} from './LoaneeDashboard'
 export  { default as LoanerDashboard} from './LoanerDashboard'

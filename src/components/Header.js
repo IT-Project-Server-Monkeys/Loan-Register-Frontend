@@ -6,16 +6,7 @@ import logo from "../images/logo.svg";
 
 const Header = (props) => {
   // check for mobile view
-  const isMobile = useMediaQuery(
-    { maxDeviceWidth: 576 }
- )
-
- // temporary login handler. generates random data,
- // then passes it onto parent via the onLogin provided by parent
- // TODO remove
-  const handleLogin = () => {
-    props.onLogin({ userId: "62fd8a9df04410afbc6df31f" });
-  };
+  const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
 
   // individual nav link component, consisting of button with href
   const NavLink = (navProps) => {
@@ -56,8 +47,7 @@ const Header = (props) => {
       );
       else return (
         <nav>
-          {/* note temporary login handler, TODO remove */}
-          <NavLink href="/login" onClick={handleLogin}>Log In</NavLink>
+          <NavLink href="/login">Log In</NavLink>
         </nav>
       );
     }
@@ -73,8 +63,7 @@ const Header = (props) => {
       );
       else return (
         <nav>
-          {/* note temporary login handler, TODO remove */}
-          <NavLink href="/login" onClick={handleLogin}>Log In</NavLink>
+          <NavLink href="/login">Log In</NavLink>
         </nav>
       );
     }

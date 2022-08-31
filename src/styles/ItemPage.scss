@@ -1,11 +1,23 @@
 .item-page {
 
+  font-size: 1.5rem;
+
+  .edit-item {
+    border-radius: 50%;
+    border: 0;
+    position: fixed;
+    height: 72px;
+    width: 72px;
+    right: 10%;
+  }
+
   .btn-list {
     display: flex;
     justify-content: space-around;
   }
 
   .item-details {
+    margin: 5rem 5rem 3rem 5rem;
     display: grid;
     grid-template-areas:
       "img inf inf"
@@ -15,12 +27,15 @@
 
   .item-image {
     grid-area: img;
+    margin: auto;
+    position: relative;
 
-    span {
-      float: right;
+    .add-img {
+      position: absolute;
+      width: 54px;
+      height: 54px;
       border-radius: 50%;
-      height: 1.5rem;
-      width: 1.5rem;
+      border: 2px solid var(--dark-grey-color);
       font-weight: bold;
       font-size: 1rem;
       padding: 0.5rem;
@@ -28,6 +43,15 @@
       bottom: 5px;
       background-color: var(--white-color);
       color: var(--black-color);
+
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+
+      svg {
+        
+      }
     }
   }
 

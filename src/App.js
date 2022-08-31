@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Header, Footer } from './components';
-import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDetails, ItemHistory, Stats, Account, ChangePassword } from './pages';
+import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword } from './pages';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
@@ -33,7 +33,7 @@ function App() {
   
   return (
     <div className="App">
-      <Header loginSession={loginSession} onLogout={logoutHandler} onLogin={loginHandler} />
+      <Header loginSession={loginSession} onLogout={logoutHandler} />
       <main style={{minHeight: 'var(--main-height)'}}>
         <Router>
           <Routes>
@@ -43,6 +43,7 @@ function App() {
             <Route path="/dashboard/loanee" element={<LoaneeDashboard />} />
             <Route path="/add-item" element={<AddItem />} />
             <Route path="/item-details/:id" element={<ItemDetails />} />
+            <Route path="/item-details/:id/edit" element={<ItemEdit />} />
             <Route path="/item-history/:id" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />

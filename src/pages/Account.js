@@ -11,7 +11,7 @@ const Account = (props) => {
     const fetchUser = async () => {
       let fetchedData = null;
       await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/users/${props.loginSession.userId}`
+        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
         )
         .then((res) => fetchedData = res.data)
         .catch((err) => console.log(err));

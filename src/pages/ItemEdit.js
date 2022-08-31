@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton } from '../components';
-import { MdEdit } from 'react-icons/md';
+import { RiImageAddFill } from 'react-icons/ri'
 // import { Modal } from 'reactstrap'
 
 
@@ -25,7 +25,7 @@ const tempItem = {
 
 const ItemDetails = (props) => {
   const [itemId, setItemId] = useState(useParams().id);
-
+  console.log(itemId);
   // TODO get item from server
   const item = tempItem;
 
@@ -33,15 +33,15 @@ const ItemDetails = (props) => {
 
   return (
     <div className={"item-page"}>
-
-      <a href={`/item-details/${itemId}/edit`}><button className={"edit-item icon-blue"}>
-        <MdEdit size={48} />
-      </button></a>
       
       <div className={"item-details"}>
 
         <div className={"item-image"}>
           <img alt="Sample" src="https://picsum.photos/300/200" />
+          <label className={"add-img"}>
+            <RiImageAddFill size={30} />
+            <input type="file" accept="image/*" style={{display: "none"}} />
+          </label>
         </div>
         
         <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
@@ -76,13 +76,8 @@ const ItemDetails = (props) => {
       </div>
 
       <div className={"btn-list"}>
-        <a href="/history"><TextButton>History</TextButton></a>
-        {item.being_loaned ? <>
-          <TextButton>Edit Loan</TextButton>
-          <TextButton>Mark Return</TextButton>
-        </> :
-          <TextButton>Loan Item</TextButton>
-        }
+        <a href={`/item-details/${itemId}`}><TextButton altStyle>Cancel</TextButton></a>
+        <a href={`/item-details/${itemId}`}><TextButton>Save</TextButton></a>
       </div>
 
     </div>

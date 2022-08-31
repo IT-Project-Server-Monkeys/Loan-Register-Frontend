@@ -34,7 +34,7 @@ const ChangePassword = (props) => {
     confirmPwd();
 
     // TODO server implement patch request
-    // await axios.patch(`https://server-monkeys-backend-test.herokuapp.com/users/${props.loginSession.userId}`,
+    // await axios.patch(`https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`,
     // { hashed_password: newPwd.value }, { transformRequest: [data => data[0]] })
     //   .then((res) => console.log(res)).catch((err) => console.log(err));
 
