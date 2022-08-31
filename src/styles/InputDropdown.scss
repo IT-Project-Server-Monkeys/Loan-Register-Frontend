@@ -1,0 +1,32 @@
+.input-dropdown {
+  position: fixed;
+  border: 1px solid var(--dark-grey-color);
+
+  .deletable {
+    background-color: var(--white-color);
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+
+    button {
+      font-size: 1rem;
+      background-color: transparent;
+      border: none;
+
+      &:first-child {
+        flex: 1;
+        text-align: left;
+        &:hover {
+          background-color: var(--light-grey-color);
+        }
+      }
+
+      &:nth-child(2) {
+        font-weight: bold;
+        &:hover {
+          color: var(--red-color);
+        }
+      }
+    }
+  }
+}
