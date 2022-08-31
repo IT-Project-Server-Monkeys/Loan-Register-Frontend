@@ -43,7 +43,7 @@ function App() {
             <Route path="/dashboard/loanee" element={<LoaneeDashboard />} />
             <Route path="/add-item" element={<AddItem />} />
             <Route path="/item-details/:id" element={<ItemDetails />} />
-            <Route path="/item-details/:id/edit" element={<ItemEdit />} />
+            <Route path="/item-details/:id/edit" element={<ItemEdit loginSession={loginSession} />} />
             <Route path="/item-history/:id" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />

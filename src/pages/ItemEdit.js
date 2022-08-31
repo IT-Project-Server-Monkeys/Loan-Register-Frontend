@@ -5,7 +5,6 @@ import { TextButton } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import axios from "axios";
 
-
 // temporary data. TODO get real data from server
 const tempItem = {
   "_id": {
@@ -23,11 +22,10 @@ const tempItem = {
   }
 }
 
-const ItemEdit = () => {
+const ItemEdit = (props) => {
   const itemId = useParams().id;
   const [item, setItem] = useState({});
-
-  const [category, setCategory] = useState();
+  const [categs, setCategs] = useState([]);
 
   useEffect(() => {
     
@@ -44,10 +42,22 @@ const ItemEdit = () => {
         else setItem(tempItem);
     }
     fetchItem();
+  }, [itemId, item]);
 
-    setCategory(item.category);
-    
-  }, [itemId, item])
+  useEffect(() => {
+    const fetchUser = async () => {
+      let fetchedData = null;
+      console.log(props.loginSession);
+      await axios.get(
+        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
+        )
+        .then((res) => fetchedData = res.data)
+        .catch((err) => console.log(err));
+      
+      setCategs(fetchedData[0].item_categories);
+    };
+    fetchUser();
+  }, [props.loginSession]);
 
   return (
     <div className={"item-page"}>
@@ -63,32 +73,42 @@ const ItemEdit = () => {
         
         <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
         <div className={"item-info"}>
-          <table><tbody>
-            <tr>
-              <td>Name:</td><td><input value={item.item_name} className={"input-box"} type="text" /></td>
-            </tr>
-            <tr>
-              <td>Category:</td><td>{item.category}</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-            </tr>
-            { item.being_loaned ? <>
+          <form>
+            <table><tbody>
               <tr>
-                <td>Loanee:</td>
+                <td>Name:</td>
+                <td>
+                  <input placeholder={item.item_name} className={"input-box"} type="text" />
+                </td>
               </tr>
               <tr>
-                <td>Date loaned:</td>
-              </tr>
-              <tr>
-                <td>Expected return:</td>
+                <td>Category:</td>
+                <td>
+                  {categs.map((c) => {return <p key={c}>{c}</p>})}
+                </td>
               </tr>
               <tr>
                 <td>&nbsp;</td>
               </tr>
-            </> : null}
-            </tbody></table>
-          <p>Description:<br />{item.description}</p>
+              { item.being_loaned ? <>
+                <tr>
+                  <td>Loanee:</td>
+                </tr>
+                <tr>
+                  <td>Date loaned:</td>
+                </tr>
+                <tr>
+                  <td>Expected return:</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+              </> : null}
+              </tbody></table>
+            <p>Description:<br />
+              <input placeholder={item.description} className={"input-box"} type="text"/>
+            </p>
+          </form>
         </div>
       </div>
 
