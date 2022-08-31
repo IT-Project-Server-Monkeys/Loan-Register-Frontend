@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton } from '../components';
+import { TextButton, Deletable, InputDropdown } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import axios from "axios";
 
@@ -25,7 +25,9 @@ const tempItem = {
 const ItemEdit = (props) => {
   const itemId = useParams().id;
   const [item, setItem] = useState({});
-  const [categs, setCategs] = useState([]);
+  const [categList, setCategList] = useState([]);
+
+  const [newCateg, setNewCateg] = useState("");
 
   useEffect(() => {
     
@@ -47,17 +49,23 @@ const ItemEdit = (props) => {
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
-      console.log(props.loginSession);
       await axios.get(
         `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
         )
         .then((res) => fetchedData = res.data)
         .catch((err) => console.log(err));
       
-      setCategs(fetchedData[0].item_categories);
+      setCategList(fetchedData[0].item_categories);
     };
     fetchUser();
   }, [props.loginSession]);
+
+  const selectCategory = (categ) => setNewCateg(categ);
+  const deleteCategory = (categ) => {
+    // TODO axios request, check if categ empty
+    setCategList((prev) => prev.filter((c) => c != categ));
+  }
+  const changeCategory = (e) => setNewCateg(e.target.value);
 
   return (
     <div className={"item-page"}>
@@ -84,26 +92,21 @@ const ItemEdit = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  {categs.map((c) => {return <p key={c}>{c}</p>})}
+                  <input
+                    placeholder={item.category} value={newCateg} onChange={changeCategory}
+                    className={"input-box"} type="text"
+                  />
+                  <InputDropdown>{categList.map((c) => {
+                    return <Deletable
+                      selectOption={selectCategory} deleteOption={deleteCategory}
+                      key={c}>{c}
+                    </Deletable>
+                  })}</InputDropdown>
                 </td>
               </tr>
               <tr>
                 <td>&nbsp;</td>
               </tr>
-              { item.being_loaned ? <>
-                <tr>
-                  <td>Loanee:</td>
-                </tr>
-                <tr>
-                  <td>Date loaned:</td>
-                </tr>
-                <tr>
-                  <td>Expected return:</td>
-                </tr>
-                <tr>
-                  <td>&nbsp;</td>
-                </tr>
-              </> : null}
               </tbody></table>
             <p>Description:<br />
               <input placeholder={item.description} className={"input-box"} type="text"/>
