@@ -1,33 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import axios from "axios";
 
-// temporary data. TODO get real data from server
-const tempItem = {
-  "_id": {
-      "$oid": "63084e1ebb2f12d6134fe1a4"
-  },
-  "item_name": "failed retrieval",
-  "category": "Books",
-  "description": "hohoho.",
-  "item_owner": {
-      "$oid": "62fd8a9df04410afbc6df31d"
-  },
-  "being_loaned": true,
-  "loan_frequency": {
-      "$numberInt": "0"
-  }
-}
-
 const ItemEdit = (props) => {
+  const redirect = useNavigate();
   const itemId = useParams().id;
   const [item, setItem] = useState({});
+  const [itemImg, setItemImg] = useState(null);
+  const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
   const [categList, setCategList] = useState([]);
-  const [newCateg, setNewCateg] = useState("");
+  const [newCateg, setNewCateg] = useState(null);
 
+  // get and show item info
   useEffect(() => {
     
     const fetchItem = async () => {
@@ -40,11 +27,11 @@ const ItemEdit = (props) => {
         .catch((err) => console.log(err));
   
         if (fetchedData != null) setItem(fetchedData);
-        else setItem(tempItem);
     }
     fetchItem();
   }, [itemId, item]);
 
+  // get list of potential categs
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
@@ -59,41 +46,79 @@ const ItemEdit = (props) => {
     fetchUser();
   }, [props.loginSession]);
 
+  // categ changing
   const selectCategory = (categ) => setNewCateg(categ);
-  const deleteCategory = (categ) => {
-    // TODO axios request, check if categ empty
+  const deleteCategory = async (categ) => {
+    let toDelCateg;
+    await axios(`https://server-monkeys-backend-test.herokuapp.com/testingItem?item_owner=${props.loginSession.userId}&category=${categ}`)
+      .then((res) => toDelCateg = res.data)
+      .catch((err) => console.log(err));
+    if (toDelCateg.length === 0) {
+      console.log(`deletable categ ${categ}`); // TODO delete categ
+    } else console.log(`categ ${categ} hidden from view`);
     setCategList((prev) => prev.filter((c) => c !== categ));
   }
   const changeCategory = (e) => setNewCateg(e.target.value);
 
+  // item img changing
+  const changeImage = (e) => {
+    setItemImg(e.target.files[0]);
+    URL.revokeObjectURL(displayImg);
+    setDisplayImg(URL.createObjectURL(e.target.files[0]));
+  }
+
+  // save item and post to db
+  const saveItem = (e) => {
+    e.preventDefault();
+    const newName = e.target.newName.value;
+    const newDesc = e.target.newDesc.value;
+
+    let formData = new FormData();
+    formData.append("_id", itemId);
+    if (itemImg != null) formData.append("image", itemImg);
+    if (newName != null) formData.append("item_name", newName);
+    if (newCateg != null) formData.append("category", newCateg);
+    if (newDesc != null) formData.append("description", newDesc);
+
+    // TODO post to location
+    // axios.post('upload_file', formData, {
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data'
+    //     }
+    // })
+
+    redirect(`/item-details/${itemId}`);
+  }
+
   return (
     <div className={"item-page"}>
-      
       <div className={"item-details"}>
-
-        <div className={"item-image"} style={{backgroundImage: "url('https://picsum.photos/100/100')" }}>
+        <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
           <label className={"add-img"}>
             <RiImageAddFill size={40} />
-            <input type="file" accept="image/*" style={{display: "none"}} />
+            <input
+              type="file" accept="image/*" 
+              name="newImg" style={{display: "none"}}
+              onChange={changeImage} 
+            />
           </label>
         </div>
         
         <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
         <div className={"item-info"}>
-          <form>
+          <form id="editItem" onSubmit={saveItem}>
             <table><tbody>
               <tr>
                 <td>Name:</td>
                 <td>
-                  <input placeholder={item.item_name} className={"input-box"} type="text" />
+                  <input name="newName" placeholder={item.item_name} className={"input-box"} type="text" />
                 </td>
               </tr>
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown value={newCateg}
-                    placeholder={item.category}
-                    options={categList}
+                  <InputDropdown name="newCateg" value={newCateg}
+                    placeholder={item.category} options={categList}
                     selectOption={selectCategory}
                     deleteOption={deleteCategory}
                     changeOption={changeCategory}
@@ -105,15 +130,17 @@ const ItemEdit = (props) => {
               </tr>
               </tbody></table>
             <p>Description:<br />
-              <textarea style={{width: "-webkit-fill-available"}} placeholder={item.description} />
+              <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder={item.description} />
             </p>
           </form>
         </div>
       </div>
 
       <div className={"btn-list"}>
-        <a href={`/item-details/${itemId}`}><TextButton altStyle>Cancel</TextButton></a>
-        <a href={`/item-details/${itemId}`}><TextButton>Save</TextButton></a>
+        <TextButton altStyle
+          onClick={() => redirect(`/item-details/${itemId}`)}
+        >Cancel</TextButton>
+        <TextButton form="editItem" type="submit">Save</TextButton>
       </div>
 
     </div>

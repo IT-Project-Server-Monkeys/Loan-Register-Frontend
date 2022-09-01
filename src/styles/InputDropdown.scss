@@ -3,22 +3,28 @@
   border-radius: 5px;
   
   .dropdown-toggle {
-    width: 250px;
+    width: 285px;
     height: 42px;
     font-size: 25px;
     padding: 0;
     border: 0;
     background-color: transparent !important;
+    display: flex;
+    justify-content: space-between;
 
     &::after {
-      color: var(--black-color);
-      vertical-align: 0.3rem;
+      content: none;
     }
 
     .input-box {
       background-color: transparent;
       width: 250px !important;
       border: 0;
+    }
+
+    span {
+      color: var(--black-color);
+      width: 35px;
     }
   }
 
