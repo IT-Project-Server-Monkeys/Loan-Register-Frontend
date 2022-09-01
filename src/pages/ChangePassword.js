@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
 import { TextBkgBox, TextButton } from "../components";
-// import axios from "axios";
+import axios from "axios";
 
 const ChangePassword = (props) => {
   const [submitStyle, setSubmitStyle] = useState({
@@ -28,30 +28,29 @@ const ChangePassword = (props) => {
     event.preventDefault();
 
     const newPwd = document.getElementById("newPwd");
-
-    newPwd.value = null;
-    document.getElementById("confirmPwd").value = null;
-    confirmPwd();
-
-    // TODO server implement patch request
-    // await axios.patch(`https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`,
-    // { hashed_password: newPwd.value }, { transformRequest: [data => data[0]] })
-    //   .then((res) => console.log(res)).catch((err) => console.log(err));
+    
+    await axios.put('https://server-monkeys-backend-test.herokuapp.com/', JSON.parse(
+      `{ "_id": "${props.uid}", "hashed_password": "${newPwd.value}" }`
+      ))
+      .then(res => console.log(res))
+      .catch(e => console.log(e));
+      // TODO testing
+      console.log(`{ "_id": "${props.uid}", "hashed_password": "${newPwd.value}" }`);
+      
+      newPwd.value = null;
+      document.getElementById("confirmPwd").value = null;
+      confirmPwd();
 
     redirect("/account");
   };
 
   return (
-    // TODO: consider bootstrap form
     <div className={"change-password"}>
       <TextBkgBox>
         <h1>Change password</h1>
         <form onSubmit={changePwd} onChange={confirmPwd}>
-          {" "}
-          {/* TODO post route*/}
           <div className={"inline-flex"}>
             <h3>New password:</h3>
-            {/* TODO consider onchange confirm check here too? */}
             <input required type="password" id="newPwd"
               placeholder="Enter password" className={"input-box"}
             />

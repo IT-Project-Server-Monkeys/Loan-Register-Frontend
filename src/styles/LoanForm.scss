@@ -1,0 +1,39 @@
+.loan-form {
+  
+  .modal-dialog {
+    max-width: fit-content;
+    
+    .modal-content {
+      background-color: transparent;
+      border: 0;
+
+      .inline-flex {
+        h3 {
+          width: 150px;
+        }
+      }
+
+      .input-dropdown {
+        margin: 20px;
+        width: 363px;
+        height: 50px;
+
+        .dropdown-toggle {
+          width: 363px;
+          height: 50px;
+        }
+
+        input {
+          width: 333px;
+          height: 50px;
+        }
+        
+        .dropdown-menu {
+          width: 363px;
+        }
+      }
+
+    }
+  }
+}
+

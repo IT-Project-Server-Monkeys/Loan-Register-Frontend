@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState, useEffect } from "react";
 import "../styles/ToggleInput.scss";
 
@@ -14,9 +15,13 @@ const ToggleInput = (props) => {
   // upon save, update field & switch back to display mode
   const saveInput = async (event) => {
     event.preventDefault();
-
-    console.log(curVal);
-    // TODO axios patch request to server
+    await axios.put('https://server-monkeys-backend-test.herokuapp.com/', JSON.parse(
+      `{ "_id": "${props.uid}", "${props.field}": "${curVal}" }`
+    ))
+      .then(res => console.log(res))
+      .catch(e => console.log(e));
+    // TODO testing
+    console.log(`{ "_id": "${props.uid}", "${props.field}": "${curVal}" }`);
 
     setEditMode(false);
   }

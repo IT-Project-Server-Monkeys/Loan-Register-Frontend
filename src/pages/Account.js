@@ -21,14 +21,14 @@ const Account = (props) => {
         display_name: "retrieval failed",
         login_email: "placeholder@mail.com",
         hashed_password: "thisisapassword",
-      }]; else console.log(fetchedData);
+      }];
       
       setUserInfo(fetchedData[0]);
     };
     fetchUser();
   }, [props.loginSession]);
 
-  return ( // TODO: consider bootstrap form
+  return (
     <div className={"account-page"}>
       <TextBkgBox>
         <h1>Account</h1>

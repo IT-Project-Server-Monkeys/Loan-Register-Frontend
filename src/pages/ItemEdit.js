@@ -12,7 +12,7 @@ const ItemEdit = (props) => {
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
   const [categList, setCategList] = useState([]);
-  const [newCateg, setNewCateg] = useState(null);
+  const [newCateg, setNewCateg] = useState("");
 
   // get and show item info
   useEffect(() => {
@@ -68,7 +68,7 @@ const ItemEdit = (props) => {
   }
 
   // save item and post to db
-  const saveItem = (e) => {
+  const saveItem = async (e) => {
     e.preventDefault();
     const newName = e.target.newName.value;
     const newDesc = e.target.newDesc.value;
@@ -80,12 +80,14 @@ const ItemEdit = (props) => {
     if (newCateg != null) formData.append("category", newCateg);
     if (newDesc != null) formData.append("description", newDesc);
 
-    // TODO post to location
-    // axios.post('upload_file', formData, {
-    //     headers: {
-    //       'Content-Type': 'multipart/form-data'
-    //     }
-    // })
+    await axios.put(
+        'https://server-monkeys-backend-test.herokuapp.com/', formData,
+        {headers: { "Content-Type": "multipart/form-data" }}
+      )
+      .then(res => console.log(res))
+      .catch(e => console.log(e));
+      // TODO testing
+      console.log(formData);
 
     redirect(`/item-details/${itemId}`);
   }

@@ -12,7 +12,7 @@ const InputDropdown = (props) => {
       <DropdownToggle caret>
         <input onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault()}}
           placeholder={props.placeholder} value={props.value} onChange={props.changeOption}
-          className={"input-box"} type="text" name={props.name}
+          type="text" name={props.name}
         />
         <span>▾</span>
       </DropdownToggle>
