@@ -4,6 +4,7 @@ import '../styles/ItemPage.scss'
 import { TextButton, Deletable, InputDropdown } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import axios from "axios";
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
 // temporary data. TODO get real data from server
 const tempItem = {
@@ -23,6 +24,9 @@ const tempItem = {
 }
 
 const ItemEdit = (props) => {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const toggle = () => setDropdownOpen((prevState) => !prevState);
+
   const itemId = useParams().id;
   const [item, setItem] = useState({});
   const [categList, setCategList] = useState([]);
@@ -62,7 +66,7 @@ const ItemEdit = (props) => {
   const selectCategory = (categ) => setNewCateg(categ);
   const deleteCategory = (categ) => {
     // TODO axios request, check if categ empty
-    setCategList((prev) => prev.filter((c) => c != categ));
+    setCategList((prev) => prev.filter((c) => c !== categ));
   }
   const changeCategory = (e) => setNewCateg(e.target.value);
 
@@ -91,16 +95,22 @@ const ItemEdit = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  <input
-                    placeholder={item.category} value={newCateg} onChange={changeCategory}
-                    className={"input-box"} type="text"
-                  />
-                  <InputDropdown>{categList.map((c) => {
-                    return <Deletable
-                      selectOption={selectCategory} deleteOption={deleteCategory}
-                      key={c}>{c}
-                    </Deletable>
-                  })}</InputDropdown>
+                  <Dropdown isOpen={dropdownOpen} toggle={toggle} direction="down">
+                    <DropdownToggle caret>
+                      <input
+                        placeholder={item.category} value={newCateg} onChange={changeCategory}
+                        className={"input-box"} type="text"
+                      />
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      {categList.map((c) => { return <DropdownItem text key={c}>
+                        <Deletable
+                            selectOption={selectCategory} deleteOption={deleteCategory}
+                            >{c}
+                          </Deletable>
+                      </DropdownItem>})}
+                    </DropdownMenu>
+                  </Dropdown>
                 </td>
               </tr>
               <tr>
