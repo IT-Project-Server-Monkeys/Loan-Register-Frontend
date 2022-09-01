@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, Deletable, InputDropdown } from '../components';
+import { TextButton, InputDropdown } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import axios from "axios";
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
 // temporary data. TODO get real data from server
 const tempItem = {
@@ -24,9 +23,6 @@ const tempItem = {
 }
 
 const ItemEdit = (props) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
-
   const itemId = useParams().id;
   const [item, setItem] = useState({});
   const [categList, setCategList] = useState([]);
@@ -95,22 +91,13 @@ const ItemEdit = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  <Dropdown isOpen={dropdownOpen} toggle={toggle} direction="down">
-                    <DropdownToggle caret>
-                      <input
-                        placeholder={item.category} value={newCateg} onChange={changeCategory}
-                        className={"input-box"} type="text"
-                      />
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      {categList.map((c) => { return <DropdownItem text key={c}>
-                        <Deletable
-                            selectOption={selectCategory} deleteOption={deleteCategory}
-                            >{c}
-                          </Deletable>
-                      </DropdownItem>})}
-                    </DropdownMenu>
-                  </Dropdown>
+                  <InputDropdown value={newCateg}
+                    placeholder={item.category}
+                    options={categList}
+                    selectOption={selectCategory}
+                    deleteOption={deleteCategory}
+                    changeOption={changeCategory}
+                  />
                 </td>
               </tr>
               <tr>

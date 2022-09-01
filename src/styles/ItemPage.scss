@@ -63,17 +63,18 @@
       grid-area: inf;
   
       .input-box {
-        width: 250px;
+        width: 285px;
       }
 
       textarea {
         resize: none;
         width: -webkit-fill-available;
         height: 240px;
+        border-radius: 5px;
       }
 
       .input-dropdown {
-        width: 250px;
+        width: 285px;
       }
     }
   }
