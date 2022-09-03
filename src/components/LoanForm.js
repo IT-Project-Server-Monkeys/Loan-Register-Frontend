@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
 import { TextButton, TextBkgBox, InputDropdown } from "./";
 import { Modal } from 'reactstrap';
-import axios from "axios";
+import axios from "axios"; // eslint-disable-line no-unused-vars
 
 const LoanForm = (props) => {
   const [today, setToday] = useState();
