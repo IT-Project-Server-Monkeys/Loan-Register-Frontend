@@ -16,6 +16,7 @@ const AddItem = (props) => {
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
+      if (props.loginSession == null) return;
       await axios.get(
         `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
         )
@@ -31,13 +32,13 @@ const AddItem = (props) => {
   const selectCategory = (categ) => setNewCateg(categ);
   const deleteCategory = async (categ) => {
     let toDelCateg;
+    setCategList((prev) => prev.filter((c) => c !== categ));
     await axios(`https://server-monkeys-backend-test.herokuapp.com/testingItem?item_owner=${props.loginSession.userId}&category=${categ}`)
       .then((res) => toDelCateg = res.data)
       .catch((err) => console.log(err));
     if (toDelCateg.length === 0) {
       console.log(`deletable categ ${categ}`); // TODO delete categ
     } else console.log(`categ ${categ} hidden from view`);
-    setCategList((prev) => prev.filter((c) => c !== categ));
   }
   const changeCategory = (e) => setNewCateg(e.target.value);
 

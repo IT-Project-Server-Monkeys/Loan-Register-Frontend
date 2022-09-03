@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useState, useEffect } from "react";
 import "../styles/ToggleInput.scss";
 
@@ -13,24 +12,17 @@ const ToggleInput = (props) => {
   }, [props]);
 
   // upon save, update field & switch back to display mode
-  const saveInput = async (event) => {
+  const handleSave = async (event) => {
     event.preventDefault();
-    await axios.put('https://server-monkeys-backend-test.herokuapp.com/', JSON.parse(
-      `{ "_id": "${props.uid}", "${props.field}": "${curVal}" }`
-    ))
-      .then(res => console.log(res))
-      .catch(e => console.log(e));
-    // TODO testing
-    console.log(`{ "_id": "${props.uid}", "${props.field}": "${curVal}" }`);
-
     setEditMode(false);
+    props.saveInput(JSON.parse(`{ "${props.field}": "${curVal}" }`));
   }
 
   return (
     <>
       {
         editMode ?
-          <form className={"inline-form"} onSubmit={saveInput}>
+          <form className={"inline-form"} onSubmit={handleSave}>
             <input required type={props.type} className={"input-box"}
               value={curVal} onChange={event => setCurVal(event.target.value)}
               placeholder={`New ${props.field.replace("_", " ")}`}

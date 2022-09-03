@@ -55,13 +55,22 @@ const ItemEdit = (props) => {
   const selectCategory = (categ) => setNewCateg(categ);
   const deleteCategory = async (categ) => {
     let toDelCateg;
+    setCategList((prev) => prev.filter((c) => c !== categ));
     await axios(`https://server-monkeys-backend-test.herokuapp.com/testingItem?item_owner=${props.loginSession.userId}&category=${categ}`)
       .then((res) => toDelCateg = res.data)
       .catch((err) => console.log(err));
     if (toDelCateg.length === 0) {
-      console.log(`deletable categ ${categ}`); // TODO delete categ
+      console.log(`deletable categ ${categ}`);
+
+      await axios({
+        method: "put", data: { _id: props.loginSession.userId, item_categories: categList },
+        url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+
     } else console.log(`categ ${categ} hidden from view`);
-    setCategList((prev) => prev.filter((c) => c !== categ));
   }
   const changeCategory = (e) => setNewCateg(e.target.value);
 
@@ -78,21 +87,19 @@ const ItemEdit = (props) => {
     const newName = e.target.newName.value;
     const newDesc = e.target.newDesc.value;
 
-    let formData = new FormData();
-    formData.append("_id", itemId);
-    if (itemImg != null) formData.append("image", itemImg);
-    if (newName != null) formData.append("item_name", newName);
-    if (newCateg != null) formData.append("category", newCateg);
-    if (newDesc != null) formData.append("description", newDesc);
+    let formData = { _id: itemId };
+    if (itemImg != null) formData.image = itemImg;
+    if (newName != null) formData.item_name = newName;
+    if (newCateg != null) formData.category = newCateg;
+    if (newDesc != null) formData.description = newDesc;
 
-    await axios.put(
-        'https://server-monkeys-backend-test.herokuapp.com/', formData,
-        {headers: { "Content-Type": "multipart/form-data" }}
-      )
-      .then(res => console.log(res))
-      .catch(e => console.log(e));
-      // TODO testing
-      console.log(formData);
+    await axios({
+      method: "put", data: formData,
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
 
     redirect(`/item-details/${itemId}`);
   }

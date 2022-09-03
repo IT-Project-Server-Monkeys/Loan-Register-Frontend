@@ -29,18 +29,18 @@ const ItemDetails = (props) => {
       let fetchedData = null;
 
       await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingItem?id=${itemId}`
+          `https://server-monkeys-backend-test.herokuapp.com/testingItem?id=${itemId}`
         )
         .then((res) => fetchedData = res.data)
         .catch((err) => console.log(err));
   
-        if (fetchedData != null) setItem({
-          ...fetchedData,
-          loanee: <Loading />,
-          loan_start_date: <Loading />,
-          intended_return_date: <Loading />
-        });
-        else setItem({}); // show img TODO
+      if (fetchedData != null) setItem({
+        ...fetchedData,
+        loanee: <Loading />,
+        loan_start_date: <Loading />,
+        intended_return_date: <Loading />
+      });
+      else setItem({}); // show img TODO
     }
     fetchItem();
   }, [itemId]);
@@ -70,16 +70,49 @@ const ItemDetails = (props) => {
     if (item.being_loaned) fetchLoan();
   }, [itemId, item.being_loaned])
 
-  const saveLoan = (formData) => {
+  const saveLoan = async (input) => {
 
-    // TODO post
-    let loanData = {loaner_id: props.loginSession.userId};
-    if (item.loan_id !== null) loanData._id = item.loan_id;
-    if (formData.loanee !== "") loanData.loanee_name = formData.loanee;
-    if (formData.loan_start_date !== "") loanData.loan_start_date = formData.loan_start_date;
-    if (formData.intended_return_date !== "") loanData.intended_return_date = formData.intended_return_date;
-    console.log(loanData);
-    console.log("TODO save loan");
+    let formData = {loaner_id: props.loginSession.userId};
+    if (item.loan_id !== null) formData._id = item.loan_id;
+    if (input.loanee !== "" && input.loanee !== null)
+      formData.loanee_name = input.loanee;
+    if (input.loan_start_date !== "" && input.loan_start_date !== null)
+      formData.loan_start_date = input.loan_start_date;
+    if (input.intended_return_date !== "" && input.intended_return_date !== null)
+      formData.intended_return_date = input.intended_return_date;
+    if (input.actual_return_date !== "" && input.actual_return_date !== null)
+      formData.actual_return_date = input.actual_return_date;
+    if (input.status !== "" && input.status !== null) formData.status = input.status;
+    console.log(formData);
+
+    await axios({
+      method: "put", data: formData,
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingLoan",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+
+    window.location.reload();
+  }
+
+  const returnLoan = async () => {
+    const actual_return_date = new Date();
+    const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
+
+    let itemFormData = { _id: itemId, being_loaned: false };
+    await axios({
+      method: "put", data: itemFormData,
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+
+    let loanFormData = { _id: item.loan_id, actual_return_date: actual_return_date };
+    if (dateDiff > 0) saveLoan({...loanFormData, status: "Late Return"});
+    else if (dateDiff > -86400000) saveLoan({...loanFormData, status: "On Time Return"});
+    else saveLoan({...loanFormData, status: "Early Return"});
   }
 
   return (
@@ -128,7 +161,7 @@ const ItemDetails = (props) => {
         <a href="/history"><TextButton>History</TextButton></a>
         {item.being_loaned ? <>
           <TextButton onClick={toggle}>Edit Loan</TextButton>
-          <TextButton style={{lineHeight: "1.2"}}>{"Mark\nReturn"}</TextButton>
+          <TextButton onClick={returnLoan} style={{lineHeight: "1.2"}}>{"Mark\nReturn"}</TextButton>
         </> :
           <TextButton onClick={toggle}>Loan Item</TextButton>
         }

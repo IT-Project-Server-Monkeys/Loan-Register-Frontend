@@ -26,20 +26,22 @@ const ChangePassword = (props) => {
 
   const changePwd = async (event) => {
     event.preventDefault();
+    let newPwd = document.getElementById("newPwd");
+    // TODO hash password
+    let formData = {_id: props.uid, hashed_password: newPwd.value};
+    console.log(formData);
 
-    const newPwd = document.getElementById("newPwd");
+    await axios({
+      method: "put", data: formData,
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
     
-    await axios.put('https://server-monkeys-backend-test.herokuapp.com/', JSON.parse(
-      `{ "_id": "${props.uid}", "hashed_password": "${newPwd.value}" }`
-      ))
-      .then(res => console.log(res))
-      .catch(e => console.log(e));
-      // TODO testing
-      console.log(`{ "_id": "${props.uid}", "hashed_password": "${newPwd.value}" }`);
-      
-      newPwd.value = null;
-      document.getElementById("confirmPwd").value = null;
-      confirmPwd();
+    newPwd.value = null;
+    document.getElementById("confirmPwd").value = null;
+    confirmPwd();
 
     redirect("/account");
   };

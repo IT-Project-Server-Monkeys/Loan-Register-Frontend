@@ -9,6 +9,18 @@ const Account = (props) => {
     login_email: <Loading />,
   });
 
+  const saveInput = async (input) => {
+    let formData = { _id: props.loginSession.userId, ...input};
+    console.log(formData);
+    await axios({
+      method: "put", data: formData,
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }
+
   // get user data from server, querying using userId recorded in the app's loginSession
   useEffect(() => {
     const fetchUser = async () => {
@@ -38,16 +50,14 @@ const Account = (props) => {
         <h1>Account</h1>
         <div className={"inline-flex"}>
           <h3>Display name:</h3>
-          <ToggleInput
-            type="text" initVal={userInfo.display_name}
-            field="display_name" uid={userInfo._id}
+          <ToggleInput saveInput={saveInput} type="text"
+            field="display_name" initVal={userInfo.display_name}
           />
         </div>
         <div className={"inline-flex"}>
           <h3>Email:</h3>
-          <ToggleInput
-            type="email" initVal={userInfo.login_email}
-            field="login_email" uid={userInfo._id}
+          <ToggleInput saveInput={saveInput} type="email"
+            field="login_email" initVal={userInfo.login_email}
           />
         </div>
         <a href="/change-password">
