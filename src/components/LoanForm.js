@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
 import { TextButton, TextBkgBox, InputDropdown } from "./";
 import { Modal } from 'reactstrap';
+import axios from "axios";
 
 const LoanForm = (props) => {
   const [today, setToday] = useState();
@@ -21,10 +22,29 @@ const LoanForm = (props) => {
     });
   }, [props.item, props.newLoan]);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
+    console.log("form submitted");
+
+    let fetchedLoanee = null;
+    // if (props.loaneeValue !== "" && props.loaneeValue !== null) {
+    //   await axios.get(
+    //     `https://server-monkeys-backend-test.herokuapp.com/testingUser?display_name=${props.loaneeValue}`
+    //     )
+    //     .then((res) => fetchedLoanee = res.data)
+    //     .catch((err) => console.log(err));
+    //   if (fetchedLoanee === null || fetchedLoanee === []) {
+    //     alert(`User ${props.loaneeValue} not found.`);
+    //     return;
+    //   }
+    //   else (fetchedLoanee = fetchedLoanee[0]._id);
+    // }
+
+    // tester. TODO remove
+    fetchedLoanee = "62ff5491723818548142d485";
+
     props.onSubmit({
-      loanee: props.loaneeValue,
+      loanee_id: fetchedLoanee,
       loan_start_date: e.target.loanDate.value,
       intended_return_date: e.target.returnDate.value
     });

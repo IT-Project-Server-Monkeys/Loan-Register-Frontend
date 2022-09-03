@@ -71,11 +71,16 @@ const ItemDetails = (props) => {
   }, [itemId, item.being_loaned])
 
   const saveLoan = async (input) => {
-
-    let formData = {loaner_id: props.loginSession.userId};
+    // initialise form
+    let formData = {
+      loaner_id: props.loginSession.userId,
+      item_id: itemId, status: input.status
+    };
     if (item.loan_id !== null) formData._id = item.loan_id;
-    if (input.loanee !== "" && input.loanee !== null)
-      formData.loanee_name = input.loanee;
+
+    // add optional fields
+    if (input.loanee_id !== "" && input.loanee_id !== null)
+      formData.loanee_id = input.loanee_id;
     if (input.loan_start_date !== "" && input.loan_start_date !== null)
       formData.loan_start_date = input.loan_start_date;
     if (input.intended_return_date !== "" && input.intended_return_date !== null)
@@ -83,36 +88,42 @@ const ItemDetails = (props) => {
     if (input.actual_return_date !== "" && input.actual_return_date !== null)
       formData.actual_return_date = input.actual_return_date;
     if (input.status !== "" && input.status !== null) formData.status = input.status;
-    console.log(formData);
 
+    console.log(formData);
     await axios({
-      method: "put", data: formData,
+      method: item.being_loaned ? "put" : "post", data: formData,
       url: "https://server-monkeys-backend-test.herokuapp.com/testingLoan",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
 
-    window.location.reload();
+    // window.location.reload();
   }
 
   const returnLoan = async () => {
     const actual_return_date = new Date();
     const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
 
-    let itemFormData = { _id: itemId, being_loaned: false };
-    await axios({
-      method: "put", data: itemFormData,
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-
     let loanFormData = { _id: item.loan_id, actual_return_date: actual_return_date };
     if (dateDiff > 0) saveLoan({...loanFormData, status: "Late Return"});
     else if (dateDiff > -86400000) saveLoan({...loanFormData, status: "On Time Return"});
     else saveLoan({...loanFormData, status: "Early Return"});
+  }
+
+  const createLoan = async (input) => {
+    let loanFormData = { status: "Current", ...input};
+    if (input.loan_start_date === null || input.loan_start_date === "")
+      loanFormData.loan_start_date = new Date();
+    saveLoan(loanFormData);
+  }
+
+  const editLoan = (input) => {
+    let loanFormData = { status: "Current" };
+    if (input.loanee_id !== null) loanFormData.loanee_id = input.loanee_id;
+    if (input.loan_start_date !== null) loanFormData.loan_start_date = input.loan_start_date;
+    if (input.intended_return_date !== null) loanFormData.intended_return_date = input.intended_return_date;
+    saveLoan(loanFormData);
   }
 
   return (
@@ -169,8 +180,9 @@ const ItemDetails = (props) => {
 
       <LoanForm modal={modal} toggle={toggle} item={item}
         newLoan={!item.being_loaned} loaneeValue={loanee}
-        onSubmit={saveLoan} suggestedLoanees={suggestedLoanees}
-        selectLoanee={selectLoanee} deleteLoanee={deleteLoanee} changeLoanee={changeLoanee}
+        onSubmit={item.being_loaned ? editLoan : createLoan}
+        suggestedLoanees={suggestedLoanees} changeLoanee={changeLoanee}
+        selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
       />
 
     </div>
