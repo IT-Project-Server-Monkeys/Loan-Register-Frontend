@@ -29,24 +29,30 @@
 
   .dropdown-menu {
     width: 285px;
+    border: 1px solid var(--dark-grey-color);
+
+    .dropdown-item-text {
+      padding: 0;
+    }
 
     .deletable {
       background-color: var(--white-color);
       display: flex;
       justify-content: space-between;
       position: relative;
+      &:hover {
+        background-color: var(--light-grey-color);
+      }
   
       button {
         font-size: 1rem;
         background-color: transparent;
         border: none;
+        padding: var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x);
   
         &:first-child {
           flex: 1;
           text-align: left;
-          &:hover {
-            background-color: var(--light-grey-color);
-          }
         }
   
         &:nth-child(2) {

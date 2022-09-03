@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { LoanForm, TextButton } from '../components';
+import { LoanForm, TextButton, Loading } from '../components';
 import { MdEdit } from 'react-icons/md';
 import axios from "axios";
 
 const ItemDetails = (props) => {
   const itemId = useParams().id;
-  const [item, setItem] = useState({being_loaned: false});
+  const [item, setItem] = useState({
+    being_loaned: false,
+    item_name: <Loading />,
+    category: <Loading />,
+    description: <Loading />
+  });
 
   const [modal, setModal] = useState(false);
   const toggle = () => setModal(!modal);
@@ -29,7 +34,12 @@ const ItemDetails = (props) => {
         .then((res) => fetchedData = res.data)
         .catch((err) => console.log(err));
   
-        if (fetchedData != null) setItem(fetchedData);
+        if (fetchedData != null) setItem({
+          ...fetchedData,
+          loanee: <Loading />,
+          loan_start_date: <Loading />,
+          intended_return_date: <Loading />
+        });
         else setItem({}); // show img TODO
     }
     fetchItem();

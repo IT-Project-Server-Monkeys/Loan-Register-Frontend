@@ -61,6 +61,12 @@
 
     .item-info {
       grid-area: inf;
+
+      table {
+        td {
+          padding-right: 1.5rem;
+        }
+      }
   
       .input-box {
         width: 285px;

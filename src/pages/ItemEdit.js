@@ -8,7 +8,11 @@ import axios from "axios";
 const ItemEdit = (props) => {
   const redirect = useNavigate();
   const itemId = useParams().id;
-  const [item, setItem] = useState({});
+  const [item, setItem] = useState({
+    item_name: "Loading...",
+    category: "Loading...",
+    description: "Loading..."
+  });
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
   const [categList, setCategList] = useState([]);
@@ -35,6 +39,7 @@ const ItemEdit = (props) => {
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
+      if (props.loginSession == null) return;
       await axios.get(
         `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
         )
@@ -106,7 +111,7 @@ const ItemEdit = (props) => {
           </label>
         </div>
         
-        <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
+        <p className={"item-status"}>&nbsp;</p>
         <div className={"item-info"}>
           <form id="editItem" onSubmit={saveItem}>
             <table><tbody>

@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
-import { TextBkgBox, ToggleInput, TextButton } from '../components';
+import { TextBkgBox, ToggleInput, TextButton, Loading } from '../components';
 import axios from "axios";
 
 const Account = (props) => {
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState({
+    display_name: <Loading />,
+    login_email: <Loading />,
+  });
 
   // get user data from server, querying using userId recorded in the app's loginSession
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
+      if (props.loginSession == null) return;
       await axios.get(
         `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
         )
         .then((res) => fetchedData = res.data)
         .catch((err) => console.log(err));
 
-      if (fetchedData == null && props.loginSession) fetchedData = [{
+      if (fetchedData == null) fetchedData = [{
         _id: props.loginSession.userId,
         display_name: "retrieval failed",
         login_email: "placeholder@mail.com",
