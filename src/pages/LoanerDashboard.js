@@ -54,9 +54,9 @@ const LoanerDashboard = (props) => {
                 <div>
                   <input type="search" placeholder='Search for items' />
                 </div>
-                <span className='icon-plus'>
+                <a className='icon-plus' href="/add-item">
                   <AiFillPlusCircle size={45} color='#0073e6' />
-                </span>
+                </a>
               </div>             
               <div style={{width: '12%', maxWidth: '8rem'}}>
                 <span className='icon-blue'>

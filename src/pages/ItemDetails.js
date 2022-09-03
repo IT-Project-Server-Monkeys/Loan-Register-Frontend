@@ -53,14 +53,22 @@ const ItemDetails = (props) => {
         ...initItem,
         loan_id: fetchedData._id,
         loanee: loaneeName,
-        loan_start_date: fetchedData.loan_start_date.substring(0, 10),
-        intended_return_date: fetchedData.intended_return_date.substring(0, 10)
+        loan_start_date: new Date(Date.parse(fetchedData.loan_start_date)).toLocaleDateString(),
+        intended_return_date: new Date(Date.parse(fetchedData.intended_return_date)).toLocaleDateString()
       }});
     }
     if (item.being_loaned) fetchLoan();
   }, [itemId, item.being_loaned])
 
-  const saveLoan = () => {
+  const saveLoan = (formData) => {
+
+    // TODO post
+    let loanData = {loaner_id: props.loginSession.userId};
+    if (item.loan_id !== null) loanData._id = item.loan_id;
+    if (formData.loanee !== "") loanData.loanee_name = formData.loanee;
+    if (formData.loan_start_date !== "") loanData.loan_start_date = formData.loan_start_date;
+    if (formData.intended_return_date !== "") loanData.intended_return_date = formData.intended_return_date;
+    console.log(loanData);
     console.log("TODO save loan");
   }
 
@@ -117,7 +125,7 @@ const ItemDetails = (props) => {
       </div>
 
       <LoanForm modal={modal} toggle={toggle} item={item}
-        itemId={itemId} newLoan={!item.being_loaned} loaneeValue={loanee}
+        newLoan={!item.being_loaned} loaneeValue={loanee}
         onSubmit={saveLoan} suggestedLoanees={suggestedLoanees}
         selectLoanee={selectLoanee} deleteLoanee={deleteLoanee} changeLoanee={changeLoanee}
       />
