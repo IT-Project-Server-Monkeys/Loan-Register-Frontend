@@ -41,7 +41,7 @@ const ItemEdit = (props) => {
 
   // save item and post to server
   const handleSaveItem = (e) => {
-    saveItem(e, itemId, newCateg, categList, itemImg, props.loginSession.userId, false);
+    saveItem(e, itemId, newCateg, categList, setCategList, itemImg, props.loginSession.userId, false);
     redirect(`/item-details/${itemId}`);
   }
 

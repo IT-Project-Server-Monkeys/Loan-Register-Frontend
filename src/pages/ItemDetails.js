@@ -86,7 +86,7 @@ const ItemDetails = (props) => {
         <a href="/history"><TextButton>History</TextButton></a>
         {item.being_loaned ? <>
           <TextButton onClick={toggle}>Edit Loan</TextButton>
-          <TextButton onClick={handleRtnLn} style={{lineHeight: "1.2"}}>{"Mark\nReturn"}</TextButton>
+          <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
         </> :
           <TextButton onClick={toggle}>Loan Item</TextButton>
         }

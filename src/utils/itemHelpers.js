@@ -47,7 +47,7 @@ const changeImage = (e, setItemImg, displayImg, setDisplayImg) => {
   setDisplayImg(URL.createObjectURL(e.target.files[0]));
 }
 
-const saveItem = async (e, itemId, newCateg, categList, itemImg, uid, newItem) => {
+const saveItem = async (e, itemId, newCateg, categList, setCategList, itemImg, uid, newItem) => {
   e.preventDefault();
   const newName = e.target.newName.value;
   const newDesc = e.target.newDesc.value;
@@ -72,16 +72,21 @@ const saveItem = async (e, itemId, newCateg, categList, itemImg, uid, newItem) =
   console.log(formData);
 
   // if new category not in user current category, put request to user to add it
-  if (!(categList.includes(newCateg))) await axios({
-    method: "put", data: {
-      _id: uid,
-      new_category: newCateg
-    },
-    url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
+  if (!(categList.includes(newCateg))) {
+    setCategList([...categList, newCateg]);
+    await axios({
+      method: "put", data: {
+        _id: uid,
+        new_category: newCateg
+      },
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  }
+  
+  window.location.reload();
 }
 
 export { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
