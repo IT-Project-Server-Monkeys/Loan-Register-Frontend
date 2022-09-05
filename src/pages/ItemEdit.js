@@ -81,7 +81,7 @@ const ItemEdit = (props) => {
     setDisplayImg(URL.createObjectURL(e.target.files[0]));
   }
 
-  // save item and post to db
+  // save item and post to server
   const saveItem = async (e) => {
     e.preventDefault();
     const newName = e.target.newName.value;
@@ -96,6 +96,19 @@ const ItemEdit = (props) => {
     await axios({
       method: "put", data: formData,
       url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+    console.log(formData);
+
+    // if new category not in user current category, put request to user to add it
+    if (!(newCateg in categList)) await axios({
+      method: "put", data: {
+        _id: props.loginSession.userId,
+        item_categories: [...categList, newCateg]
+      },
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))

@@ -55,22 +55,47 @@ const AddItem = (props) => {
     const newName = e.target.newName.value;
     const newDesc = e.target.newDesc.value;
 
-    let formData = new FormData();
-    if (itemImg != null) formData.append("image", itemImg);
-    if (newName != null) formData.append("item_name", newName);
-    if (newCateg != null) formData.append("category", newCateg);
-    if (newDesc != null) formData.append("description", newDesc);
+    let formData = {
+      item_owner: props.loginSession.userId,
+      being_loaned: false, loan_frequency: 0
+    };
 
-    await axios.put(
-        'https://server-monkeys-backend-test.herokuapp.com/', formData,
-        {headers: { "Content-Type": "multipart/form-data" }}
-      )
-      .then(res => console.log(res))
-      .catch(e => console.log(e));
-      // TODO testing
-      console.log(formData);
+    // TODO upload image to arweave and get url
+    let imgUrl = "";
+    if (itemImg != null);
+
+    formData.image_url = imgUrl;
+    formData.item_name = newName;
+    formData.category = newCateg;
+    if (newDesc !== "") formData.description = newDesc;
+      else formData.description = "(Description not set.)";
+
+    await axios({
+      method: "post", data: formData,
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+
+    console.log(formData);
+
+    // if new category not in user current category, put request to user to add it
+    if (!(newCateg in categList)) await axios({
+      method: "put", data: {
+        _id: props.loginSession.userId,
+        item_categories: [...categList, newCateg]
+      },
+      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
 
     redirect(`/dashboard/loaner`); // TODO get new item data & redirect to item page
+    // options: get item by name (unique name check?)
+    // options: getAllItemByItemOwner, find most recent one (less efficient(?))
+    // options: redirect to dashboard
   }
 
   return (
@@ -94,13 +119,13 @@ const AddItem = (props) => {
               <tr>
                 <td>Name:</td>
                 <td>
-                  <input name="newName" placeholder="Enter name..." className={"input-box"} type="text" />
+                  <input required name="newName" placeholder="Enter name..." className={"input-box"} type="text" />
                 </td>
               </tr>
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown name="newCateg" value={newCateg}
+                  <InputDropdown required name="newCateg" value={newCateg}
                     placeholder="Enter category..." options={categList}
                     selectOption={selectCategory}
                     deleteOption={deleteCategory}
