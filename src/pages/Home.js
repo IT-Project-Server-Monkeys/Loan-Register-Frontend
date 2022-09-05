@@ -2,6 +2,11 @@ import React from "react";
 import '../styles/LandingPage.scss';
 
 const Home = () => {
+
+  const redirect = () => {
+    window.location.href='/signup';
+  };
+
   return (
     <div className={"landing-page"}>
       <div className={"img-one"}>
@@ -22,9 +27,9 @@ const Home = () => {
       <div className={"flex-box"}>
         <div className={"text-box"}>
           Ready to loan an item?
-          <div className={"text-btn-default"}>
+          <button onClick={redirect} className={"text-btn-default"}>
             Get Started
-          </div>
+          </button>
         </div>
         <div className={"img-three"}>
         </div>
