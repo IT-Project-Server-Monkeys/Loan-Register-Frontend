@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import axios from "axios";
+import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 
 const ItemEdit = (props) => {
   const redirect = useNavigate();
@@ -20,100 +20,28 @@ const ItemEdit = (props) => {
 
   // get and show item info
   useEffect(() => {
-    
-    const fetchItem = async () => {
-      let fetchedData = null;
-  
-      await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingItem?id=${itemId}`
-        )
-        .then((res) => fetchedData = res.data)
-        .catch((err) => console.log(err));
-  
-        if (fetchedData != null) setItem(fetchedData);
-    }
-    fetchItem();
+    fetchItem(itemId, setItem);
   }, [itemId, item]);
 
   // get list of potential categs
   useEffect(() => {
-    const fetchUser = async () => {
-      let fetchedData = null;
-      if (props.loginSession == null) return;
-      await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
-        )
-        .then((res) => fetchedData = res.data)
-        .catch((err) => console.log(err));
-      
-      setCategList(fetchedData[0].item_categories);
-    };
-    fetchUser();
+    fetchCategs(props.loginSession, setCategList);
   }, [props.loginSession]);
 
   // categ changing
-  const selectCategory = (categ) => setNewCateg(categ);
-  const deleteCategory = async (categ) => {
-    let toDelCateg;
-    setCategList((prev) => prev.filter((c) => c !== categ));
-    await axios(`https://server-monkeys-backend-test.herokuapp.com/testingItem?item_owner=${props.loginSession.userId}&category=${categ}`)
-      .then((res) => toDelCateg = res.data)
-      .catch((err) => console.log(err));
-    if (toDelCateg.length === 0) {
-      console.log(`deletable categ ${categ}`);
-
-      await axios({
-        method: "put", data: { _id: props.loginSession.userId, item_categories: categList },
-        url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
-
-    } else console.log(`categ ${categ} hidden from view`);
+  const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
+  const handleChgCg = (e) => changeCategory(e, setNewCateg);
+  const handleDelCg = (categ) => {
+    // TODO popup window
+    deleteCategory(categ, setCategList, props.loginSession.userId);
   }
-  const changeCategory = (e) => setNewCateg(e.target.value);
 
   // item img changing
-  const changeImage = (e) => {
-    setItemImg(e.target.files[0]);
-    URL.revokeObjectURL(displayImg);
-    setDisplayImg(URL.createObjectURL(e.target.files[0]));
-  }
+  const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
 
   // save item and post to server
-  const saveItem = async (e) => {
-    e.preventDefault();
-    const newName = e.target.newName.value;
-    const newDesc = e.target.newDesc.value;
-
-    let formData = { _id: itemId };
-    if (itemImg != null) formData.image = itemImg;
-    if (newName != null) formData.item_name = newName;
-    if (newCateg != null) formData.category = newCateg;
-    if (newDesc != null) formData.description = newDesc;
-
-    await axios({
-      method: "put", data: formData,
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-    console.log(formData);
-
-    // if new category not in user current category, put request to user to add it
-    if (!(newCateg in categList)) await axios({
-      method: "put", data: {
-        _id: props.loginSession.userId,
-        item_categories: [...categList, newCateg]
-      },
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
-
+  const handleSaveItem = (e) => {
+    saveItem(e, itemId, newCateg, categList, itemImg, props.loginSession.userId, false);
     redirect(`/item-details/${itemId}`);
   }
 
@@ -126,14 +54,14 @@ const ItemEdit = (props) => {
             <input
               type="file" accept="image/*" 
               name="newImg" style={{display: "none"}}
-              onChange={changeImage} 
+              onChange={handleChgImg} 
             />
           </label>
         </div>
         
         <p className={"item-status"}>&nbsp;</p>
         <div className={"item-info"}>
-          <form id="editItem" onSubmit={saveItem}>
+          <form id="editItem" onSubmit={handleSaveItem}>
             <table><tbody>
               <tr>
                 <td>Name:</td>
@@ -146,9 +74,9 @@ const ItemEdit = (props) => {
                 <td>
                   <InputDropdown name="newCateg" value={newCateg}
                     placeholder={item.category} options={categList}
-                    selectOption={selectCategory}
-                    deleteOption={deleteCategory}
-                    changeOption={changeCategory}
+                    selectOption={handleSelCg}
+                    changeOption={handleChgCg}
+                    deleteOption={handleDelCg}
                   />
                 </td>
               </tr>
