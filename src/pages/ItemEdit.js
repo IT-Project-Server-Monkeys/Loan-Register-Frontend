@@ -20,7 +20,7 @@ const ItemEdit = (props) => {
 
   // get and show item info
   useEffect(() => {
-    fetchItem(itemId, setItem);
+    fetchItem(itemId, item, setItem);
   }, [itemId, item]);
 
   // get list of potential categs

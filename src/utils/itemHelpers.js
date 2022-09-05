@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const fetchItem = async (itemId, setItem) => {
+const fetchItem = async (itemId, setItem, addOns={}) => {
   let fetchedData = null;
 
   await axios.get(
@@ -9,7 +9,7 @@ const fetchItem = async (itemId, setItem) => {
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
 
-    if (fetchedData != null) setItem(fetchedData);
+    if (fetchedData != null) setItem({...fetchedData, ...addOns});
 }
 
 const fetchCategs = async (loginSession, setCategList) => {
@@ -32,7 +32,7 @@ const changeCategory = (e, setNewCateg) => setNewCateg(e.target.value);
 const deleteCategory = async (categ, setCategList, uid) => {
   setCategList((prev) => prev.filter((c) => c !== categ));
   await axios({
-    method: "put", data: { _id: uid, to_delete_category: categ },
+    method: "put", data: { _id: uid, delete_category: categ },
     url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
     headers: { "Content-Type": "application/json" },
   })
