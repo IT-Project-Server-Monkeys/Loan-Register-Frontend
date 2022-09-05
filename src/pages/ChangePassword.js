@@ -5,23 +5,13 @@ import { TextBkgBox, TextButton } from "../components";
 import axios from "axios";
 
 const ChangePassword = (props) => {
-  const [submitStyle, setSubmitStyle] = useState({
-    backgroundColor: "var(--dark-grey-color)",
-  });
-
   const redirect = useNavigate();
+  const [letSubmit, setLetSubmit] = useState(false);
 
   const confirmPwd = () => {
-    const submitBtn = document.getElementById("submitPwd");
     const newPwd = document.getElementById("newPwd").value;
     const confirmPwd = document.getElementById("confirmPwd").value;
-    if (newPwd && confirmPwd === newPwd) {
-      submitBtn.disabled = false;
-      setSubmitStyle({ backgroundColor: "var(--blue-color)" });
-    } else {
-      submitBtn.disabled = true;
-      setSubmitStyle({ backgroundColor: "var(--dark-grey-color)" });
-    }
+    setLetSubmit(newPwd && confirmPwd === newPwd);
   };
 
   const changePwd = async (event) => {
@@ -63,7 +53,7 @@ const ChangePassword = (props) => {
               placeholder="Confirm password" className={"input-box"}
             />
           </div>
-          <TextButton disabled style={submitStyle} id="submitPwd" type="submit">
+          <TextButton disabled={!letSubmit} type="submit">
             Confirm
           </TextButton>
         </form>

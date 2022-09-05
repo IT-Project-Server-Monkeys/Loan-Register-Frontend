@@ -23,7 +23,7 @@ const ItemDetails = (props) => {
   const changeLoanee = (e) => setLoanee(e.target.value);
 
   const handleCrtLn = (input) => createLoan(input, props.loginSession.userId);
-  const handleEdtLn = (input) => editLoan(input);
+  const handleEdtLn = (input) => editLoan(item, input);
   const handleRtnLn = () => returnLoan(item);
 
   // get and show item data

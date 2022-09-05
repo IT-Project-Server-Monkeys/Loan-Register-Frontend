@@ -5,9 +5,11 @@ const TextButton = (props) => {
   return (
     <button
       className={props.altStyle ? "text-btn-alt" : "text-btn-default"}
-      style={props.style} onClick={props.onClick}
-      id={props.id} form={props.form}
+      id={props.id} form={props.form} onClick={props.onClick}
       type={props.type} disabled={props.disabled}
+      style={{...props.style,
+        backgroundColor: props.disabled ? "var(--dark-grey-color)" : null
+      }}
     >
       {props.children}
     </button>

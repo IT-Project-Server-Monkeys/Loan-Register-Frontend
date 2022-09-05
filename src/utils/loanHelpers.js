@@ -1,5 +1,13 @@
 import axios from "axios";
 
+const fetchAllLoanees = async (setAllLoanees) => {
+  let fetchedData = {};
+  await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingUser?all=1`)
+    .then((res) => res.data.forEach((l) => {fetchedData[l.display_name] = l._id}))
+    .catch((err) => console.log(err));
+  setAllLoanees(fetchedData);
+}
+
 const fetchLoan = async (itemId, setItem) => {
   let fetchedData = null;
   let loaneeName = "";
@@ -26,8 +34,8 @@ const createLoan = (input, uid) => {
   saveLoan(loanFormData, true);
 }
 
-const editLoan = (formData) => {
-  saveLoan(formData, false);
+const editLoan = (item, formData) => {
+  saveLoan({_id: item.loan_id, ...formData}, false);
 }
 
 const returnLoan = async (item) => {
@@ -41,6 +49,7 @@ const returnLoan = async (item) => {
 }
 
 const saveLoan = async (formData, newItem) => {
+  console.log("form saving")
 
   // clean form
   for (const prop in formData)
@@ -58,4 +67,4 @@ const saveLoan = async (formData, newItem) => {
   window.location.reload();
 }
 
-export { fetchLoan, createLoan, editLoan, returnLoan };
+export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };

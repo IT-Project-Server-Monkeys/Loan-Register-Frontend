@@ -2,17 +2,22 @@ import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
 import { TextButton, TextBkgBox, InputDropdown } from "./";
 import { Modal } from 'reactstrap';
-import axios from "axios"; // eslint-disable-line no-unused-vars
+import { fetchAllLoanees } from "../utils/loanHelpers";
 
 const LoanForm = (props) => {
+  const [letSubmit, setLetSubmit] = useState(false);
   const [today, setToday] = useState();
+  const [allLoanees, setAllLoanees] = useState([]);
   const [loan, setLoan] = useState({
-    loanee: "Enter loanee name...",
+    loanee: "Enter an existing user...",
     loan_start_date: "Enter date loaned...",
     intended_return_date: "Enter date to return by..."
   });
 
-  useEffect(() => setToday(new Date().toLocaleDateString()), []);
+  useEffect(() => {
+    setToday(new Date().toLocaleDateString());
+    fetchAllLoanees(setAllLoanees);
+  }, []);
 
   useEffect(() => {
     if (!props.newLoan) setLoan({
@@ -22,29 +27,26 @@ const LoanForm = (props) => {
     });
   }, [props.item, props.newLoan]);
 
+  const checkSubmittable = (e) => {
+    let form = document.getElementById("loanForm");
+    
+    form.loanDate.value !== "" && (form.returnDate.min = form.loanDate.value);
+    if (form.returnDate.value < form.loanDate.value)
+      form.returnDate.value = "";
+
+    setLetSubmit(
+      form.loanee.value in allLoanees
+      && form.loanDate.value !== ""
+      && form.returnDate.value !== ""
+    );
+  }
+
   const submitHandler = async (e) => {
     e.preventDefault();
     console.log("form submitted");
 
-    let fetchedLoanee = null;
-    // if (props.loaneeValue !== "" && props.loaneeValue !== null) {
-    //   await axios.get(
-    //     `https://server-monkeys-backend-test.herokuapp.com/testingUser?display_name=${props.loaneeValue}`
-    //     )
-    //     .then((res) => fetchedLoanee = res.data)
-    //     .catch((err) => console.log(err));
-    //   if (fetchedLoanee === null || fetchedLoanee === []) {
-    //     alert(`User ${props.loaneeValue} not found.`);
-    //     return;
-    //   }
-    //   else (fetchedLoanee = fetchedLoanee[0]._id);
-    // }
-
-    // tester. TODO remove
-    fetchedLoanee = "62ff5491723818548142d485";
-
     props.onSubmit({
-      loanee_id: fetchedLoanee,
+      loanee_id: allLoanees[e.target.loanee.value],
       loan_start_date: e.target.loanDate.value,
       intended_return_date: e.target.returnDate.value
     });
@@ -55,7 +57,7 @@ const LoanForm = (props) => {
       <TextBkgBox>
         <h1>{props.newLoan ? "Loan Item" : "Edit Loan" }</h1>
 
-        <form onSubmit={submitHandler}>
+        <form onSubmit={submitHandler} onChange={checkSubmittable} id="loanForm">
           <div className={"inline-flex"}>
             <h3>Loanee:</h3>
             <InputDropdown value={props.loaneeValue} placeholder={loan.loanee}
@@ -80,7 +82,7 @@ const LoanForm = (props) => {
           </div>
           <div className={"btn-list"}>
             <TextButton altStyle type="button" onClick={props.toggle}>Cancel</TextButton>
-            <TextButton type="submit">Confirm</TextButton>
+            <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>
           </div>
         </form>
       </TextBkgBox>
