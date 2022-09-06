@@ -20,8 +20,8 @@ const ItemEdit = (props) => {
 
   // get and show item info
   useEffect(() => {
-    fetchItem(itemId, item, setItem);
-  }, [itemId, item]);
+    fetchItem(itemId, setItem);
+  }, [itemId]);
 
   // get list of potential categs
   useEffect(() => {
@@ -41,7 +41,7 @@ const ItemEdit = (props) => {
 
   // save item and post to server
   const handleSaveItem = (e) => {
-    saveItem(e, itemId, newCateg, categList, setCategList, itemImg, props.loginSession.userId, false);
+    saveItem(e, itemId, categList, setCategList, itemImg, props.loginSession.userId, false);
     redirect(`/item-details/${itemId}`);
   }
 
@@ -73,7 +73,7 @@ const ItemEdit = (props) => {
                 <td>Category:</td>
                 <td>
                   <InputDropdown name="newCateg" value={newCateg}
-                    placeholder={item.category} options={categList}
+                    placeholder={item.category} options={categList} field="category"
                     selectOption={handleSelCg}
                     changeOption={handleChgCg}
                     deleteOption={handleDelCg}

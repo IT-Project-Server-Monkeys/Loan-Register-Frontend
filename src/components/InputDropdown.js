@@ -15,13 +15,16 @@ const InputDropdown = (props) => {
       <DropdownToggle caret>
         <input onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault()}}
           placeholder={props.placeholder} value={props.value} onChange={props.changeOption}
-          type="text" name={props.name} required={props.required}
+          type="text" name={props.name} required={props.required} autoComplete="off"
         />
         <span>▾</span>
       </DropdownToggle>
-      <DropdownMenu>
+      <DropdownMenu modifiers={ [
+        { name: "eventListeners", options: { scroll: false } },
+        { name: 'preventOverflow', options: { mainAxis: false } }
+      ] }>
         {props.options.map((c) => { return <DropdownItem text key={c}>
-          <Deletable
+          <Deletable field={props.field}
             selectOption={props.selectOption}
             deleteOption={props.deleteOption}
           >{c}</Deletable>

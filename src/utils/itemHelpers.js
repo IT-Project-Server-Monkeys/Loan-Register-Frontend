@@ -4,7 +4,7 @@ const fetchItem = async (itemId, setItem, addOns={}) => {
   let fetchedData = null;
 
   await axios.get(
-    `https://server-monkeys-backend-test.herokuapp.com/testingItem?id=${itemId}`
+    `https://server-monkeys-backend-test.herokuapp.com/testingItem?_id=${itemId}`
     )
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
@@ -47,9 +47,10 @@ const changeImage = (e, setItemImg, displayImg, setDisplayImg) => {
   setDisplayImg(URL.createObjectURL(e.target.files[0]));
 }
 
-const saveItem = async (e, itemId, newCateg, categList, setCategList, itemImg, uid, newItem) => {
+const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newItem) => {
   e.preventDefault();
   const newName = e.target.newName.value;
+  const newCateg = e.target.newCateg.value;
   const newDesc = e.target.newDesc.value;
 
   let formData = newItem ? {
@@ -60,7 +61,7 @@ const saveItem = async (e, itemId, newCateg, categList, setCategList, itemImg, u
   if (newName !== "") formData.item_name = newName;
   if (newCateg !== "") formData.category = newCateg;
   if (newDesc !== "") formData.description = newDesc;
-    else formData.description = "[Description not set.]";
+    else formData.description = "(No description.)";
 
   await axios({
     method: newItem ? "post" : "put", data: formData,
@@ -72,7 +73,7 @@ const saveItem = async (e, itemId, newCateg, categList, setCategList, itemImg, u
   console.log(formData);
 
   // if new category not in user current category, put request to user to add it
-  if (!(categList.includes(newCateg))) {
+  if (newCateg !== "" && !(categList.includes(newCateg))) {
     setCategList([...categList, newCateg]);
     await axios({
       method: "put", data: {

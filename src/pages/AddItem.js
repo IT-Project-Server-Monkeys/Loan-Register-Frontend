@@ -30,7 +30,7 @@ const AddItem = (props) => {
 
   // save item and post to server
   const handleSaveItem = (e) => {
-    saveItem(e, "", newCateg, categList, itemImg, props.loginSession.userId, true);
+    saveItem(e, "", categList, itemImg, props.loginSession.userId, true);
     redirect(`/dashboard/loaner`);
   }
 
@@ -55,14 +55,17 @@ const AddItem = (props) => {
               <tr>
                 <td>Name:</td>
                 <td>
-                  <input required name="newName" placeholder="Enter name..." className={"input-box"} type="text" />
+                  <input required name="newName" autoComplete="off"
+                    className={"input-box"} type="text"
+                    placeholder="Enter name..."
+                  />
                 </td>
               </tr>
               <tr>
                 <td>Category:</td>
                 <td>
                   <InputDropdown required name="newCateg" value={newCateg}
-                    placeholder="Enter category..." options={categList}
+                    placeholder="Enter category..." options={categList} field="category"
                     selectOption={handleSelCg}
                     changeOption={handleChgCg}
                     deleteOption={handleDelCg}
