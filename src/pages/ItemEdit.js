@@ -16,12 +16,20 @@ const ItemEdit = (props) => {
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
   const [categList, setCategList] = useState([]);
+  const [newName, setNewName] = useState("");
   const [newCateg, setNewCateg] = useState("");
+  const [newDesc, setNewDesc] = useState("");
 
   // get and show item info
   useEffect(() => {
     fetchItem(itemId, setItem);
   }, [itemId]);
+
+  useEffect(() => {
+    setNewName(item.item_name);
+    setNewCateg(item.category);
+    setNewDesc(item.description);
+  }, [item])
 
   // get list of potential categs
   useEffect(() => {
@@ -66,14 +74,17 @@ const ItemEdit = (props) => {
               <tr>
                 <td>Name:</td>
                 <td>
-                  <input name="newName" placeholder={item.item_name} className={"input-box"} type="text" />
+                  <input name="newName" className={"input-box"} type="text"
+                    value={newName} onChange={e => setNewName(e.target.value)}
+                    placeholder="Enter name..."
+                  />
                 </td>
               </tr>
               <tr>
                 <td>Category:</td>
                 <td>
                   <InputDropdown name="newCateg" value={newCateg}
-                    placeholder={item.category} options={categList} field="category"
+                    placeholder="Enter category..." options={categList} field="category"
                     selectOption={handleSelCg}
                     changeOption={handleChgCg}
                     deleteOption={handleDelCg}
@@ -85,7 +96,9 @@ const ItemEdit = (props) => {
               </tr>
               </tbody></table>
             <p>Description:<br />
-              <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder={item.description} />
+              <textarea name="newDesc" style={{width: "-webkit-fill-available"}}
+                value={newDesc} onChange={e => setNewDesc(e.target.value)}
+                placeholder="(Optional) Enter description..." />
             </p>
           </form>
         </div>

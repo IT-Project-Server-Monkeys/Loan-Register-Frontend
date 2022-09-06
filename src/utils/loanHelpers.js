@@ -64,7 +64,7 @@ const saveLoan = async (formData, newItem) => {
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
 
-  window.location.reload();
+  // window.location.reload();
 }
 
 export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };

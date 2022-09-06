@@ -14,13 +14,27 @@ const ItemDetails = (props) => {
   });
 
   const [modal, setModal] = useState(false);
-  const toggle = () => setModal(!modal);
+  const toggle = () => {
+    setModal(!modal);
+    if (item.being_loaned) {
+      setLoanee(item.loanee);
+      setLoanDate(item.loan_start_date);
+      setReturnDate(item.intended_return_date);
+    } else {
+      setLoanee("");
+      setLoanDate(new Date().toLocaleDateString());
+      setReturnDate("");
+    }
+  };
 
   const [loanee, setLoanee] = useState("");
   const [suggestedLoanees, setSuggestedLoanees] = useState(["placeholder", "loanee", "suggestions"]);
   const selectLoanee = (ln) => setLoanee(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
   const changeLoanee = (e) => setLoanee(e.target.value);
+
+  const [loanDate, setLoanDate] = useState();
+  const [returnDate, setReturnDate] = useState();
 
   const handleCrtLn = (input) => createLoan(input, props.loginSession.userId);
   const handleEdtLn = (input) => editLoan(item, input);
@@ -39,6 +53,18 @@ const ItemDetails = (props) => {
   useEffect (() => {
     if (item.being_loaned) fetchLoan(itemId, setItem);
   }, [itemId, item.being_loaned])
+
+  useEffect (() => {
+    if (item.being_loaned) {
+      setLoanee(item.loanee);
+      setLoanDate(item.loan_start_date);
+      setReturnDate(item.intended_return_date);
+    } else {
+      setLoanee("");
+      setLoanDate(new Date().toLocaleDateString());
+      setReturnDate("");
+    }
+  }, [item])
 
   return (
     <div className={"item-page"}>
@@ -97,6 +123,8 @@ const ItemDetails = (props) => {
         onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
         suggestedLoanees={suggestedLoanees} changeLoanee={changeLoanee}
         selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
+        lnDateValue={loanDate} rtnDateValue={returnDate}
+        chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
       />
 
     </div>

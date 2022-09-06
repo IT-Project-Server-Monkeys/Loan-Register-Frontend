@@ -4,28 +4,28 @@ import { TextButton, TextBkgBox, InputDropdown } from "./";
 import { Modal } from 'reactstrap';
 import { fetchAllLoanees } from "../utils/loanHelpers";
 
+const toLocale = (dateString) => {
+  if (!dateString.includes("-")) return "";
+  return (new Date(Date.parse(dateString))).toLocaleDateString();
+}
+
+// assume DD/MM/YYYY format
+const toISO = (dateString) => {
+  if (dateString.includes("-")) return dateString;
+  else if (dateString.includes("/")) {
+    let ds = dateString.split("/");
+    return `${ds[2]}-${ds[1]}-${ds[0]}`;
+  }
+  else return "";
+}
+
 const LoanForm = (props) => {
   const [letSubmit, setLetSubmit] = useState(false);
-  const [today, setToday] = useState();
   const [allLoanees, setAllLoanees] = useState([]);
-  const [loan, setLoan] = useState({
-    loanee: "Enter an existing user...",
-    loan_start_date: "Enter date loaned...",
-    intended_return_date: "Enter date to return by..."
-  });
 
   useEffect(() => {
-    setToday(new Date().toLocaleDateString());
-    fetchAllLoanees(setAllLoanees);
+    fetchAllLoanees(setAllLoanees)
   }, []);
-
-  useEffect(() => {
-    if (!props.newLoan) setLoan({
-      loanee: props.item.loanee,
-      loan_start_date: props.item.loan_start_date,
-      intended_return_date: props.item.intended_return_date
-    });
-  }, [props.item, props.newLoan]);
 
   const checkSubmittable = (e) => {
     let form = document.getElementById("loanForm");
@@ -60,24 +60,48 @@ const LoanForm = (props) => {
         <form onSubmit={submitHandler} onChange={checkSubmittable} id="loanForm">
           <div className={"inline-flex"}>
             <h3>Loanee:</h3>
-            <InputDropdown value={props.loaneeValue} placeholder={loan.loanee}
+            <InputDropdown value={props.loaneeValue} required name="loanee"
               options={props.suggestedLoanees} selectOption={props.selectLoanee}
               deleteOption={props.deleteLoanee} changeOption={props.changeLoanee}
-              required={props.newLoan} name="loanee"
+              placeholder={props.newLoan
+                ? "Enter existing loanee..."
+                : "(Optional) Change loanee..."}
             />
           </div>
           <div className={"inline-flex"}>
             <h3>Loan date:</h3>
-            <input type="text" className={"input-box"}
-            onFocusCapture={e => e.target.type="date"} onBlurCapture={e => e.target.type="text"}
-              id="loanDate" name="loanDate" placeholder={props.newLoan ? today : loan.loan_start_date}
+            <input type="text" className={"input-box"} required
+              value={props.lnDateValue} onChange={e => props.chgLnDate(e.target.value)}
+              id="loanDate" name="loanDate"
+              placeholder={props.newLoan
+                ? "Enter date..."
+                : "(Optional) Change loan date..."}
+              onFocusCapture={e => {
+                props.chgLnDate(toISO(e.target.value));
+                e.target.type="date";
+              }}
+              onBlurCapture={e => {
+                e.target.type="text";
+                props.chgLnDate(toLocale(e.target.value));
+              }}
             />
           </div>
           <div className={"inline-flex"}>
             <h3>Return by:</h3>
-            <input type="text" className={"input-box"} required={props.newLoan}
-            onFocusCapture={e => e.target.type="date"} onBlurCapture={e => e.target.type="text"}
-              id="returnDate" name="returnDate" placeholder={loan.intended_return_date}
+            <input type="text" className={"input-box"} required
+              value={props.rtnDateValue} onChange={e => props.chgRtnDate(e.target.value)}
+              id="returnDate" name="returnDate"
+              placeholder={props.newLoan
+                ? "Enter date..."
+                : "(Optional) Change return date..."}
+              onFocusCapture={e => {
+                props.chgRtnDate(toISO(e.target.value));
+                e.target.type="date";
+              }}
+              onBlurCapture={e => {
+                e.target.type="text";
+                props.chgRtnDate(toLocale(e.target.value));
+              }}
             />
           </div>
           <div className={"btn-list"}>
