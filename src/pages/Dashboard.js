@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Row, Col } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
@@ -6,19 +7,23 @@ import { TbLayoutGrid } from 'react-icons/tb';
 import { MdQueryStats } from 'react-icons/md';
 import { ItemCard } from '../components';
 import axios from 'axios';
-import MultiSelect from  'react-multiple-select-dropdown-lite'
+import MultiSelect from 'react-multiple-select-dropdown-lite';
+import { LOANER, userViewSwitch } from '../utils/helpers';
 
 const image = 'https://picsum.photos/300/200';
 
+
 const LoanerDashboard = (props) => {
+  const navigate = useNavigate();
   const [gridView, setGridView] = useState(true);
+  const [userView, setUserView] = useState(LOANER);
 
   const items = [
     <ItemCard
       image={image}
       title="Card Title"
       category="Plant"
-      loanee="Bruce"
+      person="Bruce"
       startDate="01/01/2022"
       endDate="31/12/2022"
       gridView={gridView}
@@ -27,7 +32,7 @@ const LoanerDashboard = (props) => {
       image={image}
       title="Card Title"
       category="Plant"
-      loanee="Bruce"
+      person="Bruce"
       startDate="01/01/2022"
       endDate="31/12/2022"
       gridView={gridView}
@@ -36,7 +41,7 @@ const LoanerDashboard = (props) => {
       image={image}
       title="Card Title"
       category="Plant"
-      loanee="Bruce"
+      person="Bruce"
       startDate="01/01/2022"
       endDate="31/12/2022"
       gridView={gridView}
@@ -45,7 +50,7 @@ const LoanerDashboard = (props) => {
       image={image}
       title="Card Title"
       category="Plant"
-      loanee="Bruce"
+      person="Bruce"
       startDate="01/01/2022"
       endDate="31/12/2022"
       gridView={gridView}
@@ -54,20 +59,12 @@ const LoanerDashboard = (props) => {
       image={image}
       title="Card Title"
       category="Plant"
-      loanee="Bruce"
+      person="Bruce"
       startDate="01/01/2022"
       endDate="31/12/2022"
       gridView={gridView}
     />,
-    <ItemCard
-      image={image}
-      title="Card Title"
-      category="Plant"
-      loanee="Bruce"
-      startDate="01/01/2022"
-      endDate="31/12/2022"
-      gridView={gridView}
-    />,
+
   ];
 
   useEffect(() => {
@@ -82,25 +79,32 @@ const LoanerDashboard = (props) => {
   }, []);
 
   const dateOptions = [
-    { label:  'Start date ascending ↑', value:  '1'  },
-    { label:  'Start date descending ↓', value:  '2'  },
-    { label:  'End date ascending ↑', value:  '3'  },
-    { label:  'End date ascending ↓', value:  '4'  },
-  ]
+    { label: 'Start date ascending ↑', value: '1' },
+    { label: 'Start date descending ↓', value: '2' },
+    { label: 'End date ascending ↑', value: '3' },
+    { label: 'End date ascending ↓', value: '4' },
+  ];
   const statusOptions = [
-    { label:  'Option 1', value:  'status_1'  },
-    { label:  'Option 2', value:  'status_2'  },
-    { label:  'Option 3', value:  'status_3'  },
-    { label:  'Option 4', value:  'status_4'  },
-  ]
+    { label: 'Option 1', value: 'status_1' },
+    { label: 'Option 2', value: 'status_2' },
+    { label: 'Option 3', value: 'status_3' },
+    { label: 'Option 4', value: 'status_4' },
+  ];
+
+  const handleUserSwitch = (e) => {
+    const newView = userViewSwitch(userView);
+    setUserView(newView);
+    navigate(`/dashboard/${newView}`);
+  }
+
 
   return (
     <div className="page-margin dashboard">
       <Row>
         <Col md="3" className="bg-light-blue filter-container">
+          <h3 style={{marginBottom: '2rem'}}>View as: {userView}</h3>
           <h3>Sort by</h3>
           <MultiSelect placeholder="Loan Date" singleSelect={true} options={dateOptions} />
-          
           <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
           <MultiSelect placeholder="Status" options={statusOptions} />
           <MultiSelect placeholder="Category" options={statusOptions} />
@@ -124,7 +128,7 @@ const LoanerDashboard = (props) => {
                 <span className="icon-blue">
                   <MdQueryStats size={30} />
                 </span>
-                <span className="icon-blue">
+                <span className="icon-blue" onClick={handleUserSwitch}>
                   <AiOutlineUserSwitch size={30} />
                 </span>
               </div>

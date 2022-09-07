@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Header, Footer } from './components';
-import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword } from './pages';
+import { Home, Login, Signup, Dashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword } from './pages';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
@@ -40,8 +40,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login onLogin={loginHandler} />} />
-            <Route path="/dashboard/loaner" element={<LoanerDashboard />} />
-            <Route path="/dashboard/loanee" element={<LoaneeDashboard />} />
+            <Route path="/dashboard/loaner" element={<Dashboard />} />
+            <Route path="/dashboard/loanee" element={<Dashboard />} />
             <Route path="/add-item" element={<AddItem loginSession={loginSession} />} />
             <Route path="/item-details/:id" element={<ItemDetails loginSession={loginSession} />} />
             <Route path="/item-details/:id/edit" element={<ItemEdit loginSession={loginSession} />} />
