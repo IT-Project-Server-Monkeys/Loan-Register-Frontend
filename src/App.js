@@ -6,6 +6,7 @@ import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDet
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
+import ForgotPassword from './pages/ForgotPassword';
 
 
 function App() {
@@ -47,6 +48,7 @@ function App() {
             <Route path="/item-history/:id" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/account" element={<Account loginSession={loginSession} />} />
             <Route path="/change-password" element={<ChangePassword loginSession={loginSession} />} />
           </Routes>

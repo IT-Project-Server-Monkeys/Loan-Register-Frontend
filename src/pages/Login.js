@@ -31,7 +31,7 @@ const Login = (props) => {
             </div>
             <input type="text" placeholder="Enter password" className={"input-box"}/>
           </div>
-          <a href="/signup" className="a">Forgot password?</a>
+          <a href="/forgot-password" className="a">Forgot password?</a>
           <a href="/signup" className="a">New user?</a>
           <TextButton onClick={handleLogin} className={"button"}>Login</TextButton>
         </TextBkgBox>
