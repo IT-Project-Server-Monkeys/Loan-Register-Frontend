@@ -3,9 +3,8 @@ import { Row, Col } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
 import { TbLayoutGrid } from 'react-icons/tb';
-import { MdQueryStats, MdKeyboardArrowDown } from 'react-icons/md';
-import { BsArrowUpShort } from 'react-icons/bs';
-import { ItemCard, FilterDropdown } from '../components';
+import { MdQueryStats } from 'react-icons/md';
+import { ItemCard } from '../components';
 import axios from 'axios';
 import MultiSelect from  'react-multiple-select-dropdown-lite'
 
