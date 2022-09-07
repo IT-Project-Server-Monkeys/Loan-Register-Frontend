@@ -2,49 +2,51 @@ import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
 import { TextButton, TextBkgBox, InputDropdown } from "./";
 import { Modal } from 'reactstrap';
-import axios from "axios"; // eslint-disable-line no-unused-vars
+import { fetchAllLoanees } from "../utils/loanHelpers";
+
+const toLocale = (dateString) => {
+  if (!dateString.includes("-")) return "";
+  return (new Date(Date.parse(dateString))).toLocaleDateString();
+}
+
+// assume DD/MM/YYYY format
+const toISO = (dateString) => {
+  if (dateString.includes("-")) return dateString;
+  else if (dateString.includes("/")) {
+    let ds = dateString.split("/");
+    return `${ds[2]}-${ds[1]}-${ds[0]}`;
+  }
+  else return "";
+}
 
 const LoanForm = (props) => {
-  const [today, setToday] = useState();
-  const [loan, setLoan] = useState({
-    loanee: "Enter loanee name...",
-    loan_start_date: "Enter date loaned...",
-    intended_return_date: "Enter date to return by..."
-  });
-
-  useEffect(() => setToday(new Date().toLocaleDateString()), []);
+  const [letSubmit, setLetSubmit] = useState(false);
+  const [allLoanees, setAllLoanees] = useState([]);
 
   useEffect(() => {
-    if (!props.newLoan) setLoan({
-      loanee: props.item.loanee,
-      loan_start_date: props.item.loan_start_date,
-      intended_return_date: props.item.intended_return_date
-    });
-  }, [props.item, props.newLoan]);
+    fetchAllLoanees(setAllLoanees)
+  }, []);
+
+  const checkSubmittable = (e) => {
+    let form = document.getElementById("loanForm");
+    
+    form.loanDate.value !== "" && (form.returnDate.min = form.loanDate.value);
+    if (form.returnDate.value < form.loanDate.value)
+      form.returnDate.value = "";
+
+    setLetSubmit(
+      form.loanee.value in allLoanees
+      && form.loanDate.value !== ""
+      && form.returnDate.value !== ""
+    );
+  }
 
   const submitHandler = async (e) => {
     e.preventDefault();
     console.log("form submitted");
 
-    let fetchedLoanee = null;
-    // if (props.loaneeValue !== "" && props.loaneeValue !== null) {
-    //   await axios.get(
-    //     `https://server-monkeys-backend-test.herokuapp.com/testingUser?display_name=${props.loaneeValue}`
-    //     )
-    //     .then((res) => fetchedLoanee = res.data)
-    //     .catch((err) => console.log(err));
-    //   if (fetchedLoanee === null || fetchedLoanee === []) {
-    //     alert(`User ${props.loaneeValue} not found.`);
-    //     return;
-    //   }
-    //   else (fetchedLoanee = fetchedLoanee[0]._id);
-    // }
-
-    // tester. TODO remove
-    fetchedLoanee = "62ff5491723818548142d485";
-
     props.onSubmit({
-      loanee_id: fetchedLoanee,
+      loanee_id: allLoanees[e.target.loanee.value],
       loan_start_date: e.target.loanDate.value,
       intended_return_date: e.target.returnDate.value
     });
@@ -55,32 +57,56 @@ const LoanForm = (props) => {
       <TextBkgBox>
         <h1>{props.newLoan ? "Loan Item" : "Edit Loan" }</h1>
 
-        <form onSubmit={submitHandler}>
+        <form onSubmit={submitHandler} onChange={checkSubmittable} id="loanForm">
           <div className={"inline-flex"}>
             <h3>Loanee:</h3>
-            <InputDropdown value={props.loaneeValue} placeholder={loan.loanee}
+            <InputDropdown value={props.loaneeValue} required name="loanee"
               options={props.suggestedLoanees} selectOption={props.selectLoanee}
               deleteOption={props.deleteLoanee} changeOption={props.changeLoanee}
-              required={props.newLoan} name="loanee"
+              placeholder={props.newLoan
+                ? "Enter existing loanee..."
+                : "(Optional) Change loanee..."}
             />
           </div>
           <div className={"inline-flex"}>
             <h3>Loan date:</h3>
-            <input type="text" className={"input-box"}
-            onFocusCapture={e => e.target.type="date"} onBlurCapture={e => e.target.type="text"}
-              id="loanDate" name="loanDate" placeholder={props.newLoan ? today : loan.loan_start_date}
+            <input type="text" className={"input-box"} required
+              value={props.lnDateValue} onChange={e => props.chgLnDate(e.target.value)}
+              id="loanDate" name="loanDate"
+              placeholder={props.newLoan
+                ? "Enter date..."
+                : "(Optional) Change loan date..."}
+              onFocusCapture={e => {
+                props.chgLnDate(toISO(e.target.value));
+                e.target.type="date";
+              }}
+              onBlurCapture={e => {
+                e.target.type="text";
+                props.chgLnDate(toLocale(e.target.value));
+              }}
             />
           </div>
           <div className={"inline-flex"}>
             <h3>Return by:</h3>
-            <input type="text" className={"input-box"} required={props.newLoan}
-            onFocusCapture={e => e.target.type="date"} onBlurCapture={e => e.target.type="text"}
-              id="returnDate" name="returnDate" placeholder={loan.intended_return_date}
+            <input type="text" className={"input-box"} required
+              value={props.rtnDateValue} onChange={e => props.chgRtnDate(e.target.value)}
+              id="returnDate" name="returnDate"
+              placeholder={props.newLoan
+                ? "Enter date..."
+                : "(Optional) Change return date..."}
+              onFocusCapture={e => {
+                props.chgRtnDate(toISO(e.target.value));
+                e.target.type="date";
+              }}
+              onBlurCapture={e => {
+                e.target.type="text";
+                props.chgRtnDate(toLocale(e.target.value));
+              }}
             />
           </div>
           <div className={"btn-list"}>
             <TextButton altStyle type="button" onClick={props.toggle}>Cancel</TextButton>
-            <TextButton type="submit">Confirm</TextButton>
+            <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>
           </div>
         </form>
       </TextBkgBox>

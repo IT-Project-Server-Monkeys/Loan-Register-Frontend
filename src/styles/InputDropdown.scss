@@ -19,11 +19,13 @@
     input {
       background-color: transparent;
       border: 0;
+      padding-left: 5.5px;
     }
 
     span {
       color: var(--black-color);
       width: 35px;
+      padding-right: 2px;
     }
   }
 
@@ -53,6 +55,8 @@
         &:first-child {
           flex: 1;
           text-align: left;
+          overflow: hidden;
+          white-space: nowrap;
         }
   
         &:nth-child(2) {

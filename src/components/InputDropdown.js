@@ -1,24 +1,30 @@
 import React, { useState } from "react";
 import "../styles/InputDropdown.scss"; // component scoped style
-import { default as Deletable } from "./Deletable";
+import { Deletable } from "./";
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
 const InputDropdown = (props) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const toggle = () => setDropdownOpen((prevState) => !prevState);
+  const toggle = () => {
+    if (props.options.length !== 0) setDropdownOpen((prevState) => !prevState)
+  };
 
   return (
-    <Dropdown className={"input-dropdown"} isOpen={dropdownOpen} toggle={toggle} direction="down">
+    <Dropdown className={"input-dropdown"} toggle={toggle}
+      isOpen={dropdownOpen && props.options.length !== 0} direction="down">
       <DropdownToggle caret>
         <input onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault()}}
           placeholder={props.placeholder} value={props.value} onChange={props.changeOption}
-          type="text" name={props.name} required={props.required}
+          type="text" name={props.name} required={props.required} autoComplete="off"
         />
         <span>▾</span>
       </DropdownToggle>
-      <DropdownMenu>
+      <DropdownMenu modifiers={ [
+        { name: "eventListeners", options: { scroll: false } },
+        { name: 'preventOverflow', options: { mainAxis: false } }
+      ] }>
         {props.options.map((c) => { return <DropdownItem text key={c}>
-          <Deletable
+          <Deletable field={props.field}
             selectOption={props.selectOption}
             deleteOption={props.deleteOption}
           >{c}</Deletable>

@@ -41,15 +41,15 @@
 }
 
 .text-btn-default, .text-btn-alt {
-  width: 290px;
-  height: 106px;
+  width: 250px;
+  height: 60px;
   border-radius: 15px;
   box-shadow: none;
-  font-size: 48px;
+  font-size: 36px;
   font-weight: bold;
   margin: 10px;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0;
 }
 
 .text-btn-default {
@@ -64,7 +64,8 @@
   color: var(--blue-color);
 }
 
-.input-box {
+.input-box, textarea {
   border-radius: 5px;
   border: 1px solid var(--dark-grey-color);
+  padding-left: 5.5px;
 }

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import axios from "axios";
+import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 
 const AddItem = (props) => {
   const redirect = useNavigate();
@@ -14,63 +14,24 @@ const AddItem = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    const fetchUser = async () => {
-      let fetchedData = null;
-      if (props.loginSession == null) return;
-      await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
-        )
-        .then((res) => fetchedData = res.data)
-        .catch((err) => console.log(err));
-      
-      setCategList(fetchedData[0].item_categories);
-    };
-    fetchUser();
+    fetchCategs(props.loginSession, setCategList);
   }, [props.loginSession]);
 
   // categ changing
-  const selectCategory = (categ) => setNewCateg(categ);
-  const deleteCategory = async (categ) => {
-    let toDelCateg;
-    setCategList((prev) => prev.filter((c) => c !== categ));
-    await axios(`https://server-monkeys-backend-test.herokuapp.com/testingItem?item_owner=${props.loginSession.userId}&category=${categ}`)
-      .then((res) => toDelCateg = res.data)
-      .catch((err) => console.log(err));
-    if (toDelCateg.length === 0) {
-      console.log(`deletable categ ${categ}`); // TODO delete categ
-    } else console.log(`categ ${categ} hidden from view`);
+  const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
+  const handleChgCg = (e) => changeCategory(e, setNewCateg);
+  const handleDelCg = (categ) => {
+    // TODO popup window
+    deleteCategory(categ, setCategList, props.loginSession.userId);
   }
-  const changeCategory = (e) => setNewCateg(e.target.value);
 
   // item img changing
-  const changeImage = (e) => {
-    setItemImg(e.target.files[0]);
-    URL.revokeObjectURL(displayImg);
-    setDisplayImg(URL.createObjectURL(e.target.files[0]));
-  }
+  const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
 
-  // save item and post to db
-  const saveItem = async (e) => {
-    e.preventDefault();
-    const newName = e.target.newName.value;
-    const newDesc = e.target.newDesc.value;
-
-    let formData = new FormData();
-    if (itemImg != null) formData.append("image", itemImg);
-    if (newName != null) formData.append("item_name", newName);
-    if (newCateg != null) formData.append("category", newCateg);
-    if (newDesc != null) formData.append("description", newDesc);
-
-    await axios.put(
-        'https://server-monkeys-backend-test.herokuapp.com/', formData,
-        {headers: { "Content-Type": "multipart/form-data" }}
-      )
-      .then(res => console.log(res))
-      .catch(e => console.log(e));
-      // TODO testing
-      console.log(formData);
-
-    redirect(`/dashboard/loaner`); // TODO get new item data & redirect to item page
+  // save item and post to server
+  const handleSaveItem = (e) => {
+    saveItem(e, "", categList, itemImg, props.loginSession.userId, true);
+    redirect(`/dashboard/loaner`);
   }
 
   return (
@@ -82,29 +43,32 @@ const AddItem = (props) => {
             <input
               type="file" accept="image/*" 
               name="newImg" style={{display: "none"}}
-              onChange={changeImage} 
+              onChange={handleChgImg} 
             />
           </label>
         </div>
         
         <p className={"item-status"}>&nbsp;</p>
         <div className={"item-info"}>
-          <form id="editItem" onSubmit={saveItem}>
+          <form id="editItem" onSubmit={handleSaveItem}>
             <table><tbody>
               <tr>
                 <td>Name:</td>
                 <td>
-                  <input name="newName" placeholder="Enter name..." className={"input-box"} type="text" />
+                  <input required name="newName" autoComplete="off"
+                    className={"input-box"} type="text"
+                    placeholder="Enter name..."
+                  />
                 </td>
               </tr>
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown name="newCateg" value={newCateg}
-                    placeholder="Enter category..." options={categList}
-                    selectOption={selectCategory}
-                    deleteOption={deleteCategory}
-                    changeOption={changeCategory}
+                  <InputDropdown required name="newCateg" value={newCateg}
+                    placeholder="Enter category..." options={categList} field="category"
+                    selectOption={handleSelCg}
+                    changeOption={handleChgCg}
+                    deleteOption={handleDelCg}
                   />
                 </td>
               </tr>
@@ -113,7 +77,7 @@ const AddItem = (props) => {
               </tr>
               </tbody></table>
             <p>Description:<br />
-              <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder="Enter description..." />
+              <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder="(Optional) Enter description..." />
             </p>
           </form>
         </div>
