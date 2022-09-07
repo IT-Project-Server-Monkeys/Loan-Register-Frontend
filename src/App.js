@@ -6,6 +6,7 @@ import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDet
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
+import  'react-multiple-select-dropdown-lite/dist/index.css'
 
 
 function App() {
