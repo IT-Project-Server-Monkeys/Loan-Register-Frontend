@@ -33,7 +33,7 @@ const Header = (props) => {
 
     // mobile view, show dropdown menu of navlinks or login navlink
     if (isMobile) {
-      if (props.loginSession != null) return (
+      if (props.session != null) return (
         <nav>
           <button className="navlink">
               <GiHamburgerMenu size={20} />
@@ -54,7 +54,7 @@ const Header = (props) => {
 
     // desktop view, show applicable navlinks
     else {
-      if (props.loginSession != null) return (
+      if (props.session != null) return (
         <nav>
           <NavLink href="/dashboard/loaner">Dashboard</NavLink>
           <NavLink href="/account">Account</NavLink>
