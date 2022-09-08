@@ -10,7 +10,7 @@ const Account = (props) => {
   });
 
   const saveInput = async (input) => {
-    let formData = { _id: props.loginSession.userId, ...input};
+    let formData = { _id: props.session.userId, ...input};
     console.log(formData);
     await axios({
       method: "put", data: formData,
@@ -21,19 +21,19 @@ const Account = (props) => {
       .catch((err) => console.log(err));
   }
 
-  // get user data from server, querying using userId recorded in the app's loginSession
+  // get user data from server, querying using userId recorded in the app's session
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
-      if (props.loginSession == null) return;
+      if (props.session == null) return;
       await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
+        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.session.userId}`
         )
         .then((res) => fetchedData = res.data)
         .catch((err) => console.log(err));
 
       if (fetchedData == null) fetchedData = [{
-        _id: props.loginSession.userId,
+        _id: props.session.userId,
         display_name: "retrieval failed",
         login_email: "placeholder@mail.com",
         hashed_password: "thisisapassword",
@@ -42,7 +42,7 @@ const Account = (props) => {
       setUserInfo(fetchedData[0]);
     };
     fetchUser();
-  }, [props.loginSession]);
+  }, [props.session]);
 
   return (
     <div className={"account-page"}>

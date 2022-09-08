@@ -12,17 +12,29 @@ const fetchItem = async (itemId, setItem, addOns={}) => {
     if (fetchedData != null) setItem({...fetchedData, ...addOns});
 }
 
-const fetchCategs = async (loginSession, setCategList) => {
+const fetchCategs = async (session, setCategList) => {
   let fetchedData = null;
-  if (loginSession == null) return;
+  if (session == null) return;
   await axios.get(
-    `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${loginSession.userId}`
+    `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${session.userId}`
     )
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
   
   setCategList(fetchedData.item_categories);
 };
+
+const fetchDelableCg = (categList, session, setDelableCg) => {
+  if (session == null) return;
+  let delable = [];
+
+  categList.forEach(async c => {
+    await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingItem?category=${c}&item_owner=${session.userId}`)
+      .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
+      .catch(err => console.log(err))
+  });
+  setDelableCg(delable);
+}
 
 // category changing
 const selectCategory = (categ, setNewCateg) => setNewCateg(categ);
@@ -88,4 +100,4 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   }
 }
 
-export { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
+export { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };

@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, InputDropdown, Submitting } from '../components';
+import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import { fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 
 const AddItem = (props) => {
   const redirect = useNavigate();
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
   const [categList, setCategList] = useState([]);
+  const [delableCg, setDelableCg] = useState([]);
   const [newCateg, setNewCateg] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.loginSession, setCategList);
-  }, [props.loginSession]);
+    fetchCategs(props.session, setCategList);
+  }, [props.session]);
+
+  useEffect(() => {
+    fetchDelableCg(categList, props.session, setDelableCg);
+  }, [categList, props.session])
 
   // categ changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
     // TODO popup window
-    deleteCategory(categ, setCategList, props.loginSession.userId);
+    deleteCategory(categ, setCategList, props.session.userId);
   }
 
   // item img changing
@@ -33,7 +38,7 @@ const AddItem = (props) => {
   const handleSaveItem = (e) => {
     e.preventDefault();
     setSubmitting(true);
-    saveItem(e, null, categList, setCategList, itemImg, props.loginSession.userId, true);
+    saveItem(e, null, categList, setCategList, itemImg, props.session.userId, true);
     redirect(`/dashboard/loaner`);
   }
 
@@ -67,12 +72,22 @@ const AddItem = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown required name="newCateg" value={newCateg}
-                    placeholder="Enter category..." options={categList} field="category"
-                    selectOption={handleSelCg}
-                    changeOption={handleChgCg}
-                    deleteOption={handleDelCg}
-                  />
+                  <InputDropdown
+                    name="newCateg" placeholder="Enter category..."
+                    value={newCateg} changeOption={handleChgCg}
+                  >
+                    {categList.map((c) => {
+                      return <Deletable
+                        field="category" key={`opt-${c}`}
+                        selectOption={handleSelCg} deleteOption={handleDelCg}
+                        canDel={delableCg.includes(c)}
+                        hideOption={(categ) => setCategList(
+                            (prev) => prev.filter((c) => c !== categ)
+                          )} >
+                        {c}
+                      </Deletable>
+                    })}
+                  </InputDropdown>
                 </td>
               </tr>
               <tr>

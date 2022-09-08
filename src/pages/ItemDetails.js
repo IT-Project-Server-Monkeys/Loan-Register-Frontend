@@ -28,7 +28,7 @@ const ItemDetails = (props) => {
   };
 
   const [loanee, setLoanee] = useState("");
-  const [suggestedLoanees, setSuggestedLoanees] = useState(["placeholder", "loanee", "suggestions"]);
+  const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
   const selectLoanee = (ln) => setLoanee(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
   const changeLoanee = (e) => setLoanee(e.target.value);
@@ -40,7 +40,7 @@ const ItemDetails = (props) => {
     createLoan({
       ...input,
       item_id: itemId,
-      loaner_id: props.loginSession.userId
+      loaner_id: props.session.userId
     })
   };
   const handleEdtLn = (input) => editLoan({ _id: item.loan_id, ...input });

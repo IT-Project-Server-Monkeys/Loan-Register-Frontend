@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
-import { TextButton, TextBkgBox, InputDropdown, Submitting } from "./";
+import { TextButton, TextBkgBox, InputDropdown, Submitting, Deletable } from "./";
 import { Modal } from 'reactstrap';
 import { fetchAllLoanees } from "../utils/loanHelpers";
 
@@ -29,12 +29,14 @@ const LoanForm = (props) => {
     fetchAllLoanees(setAllLoanees);
   }, []);
 
+  useEffect(() => setLetSubmit(!props.newLoan), [props.newLoan]);
+
   const checkSubmittable = (e) => {
     let form = document.getElementById("loanForm");
     
-    form.loanDate.value !== "" && (form.returnDate.min = form.loanDate.value);
-    if (form.returnDate.value < form.loanDate.value)
-      form.returnDate.value = "";
+    toISO(form.loanDate.value) !== "" && (form.returnDate.min = toISO(form.loanDate.value));
+    if (toISO(form.returnDate.value) < toISO(form.loanDate.value))
+      props.chgRtnDate("");
 
     setLetSubmit(
       form.loanee.value in allLoanees
@@ -65,22 +67,23 @@ const LoanForm = (props) => {
           <form onSubmit={submitHandler} onChange={checkSubmittable} id="loanForm">
             <div className={"inline-flex"}>
               <h3>Loanee:</h3>
-              <InputDropdown value={props.loaneeValue} required name="loanee"
-                options={props.suggestedLoanees} selectOption={props.selectLoanee}
-                deleteOption={props.deleteLoanee} changeOption={props.changeLoanee}
-                placeholder={props.newLoan
-                  ? "Enter existing loanee..."
-                  : "(Optional) Change loanee..."}
-              />
+              <InputDropdown required name="loanee" value={props.loaneeValue} 
+                placeholder="Enter existing loanee..." changeOption={props.changeLoanee}
+              >
+                {props.suggestedLoanees.map((c) => {
+                  return <Deletable
+                    field="category" key={`opt-${c}`} canDel={false}
+                    selectOption={props.selectLoanee} hideOption={props.deleteLoanee} >
+                    {c}
+                  </Deletable>
+                })}
+              </InputDropdown>
             </div>
             <div className={"inline-flex"}>
               <h3>Loan date:</h3>
               <input type="text" className={"input-box"} required
                 value={props.lnDateValue} onChange={e => props.chgLnDate(e.target.value)}
-                id="loanDate" name="loanDate"
-                placeholder={props.newLoan
-                  ? "Enter date..."
-                  : "(Optional) Change loan date..."}
+                id="loanDate" name="loanDate" placeholder="Enter date..."
                 onFocusCapture={e => {
                   props.chgLnDate(toISO(e.target.value));
                   e.target.type="date";
@@ -95,10 +98,7 @@ const LoanForm = (props) => {
               <h3>Return by:</h3>
               <input type="text" className={"input-box"} required
                 value={props.rtnDateValue} onChange={e => props.chgRtnDate(e.target.value)}
-                id="returnDate" name="returnDate"
-                placeholder={props.newLoan
-                  ? "Enter date..."
-                  : "(Optional) Change return date..."}
+                id="returnDate" name="returnDate" placeholder="Enter date..."
                 onFocusCapture={e => {
                   props.chgRtnDate(toISO(e.target.value));
                   e.target.type="date";
