@@ -86,6 +86,8 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }
+  
+  window.location.reload();
 }
 
 export { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };

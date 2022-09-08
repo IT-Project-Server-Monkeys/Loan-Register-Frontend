@@ -47,8 +47,8 @@ const LoanForm = (props) => {
 
     props.onSubmit({
       loanee_id: allLoanees[e.target.loanee.value],
-      loan_start_date: e.target.loanDate.value,
-      intended_return_date: e.target.returnDate.value
+      loan_start_date: toISO(e.target.loanDate.value),
+      intended_return_date: toISO(e.target.returnDate.value)
     });
   }
 
