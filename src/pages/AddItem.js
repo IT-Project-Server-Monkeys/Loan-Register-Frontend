@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, InputDropdown } from '../components';
+import { TextButton, InputDropdown, Submitting } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 
@@ -11,6 +11,7 @@ const AddItem = (props) => {
   const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
   const [categList, setCategList] = useState([]);
   const [newCateg, setNewCateg] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // get list of potential categs
   useEffect(() => {
@@ -30,7 +31,9 @@ const AddItem = (props) => {
 
   // save item and post to server
   const handleSaveItem = (e) => {
-    saveItem(e, "", categList, itemImg, props.loginSession.userId, true);
+    e.preventDefault();
+    setSubmitting(true);
+    saveItem(e, null, categList, setCategList, itemImg, props.loginSession.userId, true);
     redirect(`/dashboard/loaner`);
   }
 
@@ -90,6 +93,7 @@ const AddItem = (props) => {
         <TextButton form="editItem" type="submit">Save</TextButton>
       </div>
 
+      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
     </div>
   );
 };

@@ -21,7 +21,7 @@ const fetchCategs = async (loginSession, setCategList) => {
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
   
-  setCategList(fetchedData[0].item_categories);
+  setCategList(fetchedData.item_categories);
 };
 
 // category changing
@@ -74,7 +74,7 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
 
   // if new category not in user current category, put request to user to add it
   if (newCateg !== "" && !(categList.includes(newCateg))) {
-    setCategList([...categList, newCateg]);
+    setCategList((prevCgList) => { return [...prevCgList, newCateg] });
     await axios({
       method: "put", data: {
         _id: uid,
@@ -86,8 +86,6 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }
-  
-  window.location.reload();
 }
 
 export { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };

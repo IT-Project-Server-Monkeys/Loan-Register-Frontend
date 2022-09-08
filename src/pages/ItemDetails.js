@@ -36,8 +36,15 @@ const ItemDetails = (props) => {
   const [loanDate, setLoanDate] = useState();
   const [returnDate, setReturnDate] = useState();
 
-  const handleCrtLn = (input) => createLoan(input, props.loginSession.userId);
-  const handleEdtLn = (input) => editLoan(item, input);
+  const handleCrtLn = (input) => {
+    createLoan({
+      ...input,
+      item_id: itemId,
+      loaner_id: props.loginSession.userId
+    })
+  };
+  const handleEdtLn = (input) => editLoan({ _id: item.loan_id, ...input });
+  
   const handleRtnLn = () => returnLoan(item);
 
   // get and show item data

@@ -17,7 +17,7 @@ const fetchLoan = async (itemId, setItem) => {
     .catch((err) => console.log(err));
 
   await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${fetchedData.loanee_id}`)
-    .then((res) => loaneeName = res.data[0].display_name)
+    .then((res) => loaneeName = res.data.display_name)
     .catch(err => console.log(err))
 
   setItem((initItem) => {return {
@@ -27,16 +27,14 @@ const fetchLoan = async (itemId, setItem) => {
   }});
 }
 
-const createLoan = (input, uid) => {
-  let loanFormData = { status: "Current", loaner_id: uid, ...input};
+const createLoan = (input) => {
+  let formData = { status: "Current", ...input };
   if (input.loan_start_date === null || input.loan_start_date === "")
-    loanFormData.loan_start_date = new Date();
-  saveLoan(loanFormData, true);
+    formData.loan_start_date = new Date();
+  saveLoan(formData, true);
 }
 
-const editLoan = (item, formData) => {
-  saveLoan({_id: item.loan_id, ...formData}, false);
-}
+const editLoan = (formData) => saveLoan(formData, false);
 
 const returnLoan = async (item) => {
   const actual_return_date = new Date();
@@ -63,8 +61,6 @@ const saveLoan = async (formData, newItem) => {
   })
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
-
-  window.location.reload();
 }
 
 export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };

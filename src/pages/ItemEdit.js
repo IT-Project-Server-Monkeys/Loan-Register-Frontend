@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, InputDropdown } from '../components';
+import { TextButton, InputDropdown, Submitting } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 
@@ -19,6 +19,7 @@ const ItemEdit = (props) => {
   const [newName, setNewName] = useState("");
   const [newCateg, setNewCateg] = useState("");
   const [newDesc, setNewDesc] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // get and show item info
   useEffect(() => {
@@ -49,6 +50,8 @@ const ItemEdit = (props) => {
 
   // save item and post to server
   const handleSaveItem = (e) => {
+    e.preventDefault();
+    setSubmitting(true);
     saveItem(e, itemId, categList, setCategList, itemImg, props.loginSession.userId, false);
     redirect(`/item-details/${itemId}`);
   }
@@ -111,6 +114,7 @@ const ItemEdit = (props) => {
         <TextButton form="editItem" type="submit">Save</TextButton>
       </div>
 
+      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
     </div>
   );
 };
