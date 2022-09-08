@@ -6,7 +6,7 @@ import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'r
 import { TbLayoutGrid } from 'react-icons/tb';
 import { MdQueryStats } from 'react-icons/md';
 import { ItemCard } from '../components';
-import axios from 'axios';
+import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { LOANER, userViewSwitch } from '../utils/helpers';
 
@@ -17,6 +17,8 @@ const LoanerDashboard = (props) => {
   const navigate = useNavigate();
   const [gridView, setGridView] = useState(true);
   const [userView, setUserView] = useState(LOANER);
+
+  // const userId = sessionStorage.getItem('loginSession')
 
   const items = [
     <ItemCard
@@ -68,8 +70,7 @@ const LoanerDashboard = (props) => {
   ];
 
   useEffect(() => {
-    axios
-      .get('https://server-monkeys-backend-test.herokuapp.com/users')
+    API.get('/users')
       .then((res) => {
         console.log(res);
       })
@@ -90,6 +91,24 @@ const LoanerDashboard = (props) => {
     { label: 'Option 3', value: 'status_3' },
     { label: 'Option 4', value: 'status_4' },
   ];
+  const categoryOptions = [
+    { label: 'Option 1', value: 'status_1' },
+    { label: 'Option 2', value: 'status_2' },
+    { label: 'Option 3', value: 'status_3' },
+    { label: 'Option 4', value: 'status_4' },
+  ];
+  const loanerOptions = [
+    { label: 'Option 1', value: 'status_1' },
+    { label: 'Option 2', value: 'status_2' },
+    { label: 'Option 3', value: 'status_3' },
+    { label: 'Option 4', value: 'status_4' },
+  ];
+  const loaneeOptions = [
+    { label: 'Option 1', value: 'status_1' },
+    { label: 'Option 2', value: 'status_2' },
+    { label: 'Option 3', value: 'status_3' },
+    { label: 'Option 4', value: 'status_4' },
+  ];
 
   const handleUserSwitch = (e) => {
     const newView = userViewSwitch(userView);
@@ -102,13 +121,17 @@ const LoanerDashboard = (props) => {
     <div className="page-margin dashboard">
       <Row>
         <Col md="3" className="bg-light-blue filter-container">
-          <h3 style={{marginBottom: '2rem'}}>View as: {userView}</h3>
+          <h3 style={{marginBottom: '2rem'}}>View as: <span style={{color: 'var(--blue-color)'}}>{userView}</span></h3>
           <h3>Sort by</h3>
           <MultiSelect placeholder="Loan Date" singleSelect={true} options={dateOptions} />
           <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
           <MultiSelect placeholder="Status" options={statusOptions} />
-          <MultiSelect placeholder="Category" options={statusOptions} />
-          <MultiSelect placeholder="Loanee" options={statusOptions} />
+          <MultiSelect placeholder="Category" options={categoryOptions} />
+          {
+            userView === LOANER ? <MultiSelect placeholder="Loanee" options={loaneeOptions} />
+            : <MultiSelect placeholder="Loaner" options={loanerOptions} />
+          }
+          
         </Col>
         <Col style={{ marginLeft: '4rem' }}>
           <Row className="bg-light-blue" style={{ height: '5rem' }}>
