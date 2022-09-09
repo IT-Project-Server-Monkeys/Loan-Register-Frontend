@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
 import { TextBkgBox, TextButton } from "../components";
-import axios from "axios";
+import API from '../utils/api';
 
 const ChangePassword = (props) => {
   const redirect = useNavigate();
@@ -21,9 +21,8 @@ const ChangePassword = (props) => {
     let formData = {_id: props.uid, hashed_password: newPwd.value};
     console.log(formData);
 
-    await axios({
+    await API(`/testingUser`, {
       method: "put", data: formData,
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))

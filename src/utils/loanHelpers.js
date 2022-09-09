@@ -1,8 +1,8 @@
-import axios from "axios";
+import API from "./api";
 
 const fetchAllLoanees = async (setAllLoanees) => {
   let fetchedData = {};
-  await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingUser?all=1`)
+  await API.get(`/testingUser?all=1`)
     .then((res) => res.data.forEach((l) => {fetchedData[l.display_name] = l._id}))
     .catch((err) => console.log(err));
   setAllLoanees(fetchedData);
@@ -12,11 +12,11 @@ const fetchLoan = async (itemId, setItem) => {
   let fetchedData = null;
   let loaneeName = "";
 
-  await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingLoan?item_id=${itemId}&status=current`)
+  await API.get(`/testingLoan?item_id=${itemId}&status=current`)
     .then((res) => fetchedData = res.data[0])
     .catch((err) => console.log(err));
 
-  await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${fetchedData.loanee_id}`)
+  await API.get(`/testingUser?id=${fetchedData.loanee_id}`)
     .then((res) => loaneeName = res.data.display_name)
     .catch(err => console.log(err))
 
@@ -54,9 +54,8 @@ const saveLoan = async (formData, newItem) => {
     if (formData[prop] === "" || formData[prop] === null) delete formData[prop];
 
   console.log(formData);
-  await axios({
+  await API(`/testingLoan`, {
     method: newItem ? "post" : "put", data: formData,
-    url: "https://server-monkeys-backend-test.herokuapp.com/testingLoan",
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => console.log(res))

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput, TextButton, Loading } from '../components';
-import axios from "axios";
+import API from '../utils/api';
 
 const Account = (props) => {
   const [userInfo, setUserInfo] = useState({
@@ -12,9 +12,8 @@ const Account = (props) => {
   const saveInput = async (input) => {
     let formData = { _id: props.uid, ...input};
     console.log(formData);
-    await axios({
+    await API(`/testingUser`, {
       method: "put", data: formData,
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
@@ -26,11 +25,9 @@ const Account = (props) => {
     const fetchUser = async () => {
       let fetchedData = null;
       if (props.uid == null) return;
-      await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.uid}`
-        )
-        .then((res) => fetchedData = res.data)
-        .catch((err) => console.log(err));
+      await API.get(`/testingUser?id=${props.uid}`)
+      .then((res) => fetchedData = res.data)
+      .catch((err) => console.log(err));
 
       if (fetchedData == null) fetchedData = [{
         _id: props.uid,
@@ -39,7 +36,7 @@ const Account = (props) => {
         hashed_password: "thisisapassword",
       }];
       
-      setUserInfo(fetchedData[0]);
+      setUserInfo(fetchedData);
     };
     fetchUser();
   }, [props.uid]);

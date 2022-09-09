@@ -1,12 +1,10 @@
-import axios from "axios";
+import API from "./api";
 
 const fetchItem = async (itemId, setItem, addOns={}) => {
   let fetchedData = null;
   if (itemId == null) return;
 
-  await axios.get(
-    `https://server-monkeys-backend-test.herokuapp.com/testingItem?_id=${itemId}`
-    )
+  await API.get(`/testingItem?_id=${itemId}`)
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
 
@@ -16,9 +14,8 @@ const fetchItem = async (itemId, setItem, addOns={}) => {
 const fetchCategs = async (uid, setCategList) => {
   let fetchedData = null;
   if (uid == null) return;
-  await axios.get(
-    `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${uid}`
-    )
+
+  await API.get(`/testingUser?id=${uid}`)
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
   
@@ -30,7 +27,7 @@ const fetchDelableCg = (categList, uid, setDelableCg) => {
   let delable = [];
 
   categList.forEach(async c => {
-    await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingItem?category=${c}&item_owner=${uid}`)
+    await API.get(`/testingItem?category=${c}&item_owner=${uid}`)
       .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
       .catch(err => console.log(err))
   });
@@ -44,9 +41,8 @@ const changeCategory = (e, setNewCateg) => setNewCateg(e.target.value);
 
 const deleteCategory = async (categ, setCategList, uid) => {
   setCategList((prev) => prev.filter((c) => c !== categ));
-  await axios({
+  await API(`/testingUser`, {
     method: "put", data: { _id: uid, delete_category: categ },
-    url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => console.log(res))
@@ -76,9 +72,8 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   if (newDesc !== "") formData.description = newDesc;
     else formData.description = "(No description.)";
 
-  await axios({
+  await API(`/testingItem`, {
     method: newItem ? "post" : "put", data: formData,
-    url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => console.log(res))
@@ -88,12 +83,10 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   // if new category not in user current category, put request to user to add it
   if (newCateg !== "" && !(categList.includes(newCateg))) {
     setCategList((prevCgList) => { return [...prevCgList, newCateg] });
-    await axios({
-      method: "put", data: {
-        _id: uid,
-        new_category: newCateg
-      },
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
+
+    await API(`/testingUser`, {
+      method: "put",
+      data: { _id: uid, new_category: newCateg },
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
