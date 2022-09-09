@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
-import { TextButton, TextBkgBox, InputDropdown, Submitting, Deletable } from "./";
+import { TextButton, TextBkgBox, InputDropdown, Deletable } from "./";
 import { Modal } from 'reactstrap';
 import { fetchAllLoanees } from "../utils/loanHelpers";
 
@@ -22,10 +22,8 @@ const toISO = (dateString) => {
 const LoanForm = (props) => {
   const [letSubmit, setLetSubmit] = useState(false);
   const [allLoanees, setAllLoanees] = useState([]);
-  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    setSubmitting(false);
     fetchAllLoanees(setAllLoanees);
   }, []);
 
@@ -48,8 +46,6 @@ const LoanForm = (props) => {
   const submitHandler = async (e) => {
     e.preventDefault();
     console.log("form submitted");
-
-    setSubmitting(true);
 
     props.onSubmit({
       loanee_id: allLoanees[e.target.loanee.value],
@@ -116,7 +112,6 @@ const LoanForm = (props) => {
           </form>
         </TextBkgBox>
       </Modal>
-      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
     </>
   );
 };

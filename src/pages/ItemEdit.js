@@ -35,18 +35,18 @@ const ItemEdit = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.session, setCategList);
-  }, [props.session]);
+    fetchCategs(props.uid, setCategList);
+  }, [props.uid]);
 
   useEffect(() => {
-    fetchDelableCg(categList, props.session, setDelableCg);
-  }, [categList, props.session])
+    fetchDelableCg(categList, props.uid, setDelableCg);
+  }, [categList, props.uid])
 
   // categ changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
-    deleteCategory(categ, setCategList, props.session.userId);
+    deleteCategory(categ, setCategList, props.uid);
   }
 
   // item img changing
@@ -56,7 +56,7 @@ const ItemEdit = (props) => {
   const handleSaveItem = (e) => {
     e.preventDefault();
     setSubmitting(true);
-    saveItem(e, itemId, categList, setCategList, itemImg, props.session.userId, false);
+    saveItem(e, itemId, categList, setCategList, itemImg, props.uid, false);
     redirect(`/item-details/${itemId}`);
   }
 

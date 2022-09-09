@@ -12,29 +12,29 @@ import  'react-multiple-select-dropdown-lite/dist/index.css'
 function App() {
   
   // Get/Set login session
-  const [session, setLoginSession] = useState();
+  const [uid, setUid] = useState();
   useEffect(() => {
     // TODO: SEE ABOVE, GET SESSION INFO FROM ELSEWHERE
-    setLoginSession(
-      JSON.parse(window.sessionStorage.getItem("session"))
+    setUid(
+      window.sessionStorage.getItem("uid")
     );
   }, [])
 
-  const loginHandler = (session) => {
+  const loginHandler = (uid) => {
     // TODO: STORING IN SESSIONSTORAGE IS VERY UNSAFE, STORE SESSION INFO ELSEWHERE
-    window.sessionStorage.setItem("session", JSON.stringify(session));
-    setLoginSession(session);
+    window.sessionStorage.setItem("uid", uid);
+    setUid(uid);
   }
   
   const logoutHandler = () => {
     // TODO: SEE ABOVE, MAKE SAFER
-    window.sessionStorage.removeItem("session"); 
-    setLoginSession(null);
+    window.sessionStorage.removeItem("uid"); 
+    setUid(null);
   }
   
   return (
     <div className="App">
-      <Header session={session} onLogout={logoutHandler} />
+      <Header uid={uid} onLogout={logoutHandler} />
       <main style={{minHeight: 'var(--main-height)'}}>
         <Router>
           <Routes>
@@ -42,14 +42,14 @@ function App() {
             <Route path="/login" element={<Login onLogin={loginHandler} />} />
             <Route path="/dashboard/loaner" element={<Dashboard />} />
             <Route path="/dashboard/loanee" element={<Dashboard />} />
-            <Route path="/add-item" element={<AddItem session={session} />} />
-            <Route path="/item-details/:id" element={<ItemDetails session={session} />} />
-            <Route path="/item-details/:id/edit" element={<ItemEdit session={session} />} />
+            <Route path="/add-item" element={<AddItem uid={uid} />} />
+            <Route path="/item-details/:id" element={<ItemDetails uid={uid} />} />
+            <Route path="/item-details/:id/edit" element={<ItemEdit uid={uid} />} />
             <Route path="/item-history/:id" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/account" element={<Account session={session} />} />
-            <Route path="/change-password" element={<ChangePassword session={session} />} />
+            <Route path="/account" element={<Account uid={uid} />} />
+            <Route path="/change-password" element={<ChangePassword uid={uid} />} />
           </Routes>
         </Router>
       </main>

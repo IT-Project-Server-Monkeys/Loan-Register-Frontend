@@ -8,7 +8,7 @@ const Login = (props) => {
   // then passes it onto parent via the onLogin provided by parent
   // TODO remove
   const handleLogin = () => {
-    props.onLogin({ userId: "62fd96e4f0339bd9af7e9b0c" });
+    props.onLogin("62fd96e4f0339bd9af7e9b0c");
     window.location.href='/dashboard/loaner';
   };
 

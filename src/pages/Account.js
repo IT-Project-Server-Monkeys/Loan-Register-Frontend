@@ -10,7 +10,7 @@ const Account = (props) => {
   });
 
   const saveInput = async (input) => {
-    let formData = { _id: props.session.userId, ...input};
+    let formData = { _id: props.uid, ...input};
     console.log(formData);
     await axios({
       method: "put", data: formData,
@@ -25,15 +25,15 @@ const Account = (props) => {
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
-      if (props.session == null) return;
+      if (props.uid == null) return;
       await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.session.userId}`
+        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.uid}`
         )
         .then((res) => fetchedData = res.data)
         .catch((err) => console.log(err));
 
       if (fetchedData == null) fetchedData = [{
-        _id: props.session.userId,
+        _id: props.uid,
         display_name: "retrieval failed",
         login_email: "placeholder@mail.com",
         hashed_password: "thisisapassword",
@@ -42,7 +42,7 @@ const Account = (props) => {
       setUserInfo(fetchedData[0]);
     };
     fetchUser();
-  }, [props.session]);
+  }, [props.uid]);
 
   return (
     <div className={"account-page"}>

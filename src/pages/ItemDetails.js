@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { LoanForm, TextButton, Loading } from '../components';
+import { LoanForm, TextButton, Loading, Submitting } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
 import { fetchLoan, createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
@@ -36,16 +36,28 @@ const ItemDetails = (props) => {
   const [loanDate, setLoanDate] = useState();
   const [returnDate, setReturnDate] = useState();
 
+  const [submitting, setSubmitting] = useState(false);
+
   const handleCrtLn = (input) => {
+    setSubmitting(true);
+
     createLoan({
       ...input,
       item_id: itemId,
-      loaner_id: props.session.userId
+      loaner_id: props.uid
     })
   };
-  const handleEdtLn = (input) => editLoan({ _id: item.loan_id, ...input });
+  const handleEdtLn = (input) => {
+    setSubmitting(true);
+    editLoan({ _id: item.loan_id, ...input });
+  }
   
-  const handleRtnLn = () => returnLoan(item);
+  const handleRtnLn = () => {
+    setSubmitting(true);
+    returnLoan(item);
+  }
+
+  useEffect(() => setSubmitting(false), []);
 
   // get and show item data
   useEffect(() => {
@@ -133,7 +145,8 @@ const ItemDetails = (props) => {
         lnDateValue={loanDate} rtnDateValue={returnDate}
         chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
       />
-
+      
+      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
     </div>
   );
 };

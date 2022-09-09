@@ -2,6 +2,7 @@ import axios from "axios";
 
 const fetchItem = async (itemId, setItem, addOns={}) => {
   let fetchedData = null;
+  if (itemId == null) return;
 
   await axios.get(
     `https://server-monkeys-backend-test.herokuapp.com/testingItem?_id=${itemId}`
@@ -12,11 +13,11 @@ const fetchItem = async (itemId, setItem, addOns={}) => {
     if (fetchedData != null) setItem({...fetchedData, ...addOns});
 }
 
-const fetchCategs = async (session, setCategList) => {
+const fetchCategs = async (uid, setCategList) => {
   let fetchedData = null;
-  if (session == null) return;
+  if (uid == null) return;
   await axios.get(
-    `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${session.userId}`
+    `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${uid}`
     )
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
@@ -24,12 +25,12 @@ const fetchCategs = async (session, setCategList) => {
   setCategList(fetchedData.item_categories);
 };
 
-const fetchDelableCg = (categList, session, setDelableCg) => {
-  if (session == null) return;
+const fetchDelableCg = (categList, uid, setDelableCg) => {
+  if (uid == null) return;
   let delable = [];
 
   categList.forEach(async c => {
-    await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingItem?category=${c}&item_owner=${session.userId}`)
+    await axios.get(`https://server-monkeys-backend-test.herokuapp.com/testingItem?category=${c}&item_owner=${uid}`)
       .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
       .catch(err => console.log(err))
   });

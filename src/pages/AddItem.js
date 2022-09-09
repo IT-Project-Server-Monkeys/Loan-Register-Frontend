@@ -16,19 +16,19 @@ const AddItem = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.session, setCategList);
-  }, [props.session]);
+    fetchCategs(props.uid, setCategList);
+  }, [props.uid]);
 
   useEffect(() => {
-    fetchDelableCg(categList, props.session, setDelableCg);
-  }, [categList, props.session])
+    fetchDelableCg(categList, props.uid, setDelableCg);
+  }, [categList, props.uid])
 
   // categ changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
     // TODO popup window
-    deleteCategory(categ, setCategList, props.session.userId);
+    deleteCategory(categ, setCategList, props.uid);
   }
 
   // item img changing
@@ -38,7 +38,7 @@ const AddItem = (props) => {
   const handleSaveItem = (e) => {
     e.preventDefault();
     setSubmitting(true);
-    saveItem(e, null, categList, setCategList, itemImg, props.session.userId, true);
+    saveItem(e, null, categList, setCategList, itemImg, props.uid, true);
     redirect(`/dashboard/loaner`);
   }
 
