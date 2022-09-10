@@ -47,7 +47,6 @@ const returnLoan = async (item) => {
 }
 
 const saveLoan = async (formData, newItem) => {
-  console.log("form saving")
 
   // clean form
   for (const prop in formData)

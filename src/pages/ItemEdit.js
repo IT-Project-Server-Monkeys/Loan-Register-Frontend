@@ -61,10 +61,10 @@ const ItemEdit = (props) => {
   const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
 
   // save item and post to server
-  const handleSaveItem = (e) => {
+  const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    saveItem(e, itemId, categList, setCategList, itemImg, props.uid, false);
+    await saveItem(e, itemId, categList, setCategList, itemImg, props.uid, false);
     redirect(`/item-details/${itemId}`);
   }
 

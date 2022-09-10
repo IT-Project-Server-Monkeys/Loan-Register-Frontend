@@ -35,10 +35,10 @@ const AddItem = (props) => {
   const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
 
   // save item and post to server
-  const handleSaveItem = (e) => {
+  const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    saveItem(e, null, categList, setCategList, itemImg, props.uid, true);
+    await saveItem(e, null, categList, setCategList, itemImg, props.uid, true);
     redirect(`/dashboard/loaner`);
   }
 

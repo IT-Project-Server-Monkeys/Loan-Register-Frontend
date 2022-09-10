@@ -13,8 +13,15 @@ const ItemDetails = (props) => {
     being_loaned: false, item_name: <Loading />,
     category: <Loading />, description: <Loading />
   });
-
   const [modal, setModal] = useState(false);
+
+  const [loanee, setLoanee] = useState("");
+  const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
+
+  const [loanDate, setLoanDate] = useState();
+  const [returnDate, setReturnDate] = useState();
+  const [submitting, setSubmitting] = useState(false);
+
   const toggle = () => {
     setModal(!modal);
     if (item.being_loaned) {
@@ -28,34 +35,28 @@ const ItemDetails = (props) => {
     }
   };
 
-  const [loanee, setLoanee] = useState("");
-  const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
   const selectLoanee = (ln) => setLoanee(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
   const changeLoanee = (e) => setLoanee(e.target.value);
 
-  const [loanDate, setLoanDate] = useState();
-  const [returnDate, setReturnDate] = useState();
-
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleCrtLn = (input) => {
+  const handleCrtLn = async (input) => {
     setSubmitting(true);
-
-    createLoan({
+    await createLoan({
       ...input,
       item_id: itemId,
       loaner_id: props.uid
     })
+    window.location.reload();
   };
-  const handleEdtLn = (input) => {
+  const handleEdtLn = async (input) => {
     setSubmitting(true);
-    editLoan({ _id: item.loan_id, ...input });
+    await editLoan({ _id: item.loan_id, ...input });
+    window.location.reload();
   }
-  
-  const handleRtnLn = () => {
+  const handleRtnLn = async () => {
     setSubmitting(true);
-    returnLoan(item);
+    await returnLoan(item);
+    window.location.reload();
   }
 
   useEffect(() => setSubmitting(false), []);
