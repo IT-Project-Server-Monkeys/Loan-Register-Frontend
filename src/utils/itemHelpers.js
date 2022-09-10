@@ -4,18 +4,18 @@ const fetchItem = async (itemId, setItem, addOns={}) => {
   let fetchedData = null;
   if (itemId == null) return;
 
-  await API.get(`/testingItem?_id=${itemId}`)
+  await API.get(`/items?_id=${itemId}`)
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
 
-    if (fetchedData != null) setItem({...fetchedData, ...addOns});
+  if (fetchedData != null) setItem({...fetchedData, ...addOns});
 }
 
 const fetchCategs = async (uid, setCategList) => {
   let fetchedData = null;
   if (uid == null) return;
 
-  await API.get(`/testingUser?id=${uid}`)
+  await API.get(`/users?id=${uid}`)
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
   
@@ -27,7 +27,7 @@ const fetchDelableCg = (categList, uid, setDelableCg) => {
   let delable = [];
 
   categList.forEach(async c => {
-    await API.get(`/testingItem?category=${c}&item_owner=${uid}`)
+    await API.get(`/items?category=${c}&item_owner=${uid}`)
       .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
       .catch(err => console.log(err))
   });
@@ -41,7 +41,7 @@ const changeCategory = (e, setNewCateg) => setNewCateg(e.target.value);
 
 const deleteCategory = async (categ, setCategList, uid) => {
   setCategList((prev) => prev.filter((c) => c !== categ));
-  await API(`/testingUser`, {
+  await API(`/users`, {
     method: "put", data: { _id: uid, delete_category: categ },
     headers: { "Content-Type": "application/json" },
   })
@@ -72,7 +72,7 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   if (newDesc !== "") formData.description = newDesc;
     else formData.description = "(No description.)";
 
-  await API(`/testingItem`, {
+  await API(`/items`, {
     method: newItem ? "post" : "put", data: formData,
     headers: { "Content-Type": "application/json" },
   })
@@ -84,7 +84,7 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   if (newCateg !== "" && !(categList.includes(newCateg))) {
     setCategList((prevCgList) => { return [...prevCgList, newCateg] });
 
-    await API(`/testingUser`, {
+    await API(`/users`, {
       method: "put",
       data: { _id: uid, new_category: newCateg },
       headers: { "Content-Type": "application/json" },

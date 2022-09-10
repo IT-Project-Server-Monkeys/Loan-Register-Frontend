@@ -2,7 +2,7 @@ import API from "./api";
 
 const fetchAllLoanees = async (setAllLoanees) => {
   let fetchedData = {};
-  await API.get(`/testingUser?all=1`)
+  await API.get(`/users?all=1`)
     .then((res) => res.data.forEach((l) => {fetchedData[l.display_name] = l._id}))
     .catch((err) => console.log(err));
   setAllLoanees(fetchedData);
@@ -12,11 +12,11 @@ const fetchLoan = async (itemId, setItem) => {
   let fetchedData = null;
   let loaneeName = "";
 
-  await API.get(`/testingLoan?item_id=${itemId}&status=current`)
+  await API.get(`/loans?item_id=${itemId}&status=current`)
     .then((res) => fetchedData = res.data[0])
     .catch((err) => console.log(err));
 
-  await API.get(`/testingUser?id=${fetchedData.loanee_id}`)
+  await API.get(`/users?id=${fetchedData.loanee_id}`)
     .then((res) => loaneeName = res.data.display_name)
     .catch(err => console.log(err))
 
@@ -54,7 +54,7 @@ const saveLoan = async (formData, newItem) => {
     if (formData[prop] === "" || formData[prop] === null) delete formData[prop];
 
   console.log(formData);
-  await API(`/testingLoan`, {
+  await API(`/loans`, {
     method: newItem ? "post" : "put", data: formData,
     headers: { "Content-Type": "application/json" },
   })

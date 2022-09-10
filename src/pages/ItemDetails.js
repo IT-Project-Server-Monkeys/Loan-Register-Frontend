@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting } from '../components';
 import { MdEdit } from 'react-icons/md';
@@ -7,6 +7,7 @@ import { fetchItem } from "../utils/itemHelpers";
 import { fetchLoan, createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
 
 const ItemDetails = (props) => {
+  const redirect = useNavigate();
   const itemId = useParams().id;
   const [item, setItem] = useState({
     being_loaned: false, item_name: <Loading />,
@@ -74,6 +75,14 @@ const ItemDetails = (props) => {
   }, [itemId, item.being_loaned])
 
   useEffect (() => {
+    if (item.item_owner == null) return;
+    if (props.uid == null || props.uid !== item.item_owner) {
+      // TODO show that user does not have permission to view item
+      if (props.uid == null) redirect("/login");
+      else redirect("/dashboard/loaner");
+      return;
+    }
+
     if (item.being_loaned) {
       setLoanee(item.loanee);
       setLoanDate(item.loan_start_date);
@@ -83,7 +92,7 @@ const ItemDetails = (props) => {
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
-  }, [item])
+  }, [item, props.uid, redirect])
 
   return (
     <div className={"item-page"}>

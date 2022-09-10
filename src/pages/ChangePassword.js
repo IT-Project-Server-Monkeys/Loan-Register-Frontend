@@ -21,7 +21,7 @@ const ChangePassword = (props) => {
     let formData = {_id: props.uid, hashed_password: newPwd.value};
     console.log(formData);
 
-    await API(`/testingUser`, {
+    await API(`/users`, {
       method: "put", data: formData,
       headers: { "Content-Type": "application/json" },
     })

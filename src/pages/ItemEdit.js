@@ -28,10 +28,18 @@ const ItemEdit = (props) => {
   }, [itemId]);
 
   useEffect(() => {
+    if (item.item_owner == null) return;
+    if (props.uid == null || props.uid !== item.item_owner) {
+      // TODO show that user does not have permission to view item
+      if (props.uid == null) redirect("/login");
+      else redirect("/dashboard/loaner");
+      return;
+    }
+
     setNewName(item.item_name);
     setNewCateg(item.category);
     setNewDesc(item.description);
-  }, [item])
+  }, [item, props.uid, redirect])
 
   // get list of potential categs
   useEffect(() => {

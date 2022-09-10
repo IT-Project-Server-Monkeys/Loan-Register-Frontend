@@ -12,7 +12,7 @@ const Account = (props) => {
   const saveInput = async (input) => {
     let formData = { _id: props.uid, ...input};
     console.log(formData);
-    await API(`/testingUser`, {
+    await API(`/users`, {
       method: "put", data: formData,
       headers: { "Content-Type": "application/json" },
     })
@@ -25,7 +25,7 @@ const Account = (props) => {
     const fetchUser = async () => {
       let fetchedData = null;
       if (props.uid == null) return;
-      await API.get(`/testingUser?id=${props.uid}`)
+      await API.get(`/users?id=${props.uid}`)
       .then((res) => fetchedData = res.data)
       .catch((err) => console.log(err));
 
