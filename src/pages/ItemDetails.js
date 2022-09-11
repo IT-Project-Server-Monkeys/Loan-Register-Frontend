@@ -1,19 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { LoanForm, TextButton, Loading } from '../components';
+import { LoanForm, TextButton, Loading, Submitting } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
 import { fetchLoan, createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
 
 const ItemDetails = (props) => {
+  const redirect = useNavigate();
   const itemId = useParams().id;
   const [item, setItem] = useState({
     being_loaned: false, item_name: <Loading />,
     category: <Loading />, description: <Loading />
   });
-
   const [modal, setModal] = useState(false);
+
+  const [loanee, setLoanee] = useState("");
+  const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
+
+  const [loanDate, setLoanDate] = useState();
+  const [returnDate, setReturnDate] = useState();
+  const [submitting, setSubmitting] = useState(false);
+
   const toggle = () => {
     setModal(!modal);
     if (item.being_loaned) {
@@ -27,18 +35,31 @@ const ItemDetails = (props) => {
     }
   };
 
-  const [loanee, setLoanee] = useState("");
-  const [suggestedLoanees, setSuggestedLoanees] = useState(["placeholder", "loanee", "suggestions"]);
   const selectLoanee = (ln) => setLoanee(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
   const changeLoanee = (e) => setLoanee(e.target.value);
 
-  const [loanDate, setLoanDate] = useState();
-  const [returnDate, setReturnDate] = useState();
+  const handleCrtLn = async (input) => {
+    setSubmitting(true);
+    await createLoan({
+      ...input,
+      item_id: itemId,
+      loaner_id: props.uid
+    })
+    window.location.reload();
+  };
+  const handleEdtLn = async (input) => {
+    setSubmitting(true);
+    await editLoan({ _id: item.loan_id, ...input });
+    window.location.reload();
+  }
+  const handleRtnLn = async () => {
+    setSubmitting(true);
+    await returnLoan(item);
+    window.location.reload();
+  }
 
-  const handleCrtLn = (input) => createLoan(input, props.loginSession.userId);
-  const handleEdtLn = (input) => editLoan(item, input);
-  const handleRtnLn = () => returnLoan(item);
+  useEffect(() => setSubmitting(false), []);
 
   // get and show item data
   useEffect(() => {
@@ -55,6 +76,14 @@ const ItemDetails = (props) => {
   }, [itemId, item.being_loaned])
 
   useEffect (() => {
+    if (item.item_owner == null) return;
+    if (props.uid == null || props.uid !== item.item_owner) {
+      // TODO show that user does not have permission to view item
+      if (props.uid == null) redirect("/login");
+      else redirect("/dashboard/loaner");
+      return;
+    }
+
     if (item.being_loaned) {
       setLoanee(item.loanee);
       setLoanDate(item.loan_start_date);
@@ -64,7 +93,7 @@ const ItemDetails = (props) => {
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
-  }, [item])
+  }, [item, props.uid, redirect])
 
   return (
     <div className={"item-page"}>
@@ -126,7 +155,8 @@ const ItemDetails = (props) => {
         lnDateValue={loanDate} rtnDateValue={returnDate}
         chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
       />
-
+      
+      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import React from 'react';
 import { Card, CardBody, CardTitle, Row, Col } from 'reactstrap'
+import { LOANER } from '../utils/helpers';
 
 const ItemCard = (props) => {
 
-  const {image, title, category, loanee, startDate, endDate, gridView} = props;
+  const {image, title, category, person, startDate, endDate, gridView} = props;
 
+  const userView = window.location.pathname.slice(-6);
+  
   return (
     <>
       {
@@ -24,10 +27,10 @@ const ItemCard = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Current loanee: </p>
+                    <p className='card-subtitle'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col>
-                    <p>{loanee}</p>
+                    <p>{person}</p>
                   </Col>
                 </Row>
                 <Row>
@@ -61,7 +64,7 @@ const ItemCard = (props) => {
                 <Col>
                   <h3>{title}</h3>
                   <p><span className='card-subtitle'>Category: </span>{category}</p>
-                  <p><span className='card-subtitle'>Current loanee: </span>{loanee}</p>
+                  <p><span className='card-subtitle'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </span>{person}</p>
                 </Col>
                 <Col>
                   <p><span className='card-subtitle'>Start date: </span>{startDate}</p>

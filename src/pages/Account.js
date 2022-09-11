@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput, TextButton, Loading } from '../components';
-import axios from "axios";
+import API from '../utils/api';
 
 const Account = (props) => {
   const [userInfo, setUserInfo] = useState({
@@ -10,39 +10,36 @@ const Account = (props) => {
   });
 
   const saveInput = async (input) => {
-    let formData = { _id: props.loginSession.userId, ...input};
+    let formData = { _id: props.uid, ...input};
     console.log(formData);
-    await axios({
+    await API(`/users`, {
       method: "put", data: formData,
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
       .catch((err) => console.log(err));
   }
 
-  // get user data from server, querying using userId recorded in the app's loginSession
+  // get user data from server, querying using userId recorded in the app's session
   useEffect(() => {
     const fetchUser = async () => {
       let fetchedData = null;
-      if (props.loginSession == null) return;
-      await axios.get(
-        `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${props.loginSession.userId}`
-        )
-        .then((res) => fetchedData = res.data)
-        .catch((err) => console.log(err));
+      if (props.uid == null) return;
+      await API.get(`/users?id=${props.uid}`)
+      .then((res) => fetchedData = res.data)
+      .catch((err) => console.log(err));
 
       if (fetchedData == null) fetchedData = [{
-        _id: props.loginSession.userId,
+        _id: props.uid,
         display_name: "retrieval failed",
         login_email: "placeholder@mail.com",
         hashed_password: "thisisapassword",
       }];
       
-      setUserInfo(fetchedData[0]);
+      setUserInfo(fetchedData);
     };
     fetchUser();
-  }, [props.loginSession]);
+  }, [props.uid]);
 
   return (
     <div className={"account-page"}>

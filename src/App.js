@@ -2,49 +2,49 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Header, Footer } from './components';
-import { Home, Login, Signup, LoaneeDashboard, LoanerDashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword } from './pages';
+import { Home, Login, Signup, Dashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword, ForgotPassword } from './pages';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
-import ForgotPassword from './pages/ForgotPassword';
+import  'react-multiple-select-dropdown-lite/dist/index.css'
 
 
 function App() {
   
   // Get/Set login session
-  const [loginSession, setLoginSession] = useState();
+  const [uid, setUid] = useState();
   useEffect(() => {
     // TODO: SEE ABOVE, GET SESSION INFO FROM ELSEWHERE
-    setLoginSession(
-      JSON.parse(window.sessionStorage.getItem("loginSession"))
+    setUid(
+      window.sessionStorage.getItem("uid")
     );
   }, [])
 
-  const loginHandler = (session) => {
+  const loginHandler = (uid) => {
     // TODO: STORING IN SESSIONSTORAGE IS VERY UNSAFE, STORE SESSION INFO ELSEWHERE
-    window.sessionStorage.setItem("loginSession", JSON.stringify(session));
-    setLoginSession(session);
+    window.sessionStorage.setItem("uid", uid);
+    setUid(uid);
   }
   
   const logoutHandler = () => {
     // TODO: SEE ABOVE, MAKE SAFER
-    window.sessionStorage.removeItem("loginSession"); 
-    setLoginSession(null);
+    window.sessionStorage.removeItem("uid"); 
+    setUid(null);
   }
   
   return (
     <div className="App">
-      <Header loginSession={loginSession} onLogout={logoutHandler} />
+      <Header uid={uid} onLogout={logoutHandler} />
       <main style={{minHeight: 'var(--main-height)'}}>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login onLogin={loginHandler} />} />
-            <Route path="/dashboard/loaner" element={<LoanerDashboard />} />
-            <Route path="/dashboard/loanee" element={<LoaneeDashboard />} />
-            <Route path="/add-item" element={<AddItem loginSession={loginSession} />} />
-            <Route path="/item-details/:id" element={<ItemDetails loginSession={loginSession} />} />
-            <Route path="/item-details/:id/edit" element={<ItemEdit loginSession={loginSession} />} />
+            <Route path="/dashboard/loaner" element={<Dashboard />} />
+            <Route path="/dashboard/loanee" element={<Dashboard />} />
+            <Route path="/add-item" element={<AddItem uid={uid} />} />
+            <Route path="/item-details/:id" element={<ItemDetails uid={uid} />} />
+            <Route path="/item-details/:id/edit" element={<ItemEdit uid={uid} />} />
             <Route path="/item-history/:id" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />

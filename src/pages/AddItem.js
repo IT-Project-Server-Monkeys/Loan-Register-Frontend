@@ -1,36 +1,44 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, InputDropdown } from '../components';
+import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import { fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 
 const AddItem = (props) => {
   const redirect = useNavigate();
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
   const [categList, setCategList] = useState([]);
+  const [delableCg, setDelableCg] = useState([]);
   const [newCateg, setNewCateg] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.loginSession, setCategList);
-  }, [props.loginSession]);
+    fetchCategs(props.uid, setCategList);
+  }, [props.uid]);
+
+  useEffect(() => {
+    fetchDelableCg(categList, props.uid, setDelableCg);
+  }, [categList, props.uid])
 
   // categ changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
     // TODO popup window
-    deleteCategory(categ, setCategList, props.loginSession.userId);
+    deleteCategory(categ, setCategList, props.uid);
   }
 
   // item img changing
   const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
 
   // save item and post to server
-  const handleSaveItem = (e) => {
-    saveItem(e, "", categList, itemImg, props.loginSession.userId, true);
+  const handleSaveItem = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    await saveItem(e, null, categList, setCategList, itemImg, props.uid, true);
     redirect(`/dashboard/loaner`);
   }
 
@@ -64,12 +72,22 @@ const AddItem = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown required name="newCateg" value={newCateg}
-                    placeholder="Enter category..." options={categList} field="category"
-                    selectOption={handleSelCg}
-                    changeOption={handleChgCg}
-                    deleteOption={handleDelCg}
-                  />
+                  <InputDropdown
+                    name="newCateg" placeholder="Enter category..."
+                    value={newCateg} changeOption={handleChgCg}
+                  >
+                    {categList.map((c) => {
+                      return <Deletable
+                        field="category" key={`opt-${c}`}
+                        selectOption={handleSelCg} deleteOption={handleDelCg}
+                        canDel={delableCg.includes(c)}
+                        hideOption={(categ) => setCategList(
+                            (prev) => prev.filter((c) => c !== categ)
+                          )} >
+                        {c}
+                      </Deletable>
+                    })}
+                  </InputDropdown>
                 </td>
               </tr>
               <tr>
@@ -90,6 +108,7 @@ const AddItem = (props) => {
         <TextButton form="editItem" type="submit">Save</TextButton>
       </div>
 
+      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
     </div>
   );
 };

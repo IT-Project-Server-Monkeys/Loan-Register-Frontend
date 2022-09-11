@@ -34,7 +34,7 @@ const Login = (props) => {
         url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
         headers: { "Content-Type": "application/json" },
       })
-      
+
       // const response = await axios.post("https://server-monkeys-backend-test.herokuapp.com/testingUser",
       //   JSON.stringify({display_name: user, hashed_password: pwd}),
       //   {

@@ -1,28 +1,38 @@
-import axios from "axios";
+import API from "./api";
 
 const fetchItem = async (itemId, setItem, addOns={}) => {
   let fetchedData = null;
+  if (itemId == null) return;
 
-  await axios.get(
-    `https://server-monkeys-backend-test.herokuapp.com/testingItem?_id=${itemId}`
-    )
+  await API.get(`/items?_id=${itemId}`)
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
 
-    if (fetchedData != null) setItem({...fetchedData, ...addOns});
+  if (fetchedData != null) setItem({...fetchedData, ...addOns});
 }
 
-const fetchCategs = async (loginSession, setCategList) => {
+const fetchCategs = async (uid, setCategList) => {
   let fetchedData = null;
-  if (loginSession == null) return;
-  await axios.get(
-    `https://server-monkeys-backend-test.herokuapp.com/testingUser?id=${loginSession.userId}`
-    )
+  if (uid == null) return;
+
+  await API.get(`/users?id=${uid}`)
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
   
-  setCategList(fetchedData[0].item_categories);
+  setCategList(fetchedData.item_categories);
 };
+
+const fetchDelableCg = (categList, uid, setDelableCg) => {
+  if (uid == null) return;
+  let delable = [];
+
+  categList.forEach(async c => {
+    await API.get(`/items?category=${c}&item_owner=${uid}`)
+      .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
+      .catch(err => console.log(err))
+  });
+  setDelableCg(delable);
+}
 
 // category changing
 const selectCategory = (categ, setNewCateg) => setNewCateg(categ);
@@ -31,9 +41,8 @@ const changeCategory = (e, setNewCateg) => setNewCateg(e.target.value);
 
 const deleteCategory = async (categ, setCategList, uid) => {
   setCategList((prev) => prev.filter((c) => c !== categ));
-  await axios({
+  await API(`/users`, {
     method: "put", data: { _id: uid, delete_category: categ },
-    url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => console.log(res))
@@ -63,9 +72,8 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   if (newDesc !== "") formData.description = newDesc;
     else formData.description = "(No description.)";
 
-  await axios({
+  await API(`/items`, {
     method: newItem ? "post" : "put", data: formData,
-    url: "https://server-monkeys-backend-test.herokuapp.com/testingItem",
     headers: { "Content-Type": "application/json" },
   })
     .then((res) => console.log(res))
@@ -74,13 +82,11 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
 
   // if new category not in user current category, put request to user to add it
   if (newCateg !== "" && !(categList.includes(newCateg))) {
-    setCategList([...categList, newCateg]);
-    await axios({
-      method: "put", data: {
-        _id: uid,
-        new_category: newCateg
-      },
-      url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
+    setCategList((prevCgList) => { return [...prevCgList, newCateg] });
+
+    await API(`/users`, {
+      method: "put",
+      data: { _id: uid, new_category: newCateg },
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
@@ -88,4 +94,4 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   }
 }
 
-export { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
+export { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
