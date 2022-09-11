@@ -9,7 +9,7 @@ const toLocale = (dateString) => {
   return (new Date(Date.parse(dateString))).toLocaleDateString();
 }
 
-// assume DD/MM/YYYY format
+// assume locale DD/MM/YYYY format
 const toISO = (dateString) => {
   if (dateString.includes("-")) return dateString;
   else if (dateString.includes("/")) {
@@ -45,7 +45,6 @@ const LoanForm = (props) => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    console.log("form submitted");
 
     props.onSubmit({
       loanee_id: allLoanees[e.target.loanee.value],
@@ -84,6 +83,7 @@ const LoanForm = (props) => {
                   props.chgLnDate(toISO(e.target.value));
                   e.target.type="date";
                 }}
+                onKeyDownCapture={e => e.target.blur()}
                 onBlurCapture={e => {
                   e.target.type="text";
                   props.chgLnDate(toLocale(e.target.value));
@@ -99,6 +99,7 @@ const LoanForm = (props) => {
                   props.chgRtnDate(toISO(e.target.value));
                   e.target.type="date";
                 }}
+                onKeyDownCapture={e => e.target.blur()}
                 onBlurCapture={e => {
                   e.target.type="text";
                   props.chgRtnDate(toLocale(e.target.value));
