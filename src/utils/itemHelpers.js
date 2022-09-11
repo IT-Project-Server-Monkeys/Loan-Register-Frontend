@@ -22,11 +22,11 @@ const fetchCategs = async (uid, setCategList) => {
   setCategList(fetchedData.item_categories);
 };
 
-const fetchDelableCg = (categList, uid, setDelableCg) => {
+const fetchDelableCg = async (categList, uid, setDelableCg) => {
   if (uid == null) return;
   let delable = [];
 
-  categList.forEach(async c => {
+  await categList.forEach(async c => {
     await API.get(`/items?category=${c}&item_owner=${uid}`)
       .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
       .catch(err => console.log(err))

@@ -77,7 +77,7 @@ const AddItem = (props) => {
                     value={newCateg} changeOption={handleChgCg}
                   >
                     {categList.map((c) => {
-                      return <Deletable
+                      return <Deletable askRm
                         field="category" key={`opt-${c}`}
                         selectOption={handleSelCg} deleteOption={handleDelCg}
                         canDel={delableCg.includes(c)}

@@ -67,7 +67,7 @@ const LoanForm = (props) => {
               >
                 {props.suggestedLoanees.map((c) => {
                   return <Deletable
-                    field="category" key={`opt-${c}`} canDel={false}
+                    field="loanee" key={`opt-${c}`} canDel={false}
                     selectOption={props.selectLoanee} hideOption={props.deleteLoanee} >
                     {c}
                   </Deletable>
