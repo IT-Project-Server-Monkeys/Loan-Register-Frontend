@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting } from '../components';
 import { MdEdit } from 'react-icons/md';
@@ -21,6 +21,11 @@ const ItemDetails = (props) => {
   const [loanDate, setLoanDate] = useState();
   const [returnDate, setReturnDate] = useState();
   const [submitting, setSubmitting] = useState(false);
+
+  const location = useLocation()
+  const itemDetails = location.state ? location.state.item : null;
+
+  console.log('itemDetails', itemDetails)
 
   const toggle = () => {
     setModal(!modal);

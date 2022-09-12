@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Spinner } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
 import { TbLayoutGrid } from 'react-icons/tb';
@@ -9,7 +9,7 @@ import { ItemCard } from '../components';
 import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { LOANER, userViewSwitch } from '../utils/helpers';
-import dateFormat, { masks } from "dateformat";
+import dateFormat from 'dateformat';
 
 const image = 'https://picsum.photos/300/200';
 
@@ -17,6 +17,7 @@ const LoanerDashboard = (props) => {
   const navigate = useNavigate();
   const [gridView, setGridView] = useState(true);
   const [userView, setUserView] = useState(LOANER);
+  const [loading, setLoading] = useState(true);
 
   const [loanerItems, setLoanerItems] = useState([]);
   const [loaneeItems, setLoaneeItems] = useState([]);
@@ -30,8 +31,9 @@ const LoanerDashboard = (props) => {
     loanerOptions: [],
   });
 
-  const userId = sessionStorage.getItem('uid');
+  const [selectedItem, setSelectedItem] = useState({});
 
+  const userId = sessionStorage.getItem('uid');
 
   useEffect(() => {
     API.get('/dashboard?user_id=' + userId)
@@ -46,16 +48,25 @@ const LoanerDashboard = (props) => {
         }
         setLoanerItems(loanerItemsLst);
         setLoaneeItems(loaneeItemsLst);
+        setLoading(false);
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
 
+  const getItemById = (id) => {
+    var item = loanerItems.filter(item => item.item_id === id);
+    if (!item) {
+      item = loaneeItems.filter(item => item.item_id === id);
+    }
 
+    if (item) return item[0];
+    else return null;
+  }
 
   const renderItems = (view) => {
-    var items = []
+    var items = [];
     if (view === LOANER) {
       items = loanerItems;
     } else {
@@ -64,36 +75,35 @@ const LoanerDashboard = (props) => {
 
     return gridView
       ? items.map((item, i) => (
-            <Col md="4" key={i}>
-              <Link to={`/item-details/${item.item_id}`}>
-                <ItemCard
-                  image={image}
-                  title={item.item_name}
-                  category={item.category}
-                  person={item.loanee_name ? item.loanee_name : item.loaner_name}
-                  startDate={dateFormat(item.loan_start_date, "mm/dd/yyyy")}
-                  endDate={dateFormat(item.intended_return_date, "mm/dd/yyyy")}
-                  loanStatus={item.being_loaned}
-                  gridView={gridView}
-                />
-              </Link>
-            </Col>
-          
+          <Col md="4" key={i}>
+            <Link to={`/item-details/${item.item_id}`} state={{item: getItemById(item.item_id)}}>
+              <ItemCard
+                image={image}
+                title={item.item_name}
+                category={item.category}
+                person={item.loanee_name ? item.loanee_name : item.loaner_name}
+                startDate={dateFormat(item.loan_start_date, 'mm/dd/yyyy')}
+                endDate={dateFormat(item.intended_return_date, 'mm/dd/yyyy')}
+                loanStatus={item.being_loaned}
+                gridView={gridView}
+              />
+            </Link>
+          </Col>
         ))
       : items.map((item, i) => (
           <Col xs="12" key={i}>
             <Link to={`/item-details/${item.item_id}`}>
-                <ItemCard
-                  image={image}
-                  title={item.item_name}
-                  category={item.category}
-                  person={item.loanee_name ? item.loanee_name : item.loaner_name}
-                  startDate={dateFormat(item.loan_start_date, "mm/dd/yyyy")}
-                  endDate={dateFormat(item.intended_return_date, "mm/dd/yyyy")}
-                  loanStatus={item.being_loaned}
-                  gridView={gridView}
-                />
-              </Link>
+              <ItemCard
+                image={image}
+                title={item.item_name}
+                category={item.category}
+                person={item.loanee_name ? item.loanee_name : item.loaner_name}
+                startDate={dateFormat(item.loan_start_date, 'mm/dd/yyyy')}
+                endDate={dateFormat(item.intended_return_date, 'mm/dd/yyyy')}
+                loanStatus={item.being_loaned}
+                gridView={gridView}
+              />
+            </Link>
           </Col>
         ));
   };
@@ -147,11 +157,11 @@ const LoanerDashboard = (props) => {
           <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
           <MultiSelect placeholder="Status" options={statusOptions} />
           <MultiSelect placeholder="Category" options={categoryOptions} />
-          {userView === LOANER ? (
+          {userView === LOANER ? 
             <MultiSelect placeholder="Loanee" options={loaneeOptions} />
-          ) : (
+          : 
             <MultiSelect placeholder="Loaner" options={loanerOptions} />
-          )}
+          }
         </Col>
         <Col style={{ marginLeft: '4rem' }}>
           <Row className="bg-light-blue" style={{ height: '5rem' }}>
@@ -177,7 +187,16 @@ const LoanerDashboard = (props) => {
               </div>
             </div>
           </Row>
-          <Row>{renderItems(userView)}</Row>
+          <Row>
+            {loading ?
+            <div className="m-5" style={{display: 'flex'}}>
+              <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
+              <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
+            </div> 
+            : 
+              renderItems(userView)
+            }
+          </Row>
         </Col>
       </Row>
     </div>
