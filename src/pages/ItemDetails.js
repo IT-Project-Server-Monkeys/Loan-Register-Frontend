@@ -1,48 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
-import { fetchLoan, createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
+import { createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
+import dateFormat from 'dateformat';
 
 const ItemDetails = (props) => {
   const redirect = useNavigate();
   const itemId = useParams().id;
-  const [item, setItem] = useState({
-    being_loaned: false, item_name: <Loading />,
-    category: <Loading />, description: <Loading />
-  });
+  const baseItem = {
+    item_name: <Loading />, category: <Loading />, description: <Loading />,
+    being_loaned: false, loanee_name: <Loading />,
+    loan_start_date: <Loading />, intended_return_date: <Loading />
+  }
+  const [item, setItem] = useState(baseItem);
   const [modal, setModal] = useState(false);
 
-  const [loanee, setLoanee] = useState("");
+  const [loanee_name, setLoaneeName] = useState("");
   const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
 
   const [loanDate, setLoanDate] = useState();
   const [returnDate, setReturnDate] = useState();
   const [submitting, setSubmitting] = useState(false);
 
-  const location = useLocation()
+  const location = useLocation();
   const itemDetails = location.state ? location.state.item : null;
-
-  console.log('itemDetails', itemDetails)
 
   const toggle = () => {
     setModal(!modal);
     if (item.being_loaned) {
-      setLoanee(item.loanee);
+      setLoaneeName(item.loanee_name);
       setLoanDate(item.loan_start_date);
       setReturnDate(item.intended_return_date);
     } else {
-      setLoanee("");
+      setLoaneeName("");
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
   };
 
-  const selectLoanee = (ln) => setLoanee(ln);
+  const selectLoanee = (ln) => setLoaneeName(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
-  const changeLoanee = (e) => setLoanee(e.target.value);
+  const changeLoanee = (e) => setLoaneeName(e.target.value);
 
   const handleCrtLn = async (input) => {
     setSubmitting(true);
@@ -51,7 +52,7 @@ const ItemDetails = (props) => {
       item_id: itemId,
       loaner_id: props.uid
     })
-    window.location.reload();
+    // window.location.reload();
   };
   const handleEdtLn = async (input) => {
     setSubmitting(true);
@@ -65,20 +66,21 @@ const ItemDetails = (props) => {
   }
 
   useEffect(() => setSubmitting(false), []);
-
-  // get and show item data
+  
+  // get and show item data, if not already provided
   useEffect(() => {
-    fetchItem(itemId, setItem, {
-      loanee: <Loading />,
-      loan_start_date: <Loading />,
-      intended_return_date: <Loading />
+    if (itemDetails === null) fetchItem(itemId, setItem)
+    else setItem({
+      ...itemDetails,
+      loan_start_date: dateFormat(itemDetails.loan_start_date, 'dd/mm/yyyy'),
+      intended_return_date: dateFormat(itemDetails.intended_return_date, 'dd/mm/yyyy'),
     });
-  }, [itemId]);
+    // TODO clear itemdetails
+    window.history.replaceState({}, document.title);
+  }, [itemId, itemDetails]);
 
-  // get and shows loan information
-  useEffect (() => {
-    if (item.being_loaned) fetchLoan(itemId, setItem);
-  }, [itemId, item.being_loaned])
+  useEffect(() => {
+  }, [item]);
 
   useEffect (() => {
     if (item.item_owner == null) return;
@@ -89,23 +91,14 @@ const ItemDetails = (props) => {
       return;
     }
 
-    if (item.being_loaned) {
-      setLoanee(item.loanee);
-      setLoanDate(item.loan_start_date);
-      setReturnDate(item.intended_return_date);
-    } else {
-      setLoanee("");
-      setLoanDate(new Date().toLocaleDateString());
-      setReturnDate("");
-    }
   }, [item, props.uid, redirect])
 
   return (
     <div className={"item-page"}>
 
-      <a href={`/item-details/${itemId}/edit`}><button className={"edit-item icon-blue"}>
-        <MdEdit size={40} />
-      </button></a>
+      <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
+        <button className={"edit-item icon-blue"}><MdEdit size={40} /></button>
+      </Link>
       
       <div className={"item-details"}>
 
@@ -125,7 +118,7 @@ const ItemDetails = (props) => {
             </tr>
             { item.being_loaned ? <>
               <tr>
-                <td>Loanee:</td><td>{item.loanee}</td>
+                <td>Loanee:</td><td>{item.loanee_name}</td>
               </tr>
               <tr>
                 <td>Date loaned:</td><td>{item.loan_start_date}</td>
@@ -153,7 +146,7 @@ const ItemDetails = (props) => {
       </div>
 
       <LoanForm modal={modal} toggle={toggle} item={item}
-        newLoan={!item.being_loaned} loaneeValue={loanee}
+        newLoan={!item.being_loaned} loaneeValue={loanee_name}
         onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
         suggestedLoanees={suggestedLoanees} changeLoanee={changeLoanee}
         selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}

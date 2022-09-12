@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
@@ -22,10 +22,23 @@ const ItemEdit = (props) => {
   const [newDesc, setNewDesc] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const location = useLocation();
+  const itemDetails = location.state ? location.state.item : null;
+
   // get and show item info
+  // useEffect(() => {
+  //   if (itemDetails !== null) setItem(itemDetails)
+  //   else fetchItem(itemId, setItem, false);
+  //   window.history.replaceState({}, document.title);
+  // }, [itemId, itemDetails]);
+
+  // get and show item data, if not already provided
   useEffect(() => {
-    fetchItem(itemId, setItem);
-  }, [itemId]);
+    if (itemDetails === null) fetchItem(itemId, setItem, false);
+    else setItem(itemDetails);
+    // TODO clear itemdetails
+    window.history.replaceState({}, document.title);
+  }, [itemId, itemDetails]);
 
   useEffect(() => {
     if (item.item_owner == null) return;
