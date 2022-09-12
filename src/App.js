@@ -32,7 +32,6 @@ function App() {
     setUid(null);
   }
 
-  // BEFORE YOU MERGE TO MAIN!!! Add loginSession={loginSession} back to account and change password
   
   return (
     <div className="App">
@@ -51,8 +50,8 @@ function App() {
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/account" element={<Account />} />
-            <Route path="/change-password" element={<ChangePassword />} />
+            <Route path="/account" element={<Account loginSession={loginSession} />} />
+            <Route path="/change-password" element={<ChangePassword loginSession={loginSession} />} />
           </Routes>
         </Router>
       </main>
