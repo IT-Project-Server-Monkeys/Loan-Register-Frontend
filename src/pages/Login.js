@@ -1,18 +1,15 @@
-import { useRef, useState, useEffect, useContext } from 'react';
-import AuthContext from "../context/AuthProvider";
+import { useRef, useState, useEffect } from 'react';
 import "../styles/Login.scss";
 import { TextBkgBox, TextButton } from '../components';
-import axios from 'axios';
+import API from "../utils/api";
 
 const Login = (props) => {
-  const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
 
   const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
-  const [success, setSuccess] = useState(false);
 
   // automatically focus on first input box
   useEffect(() => {
@@ -26,54 +23,32 @@ const Login = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user, pwd);
+    // console.log(user, pwd);
+    let uid = null;
 
-    try {
-      const response = await axios({
-        method: "post", data: {display_name: user, hashed_password: pwd},
-        url: "https://server-monkeys-backend-test.herokuapp.com/testingUser",
-        headers: { "Content-Type": "application/json" },
+    await API(`users?password=${pwd}&email=${user}`)
+      .then((res) => {
+        console.log(res);
+        uid = res.data[0]._id;
+        console.log(uid); 
       })
+      .catch((err) => console.log(err));
 
-      // const response = await axios.post("https://server-monkeys-backend-test.herokuapp.com/testingUser",
-      //   JSON.stringify({display_name: user, hashed_password: pwd}),
-      //   {
-      //     header: { 'Content-Type': 'application/json'},
-      //     //withCredentials: true
-      //   }
-      // );
-      // console.log(JSON.stringify(response?.data));
-
-      const accessToken = response?.data?.accessToken;
-      // const roles = response?.data?.roles;
-      setAuth({ user, pwd, accessToken });
+    //const uid = res?.data[0]._id;
+    //console.log(uid); 
+    
+    if (uid != null) {
+      props.onLogin(uid);
+      window.location.href='/dashboard/loaner';
       setUser('');
       setPwd('');
-      setSuccess(true);
-    } catch (err) {
-      if (!err?.response) {
-        setErrMsg('No Server Response');
-      } else if (err.response?.status === 400) {
-        setErrMsg('Missing Username or Password');
-      } else if (err.response?.status === 401) {
-        setErrMsg('Unauthorized');
-      } else {
-        setErrMsg('Login Failed');
-      }
+
+    } else {
+      setErrMsg('Login Failed');
       errRef.current.focus();
     }
 
-
   }
-
-
-  // temporary login handler. generates random data,
-  // then passes it onto parent via the onLogin provided by parent
-  // TODO remove
-  //const handleLogin = () => {
-    //props.onLogin({ userId: "62fd8a9df04410afbc6df31f" });
-    //window.location.href='/dashboard/loaner';
-  //};
 
   return (
     <div className={"login"}>
