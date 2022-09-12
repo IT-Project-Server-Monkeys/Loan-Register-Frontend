@@ -50,8 +50,8 @@ function App() {
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/account" element={<Account loginSession={loginSession} />} />
-            <Route path="/change-password" element={<ChangePassword loginSession={loginSession} />} />
+            <Route path="/account" element={<Account uid={uid} />} />
+            <Route path="/change-password" element={<ChangePassword uid={uid} />} />
           </Routes>
         </Router>
       </main>
