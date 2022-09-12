@@ -14,6 +14,11 @@ const AddItem = (props) => {
   const [newCateg, setNewCateg] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  const [categOpen, setCategOpen] = useState(false);
+  const categShow = () => {
+    if (delableCg.length !== 0) setCategOpen((prevState) => !prevState)
+  };
+
   // get list of potential categs
   useEffect(() => {
     fetchCategs(props.uid, setCategList);
@@ -72,15 +77,15 @@ const AddItem = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown
+                  <InputDropdown dropdownOpen={categOpen} toggle={categShow}
                     name="newCateg" placeholder="Enter category..."
                     value={newCateg} changeOption={handleChgCg}
                   >
                     {categList.map((c) => {
                       return <Deletable askRm
                         field="category" key={`opt-${c}`}
-                        selectOption={handleSelCg} deleteOption={handleDelCg}
-                        canDel={delableCg.includes(c)}
+                        selectOption={(e) => {categShow(); handleSelCg(e)}}
+                        deleteOption={handleDelCg} canDel={delableCg.includes(c)}
                         hideOption={(categ) => setCategList(
                             (prev) => prev.filter((c) => c !== categ)
                           )} >

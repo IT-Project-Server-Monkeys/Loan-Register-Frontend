@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "../styles/ToggleInput.scss";
 
 // field that switches between display mode and edit mode
 const ToggleInput = (props) => {

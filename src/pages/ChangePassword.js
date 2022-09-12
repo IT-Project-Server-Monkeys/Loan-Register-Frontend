@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
-import { TextBkgBox, TextButton } from "../components";
+import { TextBkgBox, TextButton, Submitting } from "../components";
 import API from '../utils/api';
 
 const ChangePassword = (props) => {
+  const safePattern = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z])$/;
   const redirect = useNavigate();
   const [letSubmit, setLetSubmit] = useState(false);
+  const [safetyNote, setSafetyNote] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const confirmPwd = () => {
     const newPwd = document.getElementById("newPwd").value;
@@ -16,23 +19,32 @@ const ChangePassword = (props) => {
 
   const changePwd = async (event) => {
     event.preventDefault();
-    let newPwd = document.getElementById("newPwd");
-    // TODO hash password
-    let formData = {_id: props.uid, hashed_password: newPwd.value};
-    console.log(formData);
-
-    await API(`/users`, {
-      method: "put", data: formData,
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
     
-    newPwd.value = null;
-    document.getElementById("confirmPwd").value = null;
-    confirmPwd();
+    let newPwd = document.getElementById("newPwd").value;
+    if (!safePattern.test(newPwd)) {
+      setSafetyNote(true);
+      document.getElementById("newPwd").value = "";
+      document.getElementById("confirmPwd").value = "";
+      return;
+      
+    } else {
 
-    redirect("/account");
+      // TODO hash password
+
+      setSubmitting(true);
+      
+      let formData = {_id: props.uid, hashed_password: newPwd};
+      console.log(formData);
+
+      await API(`/users`, {
+        method: "put", data: formData,
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+
+      redirect("/account");
+    }
   };
 
   return (
@@ -40,16 +52,19 @@ const ChangePassword = (props) => {
       <TextBkgBox>
         <h1>Change password</h1>
         <form onSubmit={changePwd} onChange={confirmPwd}>
+          {safetyNote ? <span className={"safety-note"}>
+            Password must contain at least: a symbol, a number, a lowercase letter and an uppercase letter.
+          </span> : null}
           <div className={"inline-flex"}>
             <h3>New password:</h3>
-            <input required type="password" id="newPwd"
-              placeholder="Enter password" className={"input-box"}
+            <input required type="password" id="newPwd" minLength={8}
+              placeholder="(Minimum 8 characters.)" className={"input-box"}
             />
           </div>
           <div className={"inline-flex"}>
             <h3>Confirm password:</h3>
             <input required type="password" id="confirmPwd"
-              placeholder="Confirm password" className={"input-box"}
+              placeholder="Same password as above" className={"input-box"}
             />
           </div>
           <TextButton disabled={!letSubmit} type="submit">
@@ -57,6 +72,7 @@ const ChangePassword = (props) => {
           </TextButton>
         </form>
       </TextBkgBox>
+      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
     </div>
   );
 };

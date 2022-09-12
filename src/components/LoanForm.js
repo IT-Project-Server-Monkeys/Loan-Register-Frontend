@@ -23,6 +23,11 @@ const LoanForm = (props) => {
   const [letSubmit, setLetSubmit] = useState(false);
   const [allLoanees, setAllLoanees] = useState([]);
 
+  const [loaneeOpen, setLoaneeOpen] = useState(false);
+  const loaneeShow = () => {
+    setLoaneeOpen((prevState) => !prevState)
+  };
+
   useEffect(() => {
     fetchAllLoanees(setAllLoanees);
   }, []);
@@ -62,13 +67,15 @@ const LoanForm = (props) => {
           <form onSubmit={submitHandler} onChange={checkSubmittable} id="loanForm">
             <div className={"inline-flex"}>
               <h3>Loanee:</h3>
-              <InputDropdown required name="loanee" value={props.loaneeValue} 
+              <InputDropdown dropdownOpen={loaneeOpen} toggle={loaneeShow}
+                required name="loanee" value={props.loaneeValue} 
                 placeholder="Enter existing loanee..." changeOption={props.changeLoanee}
               >
                 {props.suggestedLoanees.map((c) => {
-                  return <Deletable
-                    field="loanee" key={`opt-${c}`} canDel={false}
-                    selectOption={props.selectLoanee} hideOption={props.deleteLoanee} >
+                  return <Deletable field="loanee" key={`opt-${c}`}
+                    canDel={false} hideOption={props.deleteLoanee}
+                    selectOption={(e) => {loaneeShow(); props.selectLoanee(e)}}
+                  >
                     {c}
                   </Deletable>
                 })}

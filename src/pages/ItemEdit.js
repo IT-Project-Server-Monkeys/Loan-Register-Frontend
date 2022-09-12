@@ -25,12 +25,10 @@ const ItemEdit = (props) => {
   const location = useLocation();
   const itemDetails = location.state ? location.state.item : null;
 
-  // get and show item info
-  // useEffect(() => {
-  //   if (itemDetails !== null) setItem(itemDetails)
-  //   else fetchItem(itemId, setItem, false);
-  //   window.history.replaceState({}, document.title);
-  // }, [itemId, itemDetails]);
+  const [categOpen, setCategOpen] = useState(false);
+  const categShow = () => {
+    if (delableCg.length !== 0) setCategOpen((prevState) => !prevState)
+  };
 
   // get and show item data, if not already provided
   useEffect(() => {
@@ -111,15 +109,15 @@ const ItemEdit = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown
+                  <InputDropdown dropdownOpen={categOpen} toggle={categShow}
                     name="newCateg" placeholder="Enter category..."
                     value={newCateg} changeOption={handleChgCg}
                   >
                     {categList.map((c) => {
                       return <Deletable askRm
                         field="category" key={`opt-${c}`}
-                        selectOption={handleSelCg} deleteOption={handleDelCg}
-                        canDel={delableCg.includes(c)}
+                        selectOption={(e) => {categShow(); handleSelCg(e)}}
+                        deleteOption={handleDelCg} canDel={delableCg.includes(c)}
                         hideOption={(categ) => setCategList(
                             (prev) => prev.filter((c) => c !== categ)
                           )} >
