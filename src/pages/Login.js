@@ -23,8 +23,9 @@ const Login = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(user, pwd);
     let uid = null;
+
+    // TODO: add checking of hashed passwords
 
     await API(`users?password=${pwd}&email=${user}`)
       .then((res) => {
@@ -33,9 +34,6 @@ const Login = (props) => {
         console.log(uid); 
       })
       .catch((err) => console.log(err));
-
-    //const uid = res?.data[0]._id;
-    //console.log(uid); 
     
     if (uid != null) {
       props.onLogin(uid);
