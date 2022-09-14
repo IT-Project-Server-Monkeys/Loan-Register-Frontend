@@ -1,6 +1,7 @@
 import API from "./api";
+import dateFormat from 'dateformat';
 
-const fetchItem = async (itemId, setItem, addOns={}) => {
+const fetchItem = async (itemId, setItem) => {
   let fetchedData = null;
   if (itemId == null) return;
 
@@ -8,7 +9,15 @@ const fetchItem = async (itemId, setItem, addOns={}) => {
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
 
-  if (fetchedData != null) setItem({...fetchedData, ...addOns});
+  if (fetchedData.being_loaned) {
+    await API.get(`/loans?item_id=${itemId}&status=Current`)
+      .then((res) => fetchedData = {...fetchedData, ...res.data[0]})
+      .catch((err) => console.log(err));
+    fetchedData.loan_start_date = dateFormat(fetchedData.loan_start_date, 'dd/mm/yyyy');
+    fetchedData.intended_return_date = dateFormat(fetchedData.intended_return_date, 'dd/mm/yyyy');
+  }
+
+  if (fetchedData != null) setItem(fetchedData);
 }
 
 const fetchCategs = async (uid, setCategList) => {
