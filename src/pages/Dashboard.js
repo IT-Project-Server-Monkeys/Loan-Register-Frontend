@@ -22,10 +22,12 @@ const LoanerDashboard = (props) => {
   const [loanerItems, setLoanerItems] = useState([]);
   const [loaneeItems, setLoaneeItems] = useState([]);
 
+  // eslint-disable-next-line
   const [loanerFilters, setLoanerFilters] = useState({
     categoryOptions: [],
     loaneeOptions: [],
   });
+  // eslint-disable-next-line
   const [loaneeFilters, setLoaneeFilters] = useState({
     categoryOptions: [],
     loanerOptions: [],
@@ -73,6 +75,7 @@ const LoanerDashboard = (props) => {
       .catch((e) => {
         console.log(e);
       });
+      // eslint-disable-next-line
   }, []);
 
   // useEffect(() => {

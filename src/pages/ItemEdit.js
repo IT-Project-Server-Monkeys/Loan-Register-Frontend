@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
@@ -23,6 +23,7 @@ const ItemEdit = (props) => {
   const [submitting, setSubmitting] = useState(false);
 
   const location = useLocation();
+  // eslint-disable-next-line
   const itemDetails = location.state ? location.state.item : null;
 
   const [categOpen, setCategOpen] = useState(false);

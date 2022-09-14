@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Spinner } from "reactstrap";
-import "../styles/Submitting.scss";
+import "../styles/Overlay.scss";
 
 const Submitting = (props) => {
   const [ellipsis, setEllipsis] = useState("");
@@ -16,7 +16,7 @@ const Submitting = (props) => {
   }, [])
 
   return (
-    <div className="submitting" style={props.style}>
+    <div className="overlay" style={props.style}>
       <div className={"submit-loading"}>
         <Spinner>Loading...</Spinner>
         <p>Loading{ellipsis}</p>
