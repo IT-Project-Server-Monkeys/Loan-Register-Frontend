@@ -1,7 +1,7 @@
 import API from "./api";
 import dateFormat from 'dateformat';
 
-const fetchItem = async (itemId, setItem) => {
+const fetchItem = async (itemId, setItem, uid) => {
   let fetchedData = null;
   if (itemId == null) return;
 
@@ -10,17 +10,30 @@ const fetchItem = async (itemId, setItem) => {
     .catch((err) => console.log(err));
 
   if (fetchedData.being_loaned) {
-    await API.get(`/loans?item_id=${itemId}&status=Current`)
-      .then((res) => fetchedData = {...fetchedData, ...res.data[0]})
+    let loanData = null;
+    await API.get(`/loans?item_id=${itemId}&status=current`)
+      .then((res) => loanData = res.data[0])
       .catch((err) => console.log(err));
-    fetchedData.loan_start_date = dateFormat(fetchedData.loan_start_date, 'dd/mm/yyyy');
-    fetchedData.intended_return_date = dateFormat(fetchedData.intended_return_date, 'dd/mm/yyyy');
-  }
 
-  if (fetchedData != null) setItem(fetchedData);
+    if (loanData !== null) {
+      fetchedData.loan_id = loanData._id;
+      fetchedData.loanee = loanData.loanee_id;
+
+      await API.get(`/users?id=${loanData.loanee_id}`)
+        .then((res) => fetchedData.loanee = res.data.display_name)
+        .catch((err) => console.log(err));
+  
+      fetchedData.loan_start_date = dateFormat(loanData.loan_start_date, 'dd/mm/yyyy');
+      fetchedData.intended_return_date = dateFormat(loanData.intended_return_date, 'dd/mm/yyyy');
+    }
+
+  }
+  if (fetchedData != null) {
+    setItem(fetchedData)
+  };
 }
 
-const fetchCategs = async (uid, setCategList) => {
+const fetchCategs = async (uid, setCategList, setDelableCg) => {
   let fetchedData = null;
   if (uid == null) return;
 
@@ -29,6 +42,7 @@ const fetchCategs = async (uid, setCategList) => {
     .catch((err) => console.log(err));
   
   setCategList(fetchedData.item_categories);
+  fetchDelableCg(fetchedData.item_categories, uid, setDelableCg);
 };
 
 const fetchDelableCg = async (categList, uid, setDelableCg) => {
@@ -37,7 +51,7 @@ const fetchDelableCg = async (categList, uid, setDelableCg) => {
 
   await categList.forEach(async c => {
     await API.get(`/items?category=${c}&item_owner=${uid}`)
-      .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
+      .then(res => { if (res.data.length === 0) delable.push(c); })
       .catch(err => console.log(err))
   });
   setDelableCg(delable);

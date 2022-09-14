@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
+import { TextButton, InputDropdown, Submitting, Deletable, NoAccess } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import { noAccessRedirect } from "../utils/helpers";
 
 const ItemEdit = (props) => {
   const redirect = useNavigate();
@@ -21,6 +22,7 @@ const ItemEdit = (props) => {
   const [newCateg, setNewCateg] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [noAccess, setNoAccess] = useState(false);
 
   const location = useLocation();
   // eslint-disable-next-line
@@ -39,9 +41,8 @@ const ItemEdit = (props) => {
   useEffect(() => {
     if (item.item_owner == null) return;
     if (props.uid == null || props.uid !== item.item_owner) {
-      // TODO show that user does not have permission to view item
-      if (props.uid == null) redirect("/login");
-      else redirect("/dashboard/loaner");
+      noAccessRedirect(props.uid == null ? "/login" : "/dashboard/loaner",
+        redirect, setNoAccess);
       return;
     }
 
@@ -52,12 +53,8 @@ const ItemEdit = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.uid, setCategList);
+    fetchCategs(props.uid, setCategList, setDelableCg);
   }, [props.uid]);
-
-  useEffect(() => {
-    fetchDelableCg(categList, props.uid, setDelableCg);
-  }, [categList, props.uid])
 
   // categ changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
@@ -78,75 +75,78 @@ const ItemEdit = (props) => {
   }
 
   return (
-    <div className={"item-page"}>
-      <div className={"item-details"}>
-        <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
-          <label className={"add-img"}>
-            <RiImageAddFill size={40} />
-            <input
-              type="file" accept="image/*" 
-              name="newImg" style={{display: "none"}}
-              onChange={handleChgImg} 
-            />
-          </label>
+    <>
+      <div className={"item-page"} style={noAccess ? {display: "none"} : null}>
+        <div className={"item-details"}>
+          <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
+            <label className={"add-img"}>
+              <RiImageAddFill size={40} />
+              <input
+                type="file" accept="image/*" 
+                name="newImg" style={{display: "none"}}
+                onChange={handleChgImg} 
+              />
+            </label>
+          </div>
+          
+          <p className={"item-status"}>&nbsp;</p>
+          <div className={"item-info"}>
+            <form id="editItem" onSubmit={handleSaveItem}>
+              <table><tbody>
+                <tr>
+                  <td>Name:</td>
+                  <td>
+                    <input name="newName" className={"input-box"} type="text"
+                      value={newName} onChange={e => setNewName(e.target.value)}
+                      placeholder="Enter name..."
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>Category:</td>
+                  <td>
+                    <InputDropdown dropdownOpen={categOpen} toggle={categShow}
+                      name="newCateg" placeholder="Enter category..."
+                      value={newCateg} changeOption={handleChgCg}
+                    >
+                      {categList.map((c) => {
+                        return <Deletable askRm
+                          field="category" key={`opt-${c}`}
+                          selectOption={(e) => {categShow(); handleSelCg(e)}}
+                          deleteOption={handleDelCg} canDel={delableCg.includes(c)}
+                          hideOption={(categ) => setCategList(
+                              (prev) => prev.filter((c) => c !== categ)
+                            )} >
+                          {c}
+                        </Deletable>
+                      })}
+                    </InputDropdown>
+                  </td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+                </tbody></table>
+              <p>Description:<br />
+                <textarea name="newDesc" style={{width: "-webkit-fill-available"}}
+                  value={newDesc} onChange={e => setNewDesc(e.target.value)}
+                  placeholder="(Optional) Enter description..." />
+              </p>
+            </form>
+          </div>
         </div>
-        
-        <p className={"item-status"}>&nbsp;</p>
-        <div className={"item-info"}>
-          <form id="editItem" onSubmit={handleSaveItem}>
-            <table><tbody>
-              <tr>
-                <td>Name:</td>
-                <td>
-                  <input name="newName" className={"input-box"} type="text"
-                    value={newName} onChange={e => setNewName(e.target.value)}
-                    placeholder="Enter name..."
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td>Category:</td>
-                <td>
-                  <InputDropdown dropdownOpen={categOpen} toggle={categShow}
-                    name="newCateg" placeholder="Enter category..."
-                    value={newCateg} changeOption={handleChgCg}
-                  >
-                    {categList.map((c) => {
-                      return <Deletable askRm
-                        field="category" key={`opt-${c}`}
-                        selectOption={(e) => {categShow(); handleSelCg(e)}}
-                        deleteOption={handleDelCg} canDel={delableCg.includes(c)}
-                        hideOption={(categ) => setCategList(
-                            (prev) => prev.filter((c) => c !== categ)
-                          )} >
-                        {c}
-                      </Deletable>
-                    })}
-                  </InputDropdown>
-                </td>
-              </tr>
-              <tr>
-                <td>&nbsp;</td>
-              </tr>
-              </tbody></table>
-            <p>Description:<br />
-              <textarea name="newDesc" style={{width: "-webkit-fill-available"}}
-                value={newDesc} onChange={e => setNewDesc(e.target.value)}
-                placeholder="(Optional) Enter description..." />
-            </p>
-          </form>
+
+        <div className={"btn-list"}>
+          <TextButton altStyle
+            onClick={() => redirect(`/item-details/${itemId}`)}
+          >Cancel</TextButton>
+          <TextButton form="editItem" type="submit">Save</TextButton>
         </div>
-      </div>
 
-      <div className={"btn-list"}>
-        <TextButton altStyle
-          onClick={() => redirect(`/item-details/${itemId}`)}
-        >Cancel</TextButton>
-        <TextButton form="editItem" type="submit">Save</TextButton>
+        <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
       </div>
-
-      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
-    </div>
+      <NoAccess style={noAccess ? {display: "flex"} : {display: "none"}} />
+    </>
   );
 };
 
