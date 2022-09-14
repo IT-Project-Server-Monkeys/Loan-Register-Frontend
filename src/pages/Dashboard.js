@@ -81,7 +81,7 @@ const LoanerDashboard = (props) => {
 
         // update loanee cate and loaner opt
         var loaneeCate = []  // get loanee cate
-        for (var item of loaneeItemsLst) {
+        for (item of loaneeItemsLst) {
           if (!loaneeCate.includes(item.category)) {
             loaneeCate.push(item.category)
           }
