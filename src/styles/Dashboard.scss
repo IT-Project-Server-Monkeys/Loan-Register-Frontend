@@ -54,6 +54,16 @@
     margin-top: 1rem;
   }
 
+  .btn {
+    margin-top: 2rem;
+    background-color: var(--blue-color);
+    padding: 0.7rem;
+    font-size: large;
+    &:hover {
+      background-color: var(--hover-blue-color) !important;
+    }
+  }
+
 }
 
 .msl-vars {
