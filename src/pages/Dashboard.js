@@ -31,7 +31,6 @@ const LoanerDashboard = (props) => {
     loanerOptions: [],
   });
 
-  const [selectedItem, setSelectedItem] = useState({});
 
   const userId = sessionStorage.getItem('uid');
 
@@ -40,8 +39,8 @@ const LoanerDashboard = (props) => {
       .then((res) => {
         console.log('dashboard api', res);
         const items = res.data;
-        var loanerItemsLst = [],
-          loaneeItemsLst = [];
+        var loanerItemsLst = [];
+        var loaneeItemsLst = [];
         for (var item of items) {
           if (item.user_role === 'loaner') loanerItemsLst.push(item);
           else loaneeItemsLst.push(item);
@@ -49,11 +48,38 @@ const LoanerDashboard = (props) => {
         setLoanerItems(loanerItemsLst);
         setLoaneeItems(loaneeItemsLst);
         setLoading(false);
+        
+        // get filter data
+        var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
+        var loanerOptions = loanerItemsLst.map(item => item.loaner_name).filter(n => n)
+        
+        if (loanerItemsLst) {
+          setLoanerFilters({
+            categoryOptions: loanerItemsLst[0].item_categories,
+            loaneeOptions: loaneeOptions
+          })
+        }
+
+        // TODO: confirm if the loanee cate == user cate
+        if (loaneeItemsLst) {
+          setLoaneeFilters({
+            categoryOptions: loaneeItemsLst[0].item_categories,
+            loanerOptions: loanerOptions
+          })
+        }
+        
+
       })
       .catch((e) => {
         console.log(e);
       });
   }, []);
+
+  useEffect(() => {
+
+  }, [userView])
+
+  // console.log(loanerFilters)
 
   const getItemById = (id) => {
     var item = loanerItems.filter(item => item.item_id === id);
@@ -73,39 +99,22 @@ const LoanerDashboard = (props) => {
       items = loaneeItems;
     }
 
-    return gridView
-      ? items.map((item, i) => (
-          <Col md="4" key={i}>
-            <Link to={`/item-details/${item.item_id}`} state={{item: getItemById(item.item_id)}}>
-              <ItemCard
-                image={image}
-                title={item.item_name}
-                category={item.category}
-                person={item.loanee_name ? item.loanee_name : item.loaner_name}
-                startDate={dateFormat(item.loan_start_date, 'mm/dd/yyyy')}
-                endDate={dateFormat(item.intended_return_date, 'mm/dd/yyyy')}
-                loanStatus={item.being_loaned}
-                gridView={gridView}
-              />
-            </Link>
-          </Col>
-        ))
-      : items.map((item, i) => (
-          <Col xs="12" key={i}>
-            <Link to={`/item-details/${item.item_id}`}>
-              <ItemCard
-                image={image}
-                title={item.item_name}
-                category={item.category}
-                person={item.loanee_name ? item.loanee_name : item.loaner_name}
-                startDate={dateFormat(item.loan_start_date, 'mm/dd/yyyy')}
-                endDate={dateFormat(item.intended_return_date, 'mm/dd/yyyy')}
-                loanStatus={item.being_loaned}
-                gridView={gridView}
-              />
-            </Link>
-          </Col>
-        ));
+    return items.map((item, i) => (
+      <Col md={gridView ? 4 : 12} xs={gridView ? true : 12} key={i}>
+        <Link to={`/item-details/${item.item_id}`} state={{item: getItemById(item.item_id)}}>
+          <ItemCard
+            image={image}
+            title={item.item_name}
+            category={item.category}
+            person={item.loanee_name ? item.loanee_name : item.loaner_name}
+            startDate={dateFormat(item.loan_start_date, 'mm/dd/yyyy')}
+            endDate={dateFormat(item.intended_return_date, 'mm/dd/yyyy')}
+            loanStatus={item.being_loaned}
+            gridView={gridView}
+          />
+        </Link>
+      </Col>
+    ))
   };
 
   const dateOptions = [
@@ -120,6 +129,7 @@ const LoanerDashboard = (props) => {
     { label: 'Early Return', value: 'Late Return' },
     { label: 'Late Return', value: 'Early Return' },
   ];
+
   const categoryOptions = [
     { label: 'Option 1', value: 'status_1' },
     { label: 'Option 2', value: 'status_2' },
