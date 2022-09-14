@@ -19,9 +19,6 @@ const Signup = () => {
     e.preventDefault();
     let isValid = true;
     let newUser = {};
-    let defaultCategories = ["Electronics", "Books", "Stationary", "University Resources",
-                              "Cash", "Miscellaneous", "Personal", "Clothing and Apparel",
-                              "Toiletries and Beauty"];
     let randomUsername = Math.random().toString(16).substring(2, 10);
 
     // TODO: check if email is unique
@@ -38,7 +35,6 @@ const Signup = () => {
       newUser.display_name = randomUsername;
       newUser.login_email = email;
       newUser.hashed_password = pwd;
-      newUser.item_categories = defaultCategories;
   
       await API(`/users`, {    
         method: "post",
