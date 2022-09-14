@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/InputDropdown.scss"; // component scoped style
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
