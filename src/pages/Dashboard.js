@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Row, Col, Spinner } from 'reactstrap';
+import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
 import { TbLayoutGrid } from 'react-icons/tb';
@@ -8,8 +8,12 @@ import { MdQueryStats } from 'react-icons/md';
 import { ItemCard } from '../components';
 import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
-import { LOANER, userViewSwitch } from '../utils/helpers';
+import { LOANER, userViewSwitch, compArr } from '../utils/helpers';
 import dateFormat from 'dateformat';
+
+const STATUS = "status";
+const CATEGORY = "category"
+const USER = "user";
 
 const image = 'https://picsum.photos/300/200';
 
@@ -25,11 +29,20 @@ const LoanerDashboard = (props) => {
   const [loanerFilters, setLoanerFilters] = useState({
     categoryOptions: [],
     loaneeOptions: [],
+    results: []
   });
   const [loaneeFilters, setLoaneeFilters] = useState({
     categoryOptions: [],
     loanerOptions: [],
+    results: []
   });
+
+  const [filters, setFilters] = useState({
+    status: [],
+    category: [],
+    user: []
+  });
+
 
 
   const userId = sessionStorage.getItem('uid');
@@ -41,6 +54,7 @@ const LoanerDashboard = (props) => {
         const items = res.data;
         var loanerItemsLst = [];
         var loaneeItemsLst = [];
+        // separate loaner and loanee items
         for (var item of items) {
           if (item.user_role === 'loaner') loanerItemsLst.push(item);
           else loaneeItemsLst.push(item);
@@ -51,20 +65,31 @@ const LoanerDashboard = (props) => {
         
         // get filter data
         var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
-        var loanerOptions = loanerItemsLst.map(item => item.loaner_name).filter(n => n)
+        var loanerOptions = loaneeItemsLst.map(item => item.loaner_name).filter(n => n)
         
+        // update loaner cate and loanee opt
         if (loanerItemsLst) {
           setLoanerFilters({
+            ...loaneeFilters,
             categoryOptions: loanerItemsLst[0].item_categories,
-            loaneeOptions: loaneeOptions
+            loaneeOptions: loaneeOptions,
+            results: [...loanerItemsLst]
           })
         }
 
-        // TODO: confirm if the loanee cate == user cate
+        // update loanee cate and loaner opt
+        var loaneeCate = []  // get loanee cate
+        for (var item of loaneeItemsLst) {
+          if (!loaneeCate.includes(item.category)) {
+            loaneeCate.push(item.category)
+          }
+        }
         if (loaneeItemsLst) {
           setLoaneeFilters({
-            categoryOptions: loaneeItemsLst[0].item_categories,
-            loanerOptions: loanerOptions
+            ...loaneeFilters,
+            categoryOptions: loaneeCate,
+            loanerOptions: loanerOptions,
+            results: [...loaneeItemsLst]
           })
         }
         
@@ -94,9 +119,9 @@ const LoanerDashboard = (props) => {
   const renderItems = (view) => {
     var items = [];
     if (view === LOANER) {
-      items = loanerItems;
+      items = loanerFilters.results;
     } else {
-      items = loaneeItems;
+      items = loaneeFilters.results;
     }
 
     return items.map((item, i) => (
@@ -117,43 +142,95 @@ const LoanerDashboard = (props) => {
     ))
   };
 
-  const dateOptions = [
-    { label: 'Start date ascending ↑', value: '1' },
-    { label: 'Start date descending ↓', value: '2' },
-    { label: 'End date ascending ↑', value: '3' },
-    { label: 'End date ascending ↓', value: '4' },
-  ];
-  const statusOptions = [
-    { label: 'On Loan', value: 'Current' },
-    { label: 'On-Time Return', value: 'On Time Return' },
-    { label: 'Early Return', value: 'Late Return' },
-    { label: 'Late Return', value: 'Early Return' },
-  ];
 
-  const categoryOptions = [
-    { label: 'Option 1', value: 'status_1' },
-    { label: 'Option 2', value: 'status_2' },
-    { label: 'Option 3', value: 'status_3' },
-    { label: 'Option 4', value: 'status_4' },
-  ];
-  const loanerOptions = [
-    { label: 'Option 1', value: 'status_1' },
-    { label: 'Option 2', value: 'status_2' },
-    { label: 'Option 3', value: 'status_3' },
-    { label: 'Option 4', value: 'status_4' },
-  ];
-  const loaneeOptions = [
-    { label: 'Option 1', value: 'status_1' },
-    { label: 'Option 2', value: 'status_2' },
-    { label: 'Option 3', value: 'status_3' },
-    { label: 'Option 4', value: 'status_4' },
-  ];
 
   const handleUserSwitch = (e) => {
     const newView = userViewSwitch(userView);
     setUserView(newView);
     navigate(`/dashboard/${newView}`);
   };
+
+  
+
+  const handleFilters = (val, filter) => {
+    const values = val.split(",");
+    console.log('val', values, filter)
+
+    setFilters({
+      ...filters,
+      [filter]: compArr(values, ['']) ? [] : [...values]
+    })
+  }
+
+  const applyFilters = (e) => {
+      // null: no filter selected
+      // empty array: filter selected but no matched result
+      var res1 = null;
+      var res2 = null;
+      var res3 = null;
+      var results = null;
+      
+    if (userView === LOANER) {
+      if (filters.status.length > 0) {
+        res1 = loanerItems.filter(item => filters.status.includes(item.loan_status))
+      }
+      if (filters.category.length > 0) {
+        res2 = loanerItems.filter(item => filters.category.includes(item.category))
+        
+      }
+      if (filters.user.length > 0) {
+        res3 = loanerItems.filter(item => filters.user.includes(item.loanee_name))
+      }
+
+      if (res1 === null && res2 === null && res3 === null) {
+        // no filter selected
+        results = loanerItems;
+      } else {
+        results = intersection(res1, res2);
+        results = intersection(results, res3)
+      }
+    
+      setLoanerFilters({
+        ...loanerFilters,
+        results: [...results]
+      })
+
+    } else {
+      if (filters.status.length > 0) {
+        res1 = loaneeItems.filter(item => filters.status.includes(item.loan_status))
+      }
+      if (filters.category.length > 0) {
+        res2 = loaneeItems.filter(item => filters.category.includes(item.category))
+      }
+      if (filters.user.length > 0) {
+        res3 = loaneeItems.filter(item => filters.user.includes(item.loaner_name))
+      }
+
+      if (res1 === null && res2 === null && res3 === null) {
+        // no filter selected
+        results = loaneeItems;
+      } else {
+        results = intersection(res1, res2);
+        results = intersection(results, res3)
+      }
+      
+      results = intersection(res1, res2);
+      results = intersection(results, res3)
+
+      setLoaneeFilters({
+        ...loaneeFilters,
+        results: [...results]
+      })
+    }
+
+
+  }
+
+
+  console.log('items', loanerItems)
+  console.log('filters', filters)
+  console.log('results', loanerFilters.results)
+
 
   return (
     <div className="page-margin dashboard">
@@ -165,13 +242,30 @@ const LoanerDashboard = (props) => {
           <h3>Sort by</h3>
           <MultiSelect placeholder="Loan Date" singleSelect={true} options={dateOptions} />
           <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
-          <MultiSelect placeholder="Status" options={statusOptions} />
-          <MultiSelect placeholder="Category" options={categoryOptions} />
-          {userView === LOANER ? 
-            <MultiSelect placeholder="Loanee" options={loaneeOptions} />
-          : 
-            <MultiSelect placeholder="Loaner" options={loanerOptions} />
-          }
+          <MultiSelect 
+            placeholder="Status" 
+            options={statusOptions} 
+            onChange={val => handleFilters(val, STATUS)} 
+          />
+          <MultiSelect 
+            placeholder="Category" 
+            options={
+              userView === LOANER ? 
+              renderOptions(loanerFilters.categoryOptions) 
+              : renderOptions(loaneeFilters.categoryOptions)
+            } 
+            onChange={val => handleFilters(val, CATEGORY)}
+          />
+          <MultiSelect 
+            placeholder={userView === LOANER ? "Loanee" : "loaner" }
+            options={
+              userView === LOANER ? 
+              renderOptions(loanerFilters.loaneeOptions) 
+              : renderOptions(loaneeFilters.loanerOptions)
+            } 
+            onChange={val => handleFilters(val, USER)}
+          />
+          <Button onClick={applyFilters}>Apply Filters</Button>
         </Col>
         <Col style={{ marginLeft: '4rem' }}>
           <Row className="bg-light-blue" style={{ height: '5rem' }}>
@@ -214,3 +308,50 @@ const LoanerDashboard = (props) => {
 };
 
 export default LoanerDashboard;
+
+
+const dateOptions = [
+  { label: 'Start date ascending ↑', value: '1' },
+  { label: 'Start date descending ↓', value: '2' },
+  { label: 'End date ascending ↑', value: '3' },
+  { label: 'End date ascending ↓', value: '4' },
+];
+const statusOptions = [
+  { label: 'On Loan', value: 'Current' },
+  { label: 'On-Time Return', value: 'On Time Return' },
+  { label: 'Early Return', value: 'Early Return' },
+  { label: 'Late Return', value: 'Late Return' },
+  { label: 'Not Loaned', value: 'Not Loaned' },
+];
+
+
+const renderOptions = (list) => {
+  var options = []
+  for (var opt of list) {
+    options.push({label: opt, value: opt})
+  }
+
+  return options
+}
+
+
+const intersection = (arr1, arr2) => {
+  // null: no filter selected
+  // empty array: filter selected but no matched result
+
+  if (arr1 === null && arr2 === null) {
+    return null
+  }
+  if (arr1 === null || arr2 === null) {
+    if (arr1 === null) return arr2;
+    else return arr1;
+  }
+
+  var res = [];
+  for (var i of arr1) {
+    if (arr2.includes(i)) {
+      res.push(i)
+    }
+  }
+  return res;
+}
