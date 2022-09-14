@@ -26,11 +26,13 @@ const LoanerDashboard = (props) => {
   const [loanerItems, setLoanerItems] = useState([]);
   const [loaneeItems, setLoaneeItems] = useState([]);
 
+  // eslint-disable-next-line
   const [loanerFilters, setLoanerFilters] = useState({
     categoryOptions: [],
     loaneeOptions: [],
     results: []
   });
+  // eslint-disable-next-line
   const [loaneeFilters, setLoaneeFilters] = useState({
     categoryOptions: [],
     loanerOptions: [],
@@ -98,6 +100,7 @@ const LoanerDashboard = (props) => {
       .catch((e) => {
         console.log(e);
       });
+      // eslint-disable-next-line
   }, []);
 
   // useEffect(() => {
@@ -132,8 +135,8 @@ const LoanerDashboard = (props) => {
             title={item.item_name}
             category={item.category}
             person={item.loanee_name ? item.loanee_name : item.loaner_name}
-            startDate={dateFormat(item.loan_start_date, 'mm/dd/yyyy')}
-            endDate={dateFormat(item.intended_return_date, 'mm/dd/yyyy')}
+            startDate={dateFormat(item.loan_start_date, 'dd/mm/yyyy')}
+            endDate={dateFormat(item.intended_return_date, 'dd/mm/yyyy')}
             loanStatus={item.being_loaned}
             gridView={gridView}
           />

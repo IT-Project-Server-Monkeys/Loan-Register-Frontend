@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
@@ -23,6 +23,7 @@ const ItemEdit = (props) => {
   const [submitting, setSubmitting] = useState(false);
 
   const location = useLocation();
+  // eslint-disable-next-line
   const itemDetails = location.state ? location.state.item : null;
 
   const [categOpen, setCategOpen] = useState(false);
@@ -32,11 +33,8 @@ const ItemEdit = (props) => {
 
   // get and show item data, if not already provided
   useEffect(() => {
-    if (itemDetails === null) fetchItem(itemId, setItem, false);
-    else setItem(itemDetails);
-    // TODO clear itemdetails
-    window.history.replaceState({}, document.title);
-  }, [itemId, itemDetails]);
+    fetchItem(itemId, setItem);
+  }, [itemId]);
 
   useEffect(() => {
     if (item.item_owner == null) return;
