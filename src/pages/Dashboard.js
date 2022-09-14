@@ -75,9 +75,9 @@ const LoanerDashboard = (props) => {
       });
   }, []);
 
-  useEffect(() => {
+  // useEffect(() => {
 
-  }, [userView])
+  // }, [userView])
 
   // console.log(loanerFilters)
 
@@ -199,10 +199,10 @@ const LoanerDashboard = (props) => {
           </Row>
           <Row>
             {loading ?
-            <div className="m-5" style={{display: 'flex'}}>
-              <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
-              <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
-            </div> 
+              <div className="m-5" style={{display: 'flex'}}>
+                <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
+                <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
+              </div> 
             : 
               renderItems(userView)
             }

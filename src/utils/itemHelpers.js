@@ -1,6 +1,7 @@
 import API from "./api";
+import { fetchLoan } from "./loanHelpers";
 
-const fetchItem = async (itemId, setItem, addOns={}) => {
+const fetchItem = async (itemId, setItem, getLoan=true) => {
   let fetchedData = null;
   if (itemId == null) return;
 
@@ -8,7 +9,10 @@ const fetchItem = async (itemId, setItem, addOns={}) => {
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
 
-  if (fetchedData != null) setItem({...fetchedData, ...addOns});
+  if (fetchedData != null) {
+    if (fetchedData.being_loaned && getLoan) await fetchLoan(itemId, setItem);
+    setItem((prevItem) => {return {...prevItem, ...fetchedData}});
+  }
 }
 
 const fetchCategs = async (uid, setCategList) => {
@@ -22,13 +26,13 @@ const fetchCategs = async (uid, setCategList) => {
   setCategList(fetchedData.item_categories);
 };
 
-const fetchDelableCg = (categList, uid, setDelableCg) => {
+const fetchDelableCg = async (categList, uid, setDelableCg) => {
   if (uid == null) return;
   let delable = [];
 
-  categList.forEach(async c => {
+  await categList.forEach(async c => {
     await API.get(`/items?category=${c}&item_owner=${uid}`)
-      .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
+      .then(res => { if (res.data.length === 0) delable.push(c); })
       .catch(err => console.log(err))
   });
   setDelableCg(delable);

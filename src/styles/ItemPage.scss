@@ -1,6 +1,6 @@
-.item-page {
-
+main .item-page {
   font-size: 1.5rem;
+  margin-bottom: 2rem;
 
   .edit-item {
     border-radius: 50%;
@@ -15,6 +15,7 @@
   .item-details {
     margin: 5rem 15% 3rem 15%;
     display: grid;
+    gap: 1rem;
     grid-template-areas:
       "img inf inf"
       "img inf inf"

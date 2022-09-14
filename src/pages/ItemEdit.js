@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useParams, useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
@@ -22,10 +22,21 @@ const ItemEdit = (props) => {
   const [newDesc, setNewDesc] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  // get and show item info
+  const location = useLocation();
+  const itemDetails = location.state ? location.state.item : null;
+
+  const [categOpen, setCategOpen] = useState(false);
+  const categShow = () => {
+    if (delableCg.length !== 0) setCategOpen((prevState) => !prevState)
+  };
+
+  // get and show item data, if not already provided
   useEffect(() => {
-    fetchItem(itemId, setItem);
-  }, [itemId]);
+    if (itemDetails === null) fetchItem(itemId, setItem, false);
+    else setItem(itemDetails);
+    // TODO clear itemdetails
+    window.history.replaceState({}, document.title);
+  }, [itemId, itemDetails]);
 
   useEffect(() => {
     if (item.item_owner == null) return;
@@ -98,15 +109,15 @@ const ItemEdit = (props) => {
               <tr>
                 <td>Category:</td>
                 <td>
-                  <InputDropdown
+                  <InputDropdown dropdownOpen={categOpen} toggle={categShow}
                     name="newCateg" placeholder="Enter category..."
                     value={newCateg} changeOption={handleChgCg}
                   >
                     {categList.map((c) => {
-                      return <Deletable
+                      return <Deletable askRm
                         field="category" key={`opt-${c}`}
-                        selectOption={handleSelCg} deleteOption={handleDelCg}
-                        canDel={delableCg.includes(c)}
+                        selectOption={(e) => {categShow(); handleSelCg(e)}}
+                        deleteOption={handleDelCg} canDel={delableCg.includes(c)}
                         hideOption={(categ) => setCategList(
                             (prev) => prev.filter((c) => c !== categ)
                           )} >
