@@ -17,10 +17,8 @@ const fetchItem = async (itemId, setItem, uid) => {
 
     if (loanData !== null) {
       fetchedData.loan_id = loanData._id;
-      fetchedData.loanee = loanData.loanee_id;
-
       await API.get(`/users?id=${loanData.loanee_id}`)
-        .then((res) => fetchedData.loanee = res.data.display_name)
+        .then((res) => fetchedData.loanee_name = res.data.display_name)
         .catch((err) => console.log(err));
   
       fetchedData.loan_start_date = dateFormat(loanData.loan_start_date, 'dd/mm/yyyy');
@@ -92,8 +90,7 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
   if (itemImg !== null) formData.image = itemImg;
   if (newName !== "") formData.item_name = newName;
   if (newCateg !== "") formData.category = newCateg;
-  if (newDesc !== "") formData.description = newDesc;
-    else formData.description = "(No description.)";
+  formData.description = newDesc;
 
   await API(`/items`, {
     method: newItem ? "post" : "put", data: formData,

@@ -25,7 +25,6 @@ const ItemEdit = (props) => {
   const [noAccess, setNoAccess] = useState(false);
 
   const location = useLocation();
-  // eslint-disable-next-line
   const itemDetails = location.state ? location.state.item : null;
 
   const [categOpen, setCategOpen] = useState(false);
@@ -33,10 +32,12 @@ const ItemEdit = (props) => {
     if (delableCg.length !== 0) setCategOpen((prevState) => !prevState)
   };
 
-  // get and show item data, if not already provided
+  // get and show item data
   useEffect(() => {
-    fetchItem(itemId, setItem);
-  }, [itemId]);
+    console.log(itemDetails);
+    if (itemDetails === null) fetchItem(itemId, setItem);
+    else setItem(itemDetails);
+  }, [itemId, itemDetails]);
 
   useEffect(() => {
     if (item.item_owner == null) return;
@@ -67,11 +68,11 @@ const ItemEdit = (props) => {
   const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
 
   // save item and post to server
-  const handleSaveItem = async (e) => {
+  const handleSaveItem = (e) => {
     e.preventDefault();
     setSubmitting(true);
-    await saveItem(e, itemId, categList, setCategList, itemImg, props.uid, false);
-    redirect(`/item-details/${itemId}`);
+    saveItem(e, itemId, categList, setCategList, itemImg, props.uid, false);
+    redirect(`/item-details/${itemId}`, {state: {item: {...item, item_name: newName, category: newCateg, description: newDesc}}});
   }
 
   return (
@@ -138,7 +139,7 @@ const ItemEdit = (props) => {
 
         <div className={"btn-list"}>
           <TextButton altStyle
-            onClick={() => redirect(`/item-details/${itemId}`)}
+            onClick={() => redirect(`/item-details/${itemId}`, {state: {item: item}})}
           >Cancel</TextButton>
           <TextButton form="editItem" type="submit">Save</TextButton>
         </div>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
@@ -13,11 +13,11 @@ const ItemDetails = (props) => {
   const [item, setItem] = useState({
     being_loaned: false, item_name: <Loading />,
     category: <Loading />, description: <Loading />,
-    loanee: <Loading />, loan_start_date: <Loading />, intended_return_date: <Loading />,
+    loanee_name: <Loading />, loan_start_date: <Loading />, intended_return_date: <Loading />,
   });
   const [modal, setModal] = useState(false);
 
-  const [loanee, setLoanee] = useState("");
+  const [loaneeName, setLoaneeName] = useState("");
   const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
 
   const [loanDate, setLoanDate] = useState();
@@ -26,27 +26,26 @@ const ItemDetails = (props) => {
   const [noAccess, setNoAccess] = useState(false);
 
   const location = useLocation()
-  // eslint-disable-next-line
   const itemDetails = location.state ? location.state.item : null;
 
-  // console.log('itemDetails', itemDetails)
+  console.log('itemDetails', itemDetails)
 
   const toggle = () => {
     setModal(!modal);
     if (item.being_loaned) {
-      setLoanee(item.loanee);
+      setLoaneeName(item.loanee_name);
       setLoanDate(item.loan_start_date);
       setReturnDate(item.intended_return_date);
     } else {
-      setLoanee("");
+      setLoaneeName("");
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
   };
 
-  const selectLoanee = (ln) => setLoanee(ln);
+  const selectLoanee = (ln) => setLoaneeName(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
-  const changeLoanee = (e) => setLoanee(e.target.value);
+  const changeLoanee = (e) => setLoaneeName(e.target.value);
 
   const handleCrtLn = async (input) => {
     setSubmitting(true);
@@ -54,27 +53,34 @@ const ItemDetails = (props) => {
       ...input,
       item_id: itemId,
       loaner_id: props.uid
+    }, () => {
+      redirect(`/item-details/${itemId}`, {state: null});
+      window.location.reload();
     })
-    window.location.reload();
   };
   const handleEdtLn = async (input) => {
     setSubmitting(true);
-    await editLoan({ _id: item.loan_id, ...input });
-    window.location.reload();
+    await editLoan({ _id: item.loan_id, ...input }, () => {
+      redirect(`/item-details/${itemId}`, {state: null});
+      window.location.reload();
+    })
   }
   const handleRtnLn = async () => {
     setSubmitting(true);
     console.log(item);
-    await returnLoan(item);
-    window.location.reload();
+    await returnLoan(item, () => {
+      redirect(`/item-details/${itemId}`, {state: null});
+      window.location.reload();
+    })
   }
 
   useEffect(() => setSubmitting(false), []);
 
   // get and show item data
   useEffect(() => {
-    fetchItem(itemId, setItem);
-  }, [itemId]);
+    if (itemDetails === null) fetchItem(itemId, setItem);
+    else setItem(itemDetails);
+  }, [itemId, itemDetails]);
 
   useEffect (() => {
     if (item.item_owner == null) return;
@@ -87,11 +93,11 @@ const ItemDetails = (props) => {
     }
 
     if (item.being_loaned) {
-      setLoanee(item.loanee);
+      setLoaneeName(item.loanee_name);
       setLoanDate(item.loan_start_date);
       setReturnDate(item.intended_return_date);
     } else {
-      setLoanee("");
+      setLoaneeName("");
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
@@ -101,9 +107,9 @@ const ItemDetails = (props) => {
     <>
       <div className={"item-page"} style={noAccess ? {display: "none"} : null}>
 
-        <a href={`/item-details/${itemId}/edit`}><button className={"edit-item icon-blue"}>
-          <MdEdit size={40} />
-        </button></a>
+        <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
+          <button className={"edit-item icon-blue"}><MdEdit size={40} /></button>
+        </Link>
         
         <div className={"item-details"}>
 
@@ -123,7 +129,7 @@ const ItemDetails = (props) => {
               </tr>
               { item.being_loaned ? <>
                 <tr>
-                  <td>Loanee:</td><td>{item.loanee}</td>
+                  <td>Loanee:</td><td>{item.loanee_name}</td>
                 </tr>
                 <tr>
                   <td>Date loaned:</td><td>{item.loan_start_date}</td>
@@ -136,7 +142,7 @@ const ItemDetails = (props) => {
                 </tr>
               </> : null}
               </tbody></table>
-            <p>Description:<br />{item.description}</p>
+            <p>Description:<br />{item.description !== "" ? item.description : "(No description.)"}</p>
           </div>
         </div>
 
@@ -151,7 +157,7 @@ const ItemDetails = (props) => {
         </div>
 
         <LoanForm modal={modal} toggle={toggle} item={item}
-          newLoan={!item.being_loaned} loaneeValue={loanee}
+          newLoan={!item.being_loaned} loaneeValue={loaneeName}
           onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
           suggestedLoanees={suggestedLoanees} changeLoanee={changeLoanee}
           selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
