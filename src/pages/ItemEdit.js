@@ -84,7 +84,7 @@ const ItemEdit = (props) => {
   // save item and post to server
   const handleSaveItem = async (e) => {
     e.preventDefault();
-    // setSubmitting(true);
+    setSubmitting(true);
     let imgString = "";
 
     if (itemImg !== null) {
@@ -96,14 +96,12 @@ const ItemEdit = (props) => {
       });
     }
 
-    console.log(itemImg.size)
-    // await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
-    // redirect(`/item-details/${itemId}`, {state: null});
-    // redirect(`/item-details/${itemId}`, {state: {item:
-    //   {
-    //     ...item, image_url: displayImg,
-    //     item_name: newName, category: newCateg, description: newDesc,
-    //   }}});
+    await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
+    redirect(`/item-details/${itemId}`, {state: {item:
+      {
+        ...item, image_url: displayImg,
+        item_name: newName, category: newCateg, description: newDesc,
+      }}});
   }
 
   return (
