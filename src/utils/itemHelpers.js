@@ -71,10 +71,10 @@ const deleteCategory = async (categ, setCategList, uid) => {
 }
 
 // item image changing
-const changeImage = (e, setItemImg, displayImg, setDisplayImg) => {
-  setItemImg(e.target.files[0]);
+const changeImage = (img, setItemImg, displayImg, setDisplayImg) => {
+  setItemImg(img);
   URL.revokeObjectURL(displayImg);
-  setDisplayImg(URL.createObjectURL(e.target.files[0]));
+  setDisplayImg(URL.createObjectURL(img));
 }
 
 const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newItem) => {

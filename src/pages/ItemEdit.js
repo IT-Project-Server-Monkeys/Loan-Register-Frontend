@@ -16,13 +16,18 @@ const ItemEdit = (props) => {
     category: "Loading...",
     description: "Loading..."
   });
+
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState(noImg);
+  const [sizeWarn, setSizeWarn] = useState(false);
+
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
+
   const [newName, setNewName] = useState("");
   const [newCateg, setNewCateg] = useState("");
   const [newDesc, setNewDesc] = useState("");
+
   const [submitting, setSubmitting] = useState(false);
   const [noAccess, setNoAccess] = useState(false);
 
@@ -36,7 +41,6 @@ const ItemEdit = (props) => {
 
   // get and show item data
   useEffect(() => {
-    console.log(itemDetails);
     if (itemDetails === null) fetchItem(itemId, setItem);
     else setItem(itemDetails);
   }, [itemId, itemDetails]);
@@ -68,18 +72,38 @@ const ItemEdit = (props) => {
   }
 
   // item img changing
-  const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
+  const handleChgImg = (e) => {
+    const img = e.target.files[0];
+    if (img.size > 51200) setSizeWarn(true); // 5KB size limit
+    else {
+      setSizeWarn(false);
+      changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    }
+  };
 
   // save item and post to server
-  const handleSaveItem = (e) => {
+  const handleSaveItem = async (e) => {
     e.preventDefault();
-    setSubmitting(true);
+    // setSubmitting(true);
     let imgString = "";
 
-    if (itemImg !== null) console.log("img get");
+    if (itemImg !== null) {
+      imgString = await new Promise((resolve) => {
+        let fileReader = new FileReader();
+        fileReader.onload = () =>
+          resolve(fileReader.result.replace('data:', '').replace(/^.+,/, ''));
+        fileReader.readAsDataURL(itemImg);
+      });
+    }
 
-    saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
-    redirect(`/item-details/${itemId}`, {state: {item: {...item, item_name: newName, category: newCateg, description: newDesc}}});
+    console.log(itemImg.size)
+    // await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
+    // redirect(`/item-details/${itemId}`, {state: null});
+    // redirect(`/item-details/${itemId}`, {state: {item:
+    //   {
+    //     ...item, image_url: displayImg,
+    //     item_name: newName, category: newCateg, description: newDesc,
+    //   }}});
   }
 
   return (
@@ -97,7 +121,11 @@ const ItemEdit = (props) => {
             </label>
           </div>
           
-          <p className={"item-status"}>&nbsp;</p>
+          <p className={"big-img-warn"}
+            style={{display: sizeWarn ? "block" : "none"}}
+          >
+            Image must be under 5KB.
+          </p>
           <div className={"item-info"}>
             <form id="editItem" onSubmit={handleSaveItem}>
               <table><tbody>
