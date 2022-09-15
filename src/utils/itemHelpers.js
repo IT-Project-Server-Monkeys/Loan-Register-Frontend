@@ -77,7 +77,7 @@ const changeImage = (e, setItemImg, displayImg, setDisplayImg) => {
   setDisplayImg(URL.createObjectURL(e.target.files[0]));
 }
 
-const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newItem) => {
+const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newItem) => {
   e.preventDefault();
   const newName = e.target.newName.value;
   const newCateg = e.target.newCateg.value;
@@ -87,7 +87,7 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
     item_owner: uid,
     being_loaned: false, loan_frequency: 0
   } : { _id: itemId } ;
-  if (itemImg !== null) formData.image = itemImg;
+  if (imgString !== "") formData.image_enc = imgString;
   if (newName !== "") formData.item_name = newName;
   if (newCateg !== "") formData.category = newCateg;
   formData.description = newDesc;

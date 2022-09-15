@@ -7,6 +7,10 @@ import logo from "../images/logo.svg";
 const Header = (props) => {
   // check for mobile view
   const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
+  const logOut = () => {
+    window.history.replaceState(null, document.title);
+    props.onLogout();
+  }
 
   // individual nav link component, consisting of button with href
   const NavLink = (navProps) => {
@@ -41,7 +45,7 @@ const Header = (props) => {
           <div className="dropdown">
             <NavLink href="/dashboard/loaner">Dashboard</NavLink>
             <NavLink href="/account">Account</NavLink>
-            <NavLink href="/" onClick={props.onLogout}>Log Out</NavLink>
+            <NavLink href="/" onClick={logOut}>Log Out</NavLink>
           </div>
         </nav>
       );

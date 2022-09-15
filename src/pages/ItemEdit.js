@@ -5,6 +5,8 @@ import { TextButton, InputDropdown, Submitting, Deletable, NoAccess } from '../c
 import { RiImageAddFill } from 'react-icons/ri'
 import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import { noAccessRedirect } from "../utils/helpers";
+import noImg from "../images/noImage_300x375.png";
+// import noImg from "../images/noImageAlt_300x375.png";
 
 const ItemEdit = (props) => {
   const redirect = useNavigate();
@@ -15,7 +17,7 @@ const ItemEdit = (props) => {
     description: "Loading..."
   });
   const [itemImg, setItemImg] = useState(null);
-  const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
+  const [displayImg, setDisplayImg] = useState(noImg);
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
   const [newName, setNewName] = useState("");
@@ -47,6 +49,7 @@ const ItemEdit = (props) => {
       return;
     }
 
+    setDisplayImg(item.image_url !== undefined ? item.image_url : noImg)
     setNewName(item.item_name);
     setNewCateg(item.category);
     setNewDesc(item.description);
@@ -71,7 +74,11 @@ const ItemEdit = (props) => {
   const handleSaveItem = (e) => {
     e.preventDefault();
     setSubmitting(true);
-    saveItem(e, itemId, categList, setCategList, itemImg, props.uid, false);
+    let imgString = "";
+
+    if (itemImg !== null) console.log("img get");
+
+    saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
     redirect(`/item-details/${itemId}`, {state: {item: {...item, item_name: newName, category: newCateg, description: newDesc}}});
   }
 

@@ -6,6 +6,8 @@ import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
 import { createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect } from "../utils/helpers";
+import noImg from "../images/noImage_300x375.png";
+// import noImg from "../images/noImageAlt_300x375.png";
 
 const ItemDetails = (props) => {
   const redirect = useNavigate();
@@ -28,7 +30,7 @@ const ItemDetails = (props) => {
   const location = useLocation()
   const itemDetails = location.state ? location.state.item : null;
 
-  console.log('itemDetails', itemDetails)
+  // console.log('itemDetails', itemDetails)
 
   const toggle = () => {
     setModal(!modal);
@@ -101,6 +103,7 @@ const ItemDetails = (props) => {
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
+
   }, [item, props.uid, redirect])
 
   return (
@@ -113,7 +116,10 @@ const ItemDetails = (props) => {
         
         <div className={"item-details"}>
 
-          <div className={"item-image"} style={{backgroundImage: "url('https://picsum.photos/400/400')" }} />
+          <div className={"item-image"} style={{
+            backgroundImage: item.image_url !== undefined
+              ? `url(${item.image_url})` : `url(${noImg})`
+          }} />
           
           <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
           <div className={"item-info"}>
