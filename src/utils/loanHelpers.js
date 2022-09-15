@@ -1,4 +1,5 @@
 import API from "./api";
+import dateFormat from 'dateformat';
 
 const fetchAllLoanees = async (setAllLoanees) => {
   let fetchedData = {};
@@ -21,9 +22,9 @@ const fetchLoan = async (itemId, setItem) => {
     .catch(err => console.log(err))
 
   setItem((initItem) => {return {
-    ...initItem, loan_id: fetchedData._id, loanee: loaneeName,
-    loan_start_date: new Date(Date.parse(fetchedData.loan_start_date)).toLocaleDateString(),
-    intended_return_date: new Date(Date.parse(fetchedData.intended_return_date)).toLocaleDateString()
+    ...initItem, loan_id: fetchedData._id, loanee_name: loaneeName,
+    loan_start_date: dateFormat(fetchedData.loan_start_date, 'dd/mm/yyyy'),
+    intended_return_date: dateFormat(fetchedData.intended_return_date, 'dd/mm/yyyy')
   }});
 }
 

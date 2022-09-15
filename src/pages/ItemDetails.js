@@ -4,7 +4,7 @@ import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
-import { createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
+import { createLoan, editLoan, fetchLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 // import noImg from "../images/noImageAlt_300x375.png";
@@ -15,15 +15,16 @@ const ItemDetails = (props) => {
   const [item, setItem] = useState({
     being_loaned: false, item_name: <Loading />,
     category: <Loading />, description: <Loading />,
-    loanee_name: <Loading />, loan_start_date: <Loading />, intended_return_date: <Loading />,
+    loan_id: null, loanee_name: <Loading />,
+    loan_start_date: <Loading />, intended_return_date: <Loading />,
   });
   const [modal, setModal] = useState(false);
 
   const [loaneeName, setLoaneeName] = useState("");
   const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
 
-  const [loanDate, setLoanDate] = useState();
-  const [returnDate, setReturnDate] = useState();
+  const [loanDate, setLoanDate] = useState(new Date().toLocaleDateString());
+  const [returnDate, setReturnDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [noAccess, setNoAccess] = useState(false);
 
@@ -56,14 +57,20 @@ const ItemDetails = (props) => {
       item_id: itemId,
       loaner_id: props.uid
     }, () => {
-      redirect(`/item-details/${itemId}`, {state: null});
+      redirect(`/item-details/${itemId}`, {state: {item: {
+        ...item, loan_id: null, loanee_name: <Loading />,
+        loan_start_date: <Loading />, intended_return_date: <Loading />
+      }}});
       window.location.reload();
     })
   };
   const handleEdtLn = async (input) => {
     setSubmitting(true);
     await editLoan({ _id: item.loan_id, ...input }, () => {
-      redirect(`/item-details/${itemId}`, {state: null});
+      redirect(`/item-details/${itemId}`, {state: {item: {
+        ...item, loan_id: null, loanee_name: <Loading />,
+        loan_start_date: <Loading />, intended_return_date: <Loading />
+      }}});
       window.location.reload();
     })
   }
@@ -71,7 +78,10 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     console.log(item);
     await returnLoan(item, () => {
-      redirect(`/item-details/${itemId}`, {state: null});
+      redirect(`/item-details/${itemId}`, {state: {item: {
+        ...item, loan_id: null, loanee_name: <Loading />,
+        loan_start_date: <Loading />, intended_return_date: <Loading />
+      }}});
       window.location.reload();
     })
   }
@@ -95,9 +105,13 @@ const ItemDetails = (props) => {
     }
 
     if (item.being_loaned) {
-      setLoaneeName(item.loanee_name);
-      setLoanDate(item.loan_start_date);
-      setReturnDate(item.intended_return_date);
+      if (item.loan_id === null) {
+        fetchLoan(item._id, setItem);
+      } else {
+        setLoaneeName(item.loanee_name);
+        setLoanDate(item.loan_start_date);
+        setReturnDate(item.intended_return_date);
+      }
     } else {
       setLoaneeName("");
       setLoanDate(new Date().toLocaleDateString());

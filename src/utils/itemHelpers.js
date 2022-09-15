@@ -1,34 +1,14 @@
 import API from "./api";
-import dateFormat from 'dateformat';
 
-const fetchItem = async (itemId, setItem, uid) => {
+const fetchItem = async (itemId, setItem) => {
   let fetchedData = null;
   if (itemId == null) return;
 
   await API.get(`/items?_id=${itemId}`)
-    .then((res) => fetchedData = res.data)
+    .then((res) => {fetchedData = res.data})
     .catch((err) => console.log(err));
 
-  if (fetchedData.being_loaned) {
-    let loanData = null;
-    await API.get(`/loans?item_id=${itemId}&status=current`)
-      .then((res) => loanData = res.data[0])
-      .catch((err) => console.log(err));
-
-    if (loanData !== null) {
-      fetchedData.loan_id = loanData._id;
-      await API.get(`/users?id=${loanData.loanee_id}`)
-        .then((res) => fetchedData.loanee_name = res.data.display_name)
-        .catch((err) => console.log(err));
-  
-      fetchedData.loan_start_date = dateFormat(loanData.loan_start_date, 'dd/mm/yyyy');
-      fetchedData.intended_return_date = dateFormat(loanData.intended_return_date, 'dd/mm/yyyy');
-    }
-
-  }
-  if (fetchedData != null) {
-    setItem(fetchedData)
-  };
+  if (fetchedData != null) setItem((i) => {return {...i, ...fetchedData}});
 }
 
 const fetchCategs = async (uid, setCategList, setDelableCg) => {

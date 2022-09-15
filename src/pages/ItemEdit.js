@@ -97,11 +97,10 @@ const ItemEdit = (props) => {
     }
 
     await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
-    redirect(`/item-details/${itemId}`, {state: {item:
-      {
-        ...item, image_url: displayImg,
-        item_name: newName, category: newCateg, description: newDesc,
-      }}});
+    redirect(`/item-details/${itemId}`, {state: {item: {
+      ...item, image_url: displayImg,
+      item_name: newName, category: newCateg, description: newDesc,
+    }}});
   }
 
   return (
