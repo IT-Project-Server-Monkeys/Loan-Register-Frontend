@@ -7,31 +7,29 @@ import { fetchItem } from "../utils/itemHelpers";
 import { createLoan, editLoan, fetchLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
-// import noImg from "../images/noImageAlt_300x375.png";
+import dateFormat from 'dateformat';
 
 const ItemDetails = (props) => {
   const redirect = useNavigate();
   const itemId = useParams().id;
   const [item, setItem] = useState({
-    being_loaned: false, item_name: <Loading />,
+    item_name: <Loading />, image_url: noImg,
     category: <Loading />, description: <Loading />,
-    loan_id: null, loanee_name: <Loading />,
-    loan_start_date: <Loading />, intended_return_date: <Loading />,
+    being_loaned: false, loan_id: null, loanee_name: <Loading />,
+    loan_start_date: <Loading />, intended_return_date: <Loading />
   });
   const [modal, setModal] = useState(false);
 
   const [loaneeName, setLoaneeName] = useState("");
   const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
 
-  const [loanDate, setLoanDate] = useState(new Date().toLocaleDateString());
+  const [loanDate, setLoanDate] = useState(dateFormat(new Date(), 'dd/mm/yyyy'));
   const [returnDate, setReturnDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [noAccess, setNoAccess] = useState(false);
 
   const location = useLocation()
   const itemDetails = location.state ? location.state.item : null;
-
-  // console.log('itemDetails', itemDetails)
 
   const toggle = () => {
     setModal(!modal);
@@ -53,13 +51,12 @@ const ItemDetails = (props) => {
   const handleCrtLn = async (input) => {
     setSubmitting(true);
     await createLoan({
-      ...input,
-      item_id: itemId,
-      loaner_id: props.uid
+      ...input, item_id: itemId, loaner_id: props.uid
     }, () => {
       redirect(`/item-details/${itemId}`, {state: {item: {
-        ...item, loan_id: null, loanee_name: <Loading />,
-        loan_start_date: <Loading />, intended_return_date: <Loading />
+        item_owner: item.item_owner, item_id: item.item_id, being_loaned: true,
+        item_name: item.item_name, category: item.category,
+        description: item.description, image_url: item.image_url
       }}});
       window.location.reload();
     })
@@ -68,19 +65,20 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await editLoan({ _id: item.loan_id, ...input }, () => {
       redirect(`/item-details/${itemId}`, {state: {item: {
-        ...item, loan_id: null, loanee_name: <Loading />,
-        loan_start_date: <Loading />, intended_return_date: <Loading />
+        item_owner: item.item_owner, item_id: item.item_id, being_loaned: true,
+        item_name: item.item_name, category: item.category,
+        description: item.description, image_url: item.image_url
       }}});
       window.location.reload();
     })
   }
   const handleRtnLn = async () => {
     setSubmitting(true);
-    console.log(item);
     await returnLoan(item, () => {
       redirect(`/item-details/${itemId}`, {state: {item: {
-        ...item, loan_id: null, loanee_name: <Loading />,
-        loan_start_date: <Loading />, intended_return_date: <Loading />
+        item_owner: item.item_owner, item_id: item.item_id, being_loaned: false,
+        item_name: item.item_name, category: item.category,
+        description: item.description, image_url: item.image_url
       }}});
       window.location.reload();
     })
@@ -91,22 +89,22 @@ const ItemDetails = (props) => {
   // get and show item data
   useEffect(() => {
     if (itemDetails === null) fetchItem(itemId, setItem);
-    else setItem(itemDetails);
+    else setItem({...itemDetails, loan_id: null, loanee_name: <Loading />,
+      loan_start_date: <Loading />, intended_return_date: <Loading />
+    });
   }, [itemId, itemDetails]);
 
   useEffect (() => {
     if (item.item_owner == null) return;
     if (props.uid == null || props.uid !== item.item_owner) {
-
       noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
         redirect, setNoAccess);
-
       return;
     }
 
     if (item.being_loaned) {
-      if (item.loan_id === null) {
-        fetchLoan(item._id, setItem);
+      if (item.loan_id == null) {
+        fetchLoan(item.item_id, setItem);
       } else {
         setLoaneeName(item.loanee_name);
         setLoanDate(item.loan_start_date);
@@ -121,8 +119,8 @@ const ItemDetails = (props) => {
   }, [item, props.uid, redirect])
 
   return (
-    <>
-      <div className={"item-page"} style={noAccess ? {display: "none"} : null}>
+    <>{noAccess ? <NoAccess /> :
+      <div className={"item-page"}>
 
         <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
           <button className={"edit-item icon-blue"}><MdEdit size={40} /></button>
@@ -184,11 +182,9 @@ const ItemDetails = (props) => {
           lnDateValue={loanDate} rtnDateValue={returnDate}
           chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
         />
-        
-        <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
+        {submitting ? <Submitting /> : null}
       </div>
-      <NoAccess style={noAccess ? {display: "flex"} : {display: "none"}} />
-    </>
+    }</>
   );
 };
 

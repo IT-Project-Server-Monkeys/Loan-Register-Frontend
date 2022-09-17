@@ -34,7 +34,7 @@ const LoanForm = (props) => {
 
   useEffect(() => setLetSubmit(!props.newLoan), [props.newLoan]);
 
-  const checkSubmittable = (e) => {
+  const checkSubmittable = (e, selLne=null) => {
     let form = document.getElementById("loanForm");
     
     toISO(form.loanDate.value) !== "" && (form.returnDate.min = toISO(form.loanDate.value));
@@ -42,7 +42,7 @@ const LoanForm = (props) => {
       props.chgRtnDate("");
 
     setLetSubmit(
-      form.loanee.value in allLoanees
+      (selLne !== null || form.loanee.value in allLoanees)
       && form.loanDate.value !== ""
       && form.returnDate.value !== ""
     );
@@ -74,7 +74,11 @@ const LoanForm = (props) => {
                 {props.suggestedLoanees.map((c) => {
                   return <Deletable field="loanee" key={`opt-${c}`}
                     canDel={false} hideOption={props.deleteLoanee}
-                    selectOption={(e) => {loaneeShow(); props.selectLoanee(e)}}
+                    selectOption={(e) => {
+                      loaneeShow();
+                      props.selectLoanee(e)
+                      checkSubmittable(null, e);
+                    }}
                   >
                     {c}
                   </Deletable>

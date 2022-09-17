@@ -107,8 +107,7 @@ const AddItem = (props) => {
         >Cancel</TextButton>
         <TextButton form="editItem" type="submit">Save</TextButton>
       </div>
-
-      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
+      {submitting ? <Submitting /> : null}
     </div>
   );
 };

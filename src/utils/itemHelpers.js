@@ -8,7 +8,7 @@ const fetchItem = async (itemId, setItem) => {
     .then((res) => {fetchedData = res.data})
     .catch((err) => console.log(err));
 
-  if (fetchedData != null) setItem((i) => {return {...i, ...fetchedData}});
+  if (fetchedData != null) setItem((i) => {return {...i, ...fetchedData, item_id: itemId}});
 }
 
 const fetchCategs = async (uid, setCategList, setDelableCg) => {

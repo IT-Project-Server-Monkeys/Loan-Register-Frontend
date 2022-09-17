@@ -74,7 +74,7 @@ const ItemEdit = (props) => {
   // item img changing
   const handleChgImg = (e) => {
     const img = e.target.files[0];
-    if (img.size > 51200) setSizeWarn(true); // 5KB size limit
+    if (img.size > 81920) setSizeWarn(true); // 80KB size limit
     else {
       setSizeWarn(false);
       changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
@@ -104,8 +104,8 @@ const ItemEdit = (props) => {
   }
 
   return (
-    <>
-      <div className={"item-page"} style={noAccess ? {display: "none"} : null}>
+    <>{noAccess ? <NoAccess /> : 
+      <div className={"item-page"}>
         <div className={"item-details"}>
           <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
             <label className={"add-img"}>
@@ -118,11 +118,9 @@ const ItemEdit = (props) => {
             </label>
           </div>
           
-          <p className={"big-img-warn"}
-            style={{display: sizeWarn ? "block" : "none"}}
-          >
-            Image must be under 5KB.
-          </p>
+          {sizeWarn ?
+            <p className={"big-img-warn"}>Image must be under 80KB.</p>
+          : null}
           <div className={"item-info"}>
             <form id="editItem" onSubmit={handleSaveItem}>
               <table><tbody>
@@ -175,11 +173,10 @@ const ItemEdit = (props) => {
           >Cancel</TextButton>
           <TextButton form="editItem" type="submit">Save</TextButton>
         </div>
-
-        <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
+        
+        {submitting ? <Submitting /> : null}
       </div>
-      <NoAccess style={noAccess ? {display: "flex"} : {display: "none"}} />
-    </>
+    }</>
   );
 };
 

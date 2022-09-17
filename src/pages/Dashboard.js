@@ -131,7 +131,9 @@ const LoanerDashboard = (props) => {
 
     return items.map((item, i) => (
       <Col md={gridView ? 4 : 12} xs={gridView ? true : 12} key={i}>
-        <Link to={`/item-details/${item.item_id}`} state={{item: getItemById(item.item_id)}}>
+        <Link to={`/item-details/${item.item_id}`}
+          state={{item: {...getItemById(item.item_id), item_owner: userId}}}
+        >
           <ItemCard
             image={image}
             title={item.item_name}

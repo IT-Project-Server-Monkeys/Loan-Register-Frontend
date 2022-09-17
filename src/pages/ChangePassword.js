@@ -72,7 +72,7 @@ const ChangePassword = (props) => {
           </TextButton>
         </form>
       </TextBkgBox>
-      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
+      {submitting ? <Submitting /> : null}
     </div>
   );
 };
