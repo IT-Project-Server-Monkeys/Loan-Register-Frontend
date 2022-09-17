@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput, TextButton, Loading } from '../components';
 import API from '../utils/api';
+import { useNavigate } from "react-router-dom";
 
 const Account = (props) => {
+  const redirect = useNavigate();
   const [userInfo, setUserInfo] = useState({
     display_name: <Loading />,
     login_email: <Loading />,
@@ -25,6 +27,7 @@ const Account = (props) => {
     const fetchUser = async () => {
       let fetchedData = null;
       if (props.uid == null) return;
+
       await API.get(`/users?id=${props.uid}`)
       .then((res) => fetchedData = res.data)
       .catch((err) => console.log(err));
@@ -39,7 +42,7 @@ const Account = (props) => {
       setUserInfo(fetchedData);
     };
     fetchUser();
-  }, [props.uid]);
+  }, [props.uid, redirect]);
 
   return (
     <div className={"account-page"}>

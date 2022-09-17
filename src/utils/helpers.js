@@ -14,3 +14,8 @@ export const userViewSwitch = (current) => {
 export const compArr = (arr1, arr2) => {
   return arr1.toString() === arr2.toString()
 }
+
+export const noAccessRedirect = (page, redirect, setPopupOpen) => {
+  setPopupOpen(true);
+  setTimeout(() => redirect(page), 3000);
+}

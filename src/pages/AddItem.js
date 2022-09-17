@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import { fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 
 const AddItem = (props) => {
   const redirect = useNavigate();
@@ -21,18 +21,13 @@ const AddItem = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.uid, setCategList);
+    fetchCategs(props.uid, setCategList, setDelableCg);
   }, [props.uid]);
-
-  useEffect(() => {
-    fetchDelableCg(categList, props.uid, setDelableCg);
-  }, [categList, props.uid])
 
   // categ changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
-    // TODO popup window
     deleteCategory(categ, setCategList, props.uid);
   }
 

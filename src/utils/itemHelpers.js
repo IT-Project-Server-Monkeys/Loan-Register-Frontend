@@ -1,26 +1,17 @@
 import API from "./api";
-import dateFormat from 'dateformat';
 
 const fetchItem = async (itemId, setItem) => {
   let fetchedData = null;
   if (itemId == null) return;
 
   await API.get(`/items?_id=${itemId}`)
-    .then((res) => fetchedData = res.data)
+    .then((res) => {fetchedData = res.data})
     .catch((err) => console.log(err));
 
-  if (fetchedData.being_loaned) {
-    await API.get(`/loans?item_id=${itemId}&status=Current`)
-      .then((res) => fetchedData = {...fetchedData, ...res.data[0]})
-      .catch((err) => console.log(err));
-    fetchedData.loan_start_date = dateFormat(fetchedData.loan_start_date, 'dd/mm/yyyy');
-    fetchedData.intended_return_date = dateFormat(fetchedData.intended_return_date, 'dd/mm/yyyy');
-  }
-
-  if (fetchedData != null) setItem(fetchedData);
+  if (fetchedData != null) setItem((i) => {return {...i, ...fetchedData}});
 }
 
-const fetchCategs = async (uid, setCategList) => {
+const fetchCategs = async (uid, setCategList, setDelableCg) => {
   let fetchedData = null;
   if (uid == null) return;
 
@@ -29,6 +20,7 @@ const fetchCategs = async (uid, setCategList) => {
     .catch((err) => console.log(err));
   
   setCategList(fetchedData.item_categories);
+  fetchDelableCg(fetchedData.item_categories, uid, setDelableCg);
 };
 
 const fetchDelableCg = async (categList, uid, setDelableCg) => {
@@ -37,7 +29,7 @@ const fetchDelableCg = async (categList, uid, setDelableCg) => {
 
   await categList.forEach(async c => {
     await API.get(`/items?category=${c}&item_owner=${uid}`)
-      .then(res => { console.log(res.data); if (res.data.length === 0) delable.push(c); })
+      .then(res => { if (res.data.length === 0) delable.push(c); })
       .catch(err => console.log(err))
   });
   setDelableCg(delable);
@@ -59,13 +51,13 @@ const deleteCategory = async (categ, setCategList, uid) => {
 }
 
 // item image changing
-const changeImage = (e, setItemImg, displayImg, setDisplayImg) => {
-  setItemImg(e.target.files[0]);
+const changeImage = (img, setItemImg, displayImg, setDisplayImg) => {
+  setItemImg(img);
   URL.revokeObjectURL(displayImg);
-  setDisplayImg(URL.createObjectURL(e.target.files[0]));
+  setDisplayImg(URL.createObjectURL(img));
 }
 
-const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newItem) => {
+const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newItem) => {
   e.preventDefault();
   const newName = e.target.newName.value;
   const newCateg = e.target.newCateg.value;
@@ -75,11 +67,10 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
     item_owner: uid,
     being_loaned: false, loan_frequency: 0
   } : { _id: itemId } ;
-  if (itemImg !== null) formData.image = itemImg;
+  if (imgString !== "") formData.image_enc = imgString;
   if (newName !== "") formData.item_name = newName;
   if (newCateg !== "") formData.category = newCateg;
-  if (newDesc !== "") formData.description = newDesc;
-    else formData.description = "(No description.)";
+  formData.description = newDesc;
 
   await API(`/items`, {
     method: newItem ? "post" : "put", data: formData,
