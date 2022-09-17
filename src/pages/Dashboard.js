@@ -11,9 +11,14 @@ import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { LOANER, userViewSwitch, compArr } from '../utils/helpers';
 import dateFormat from 'dateformat';
 
+/* constants */
 const STATUS = "status";
 const CATEGORY = "category"
 const USER = "user";
+const SA = "start date ascending"
+const SD = "start date decending"
+const EA = "end date ascending"
+const ED = "end date decending"
 
 const image = 'https://picsum.photos/300/200';
 
@@ -26,20 +31,21 @@ const LoanerDashboard = (props) => {
   const [loanerItems, setLoanerItems] = useState([]);
   const [loaneeItems, setLoaneeItems] = useState([]);
 
-  // eslint-disable-next-line
   const [loanerFilters, setLoanerFilters] = useState({
     categoryOptions: [],
     loaneeOptions: [],
     results: []
   });
-  // eslint-disable-next-line
+  
   const [loaneeFilters, setLoaneeFilters] = useState({
     categoryOptions: [],
     loanerOptions: [],
     results: []
   });
 
+  // filters inputted from the side bar
   const [filters, setFilters] = useState({
+    sortedItems: [],
     status: [],
     category: [],
     user: []
@@ -58,7 +64,7 @@ const LoanerDashboard = (props) => {
         var loaneeItemsLst = [];
         // separate loaner and loanee items
         for (var item of items) {
-          if (item.user_role === 'loaner') loanerItemsLst.push(item);
+          if (item.user_role === LOANER) loanerItemsLst.push(item);
           else loaneeItemsLst.push(item);
         }
         setLoanerItems(loanerItemsLst);
@@ -100,14 +106,9 @@ const LoanerDashboard = (props) => {
       .catch((e) => {
         console.log(e);
       });
-      // eslint-disable-next-line
+
   }, []);
 
-  // useEffect(() => {
-
-  // }, [userView])
-
-  // console.log(loanerFilters)
 
   const getItemById = (id) => {
     var item = loanerItems.filter(item => item.item_id === id);
@@ -134,9 +135,15 @@ const LoanerDashboard = (props) => {
             image={image}
             title={item.item_name}
             category={item.category}
-            person={item.loanee_name ? item.loanee_name : item.loaner_name}
-            startDate={dateFormat(item.loan_start_date, 'dd/mm/yyyy')}
-            endDate={dateFormat(item.intended_return_date, 'dd/mm/yyyy')}
+            user={item.loanee_name ? item.loanee_name : item.loaner_name}
+            startDate={
+              item.loan_start_date &&
+              dateFormat(item.loan_start_date, 'dd/mm/yyyy')
+            }
+            endDate={
+              item.intended_return_date &&
+              dateFormat(item.intended_return_date, 'dd/mm/yyyy')
+            }
             loanStatus={item.being_loaned}
             gridView={gridView}
           />
@@ -153,6 +160,39 @@ const LoanerDashboard = (props) => {
     navigate(`/dashboard/${newView}`);
   };
 
+
+  const handleSortByDate = (val) => {
+    const res = userView === LOANER ? loanerItems : loaneeItems;
+    switch (val) {
+      case SA:
+        res.sort((a, b) => {
+          return new Date(a.loan_start_date) - new Date(b.loan_start_date);
+        })
+        break;
+      case SD:
+        res.sort((a, b) => {
+          return new Date(b.loan_start_date) - new Date(a.loan_start_date);
+        })
+        break;
+      case EA:
+        res.sort((a, b) => {
+          return new Date(a.intended_return_date) - new Date(b.intended_return_date);
+        })
+        break;
+      case ED:
+        res.sort((a, b) => {
+          return new Date(b.intended_return_date) - new Date(a.intended_return_date);
+        })
+        break;
+      
+    }
+
+    setFilters({
+      ...filters,
+      sortedItems: res
+    })
+  }
+
   
 
   const handleFilters = (val, filter) => {
@@ -161,19 +201,21 @@ const LoanerDashboard = (props) => {
 
     setFilters({
       ...filters,
-      [filter]: compArr(values, ['']) ? [] : [...values]
+      [filter]: compArr(values, ['']) ? [] : [...values]  // if no value, use empty array
     })
   }
 
   const applyFilters = (e) => {
-      // null: no filter selected
-      // empty array: filter selected but no matched result
-      var res1 = null;
-      var res2 = null;
-      var res3 = null;
-      var results = null;
+    // null: no filter selected
+    // empty array: filter selected but no matched result
+    var res1 = null;     // status
+    var res2 = null;     // category
+    var res3 = null;     // user
+    var results = null;  // final results
       
     if (userView === LOANER) {
+      
+
       if (filters.status.length > 0) {
         res1 = loanerItems.filter(item => filters.status.includes(item.loan_status))
       }
@@ -191,6 +233,10 @@ const LoanerDashboard = (props) => {
       } else {
         results = intersection(res1, res2);
         results = intersection(results, res3)
+      }
+
+      if (filters.sortedItems !== []) {
+        results = intersection(filters.sortedItems, results)
       }
     
       setLoanerFilters({
@@ -216,9 +262,11 @@ const LoanerDashboard = (props) => {
         results = intersection(res1, res2);
         results = intersection(results, res3)
       }
+
+      if (filters.sortedItems !== []) {
+        results = intersection(filters.sortedItems, results)
+      }
       
-      results = intersection(res1, res2);
-      results = intersection(results, res3)
 
       setLoaneeFilters({
         ...loaneeFilters,
@@ -243,7 +291,12 @@ const LoanerDashboard = (props) => {
             View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
           </h3>
           <h3>Sort by</h3>
-          <MultiSelect placeholder="Loan Date" singleSelect={true} options={dateOptions} />
+          <MultiSelect 
+            placeholder="Loan Date" 
+            singleSelect={true} 
+            options={dateOptions} 
+            onChange={handleSortByDate}
+          />
           <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
           <MultiSelect 
             placeholder="Status" 
@@ -314,10 +367,10 @@ export default LoanerDashboard;
 
 
 const dateOptions = [
-  { label: 'Start date ascending ↑', value: '1' },
-  { label: 'Start date descending ↓', value: '2' },
-  { label: 'End date ascending ↑', value: '3' },
-  { label: 'End date ascending ↓', value: '4' },
+  { label: 'Start date ascending ↑', value: SA },
+  { label: 'Start date descending ↓', value: SD },
+  { label: 'End date ascending ↑', value: EA },
+  { label: 'End date decending ↓', value: ED },
 ];
 const statusOptions = [
   { label: 'On Loan', value: 'Current' },

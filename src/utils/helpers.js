@@ -10,6 +10,7 @@ export const userViewSwitch = (current) => {
   else return LOANER;
 }
 
-export const compArr = (str1, str2) => {
-  return str1.toString() === str2.toString()
+// compare two arrays
+export const compArr = (arr1, arr2) => {
+  return arr1.toString() === arr2.toString()
 }

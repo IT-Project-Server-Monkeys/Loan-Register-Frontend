@@ -4,7 +4,7 @@ import { LOANER } from '../utils/helpers';
 
 const ItemCard = (props) => {
 
-  const {image, title, category, person, startDate, endDate, loanStatus, gridView} = props;
+  const {image, title, category, user, startDate, endDate, loanStatus, gridView} = props;
 
   const userView = window.location.pathname.slice(-6);
   
@@ -38,7 +38,7 @@ const ItemCard = (props) => {
                     <p className='card-subtitle'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col>
-                    <p>{person}</p>
+                    <p>{user}</p>
                   </Col>
                 </Row>
                 <Row>
@@ -87,7 +87,7 @@ const ItemCard = (props) => {
                     <p className='card-subtitle'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col>
-                    <p>{person}</p>
+                    <p>{user}</p>
                   </Col>
                 </Row>
                 <Row>
