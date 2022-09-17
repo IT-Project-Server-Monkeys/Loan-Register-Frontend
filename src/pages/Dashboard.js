@@ -78,7 +78,7 @@ const LoanerDashboard = (props) => {
         // update loaner cate and loanee opt
         if (loanerItemsLst) {
           setLoanerFilters({
-            ...loaneeFilters,
+            ...loanerFilters,
             categoryOptions: loanerItemsLst[0].item_categories,
             loaneeOptions: loaneeOptions,
             results: [...loanerItemsLst]
@@ -107,7 +107,7 @@ const LoanerDashboard = (props) => {
         console.log(e);
       });
 
-  }, []);
+  }, [userId]);
 
 
   const getItemById = (id) => {
@@ -184,7 +184,8 @@ const LoanerDashboard = (props) => {
           return new Date(b.intended_return_date) - new Date(a.intended_return_date);
         })
         break;
-      
+      default:
+        break;
     }
 
     setFilters({
