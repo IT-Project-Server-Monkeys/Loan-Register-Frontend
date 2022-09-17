@@ -74,7 +74,7 @@ const ItemEdit = (props) => {
   // item img changing
   const handleChgImg = (e) => {
     const img = e.target.files[0];
-    if (img.size > 81920) setSizeWarn(true); // 80KB size limit
+    if (img.size > 51200) setSizeWarn(true); // 50KB size limit
     else {
       setSizeWarn(false);
       changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
@@ -119,7 +119,7 @@ const ItemEdit = (props) => {
           </div>
           
           {sizeWarn ?
-            <p className={"big-img-warn"}>Image must be under 80KB.</p>
+            <p className={"big-img-warn"}>Image must be under 50KB.</p>
           : null}
           <div className={"item-info"}>
             <form id="editItem" onSubmit={handleSaveItem}>
