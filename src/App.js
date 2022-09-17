@@ -40,8 +40,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login onLogin={loginHandler} />} />
-            <Route path="/dashboard/loaner" element={<Dashboard />} />
-            <Route path="/dashboard/loanee" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/add-item" element={<AddItem uid={uid} />} />
             <Route path="/item-details/:id" element={<ItemDetails uid={uid} />} />
             <Route path="/item-details/:id/edit" element={<ItemEdit uid={uid} />} />

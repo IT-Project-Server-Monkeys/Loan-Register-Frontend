@@ -39,7 +39,7 @@ const AddItem = (props) => {
     e.preventDefault();
     setSubmitting(true);
     await saveItem(e, null, categList, setCategList, itemImg, props.uid, true);
-    redirect(`/dashboard/loaner`);
+    redirect(`/dashboard`);
   }
 
   return (
@@ -103,7 +103,7 @@ const AddItem = (props) => {
 
       <div className={"btn-list"}>
         <TextButton altStyle
-          onClick={() => redirect(`/dashboard/loaner`)}
+          onClick={() => redirect(`/dashboard`)}
         >Cancel</TextButton>
         <TextButton form="editItem" type="submit">Save</TextButton>
       </div>

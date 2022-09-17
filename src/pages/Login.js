@@ -9,7 +9,7 @@ const Login = (props) => {
   // TODO remove
   const handleLogin = () => {
     props.onLogin("63212e6cb6af93dcba6377b9");
-    window.location.href='/dashboard/loaner';
+    window.location.href='/dashboard';
   };
 
   return (

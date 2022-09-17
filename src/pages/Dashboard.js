@@ -76,7 +76,7 @@ const LoanerDashboard = (props) => {
         var loanerOptions = loaneeItemsLst.map(item => item.loaner_name).filter(n => n)
         
         // update loaner cate and loanee opt
-        if (loanerItemsLst) {
+        if (loanerItemsLst.length > 0) {
           setLoanerFilters({
             ...loanerFilters,
             categoryOptions: loanerItemsLst[0].item_categories,
@@ -92,7 +92,7 @@ const LoanerDashboard = (props) => {
             loaneeCate.push(item.category)
           }
         }
-        if (loaneeItemsLst) {
+        if (loaneeItemsLst.length > 0) {
           setLoaneeFilters({
             ...loaneeFilters,
             categoryOptions: loaneeCate,
@@ -107,7 +107,8 @@ const LoanerDashboard = (props) => {
         console.log(e);
       });
 
-  }, [userId]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   const getItemById = (id) => {

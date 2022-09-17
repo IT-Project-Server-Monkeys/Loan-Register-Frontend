@@ -98,7 +98,7 @@ const ItemDetails = (props) => {
     if (item.item_owner == null) return;
     if (props.uid == null || props.uid !== item.item_owner) {
 
-      noAccessRedirect(props.uid == null ? "/login" : "/dashboard/loaner",
+      noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
         redirect, setNoAccess);
 
       return;

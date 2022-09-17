@@ -43,7 +43,7 @@ const Header = (props) => {
               <GiHamburgerMenu size={20} />
           </button>
           <div className="dropdown">
-            <NavLink href="/dashboard/loaner">Dashboard</NavLink>
+            <NavLink href="/dashboard">Dashboard</NavLink>
             <NavLink href="/account">Account</NavLink>
             <NavLink href="/" onClick={logOut}>Log Out</NavLink>
           </div>
@@ -60,7 +60,7 @@ const Header = (props) => {
     else {
       if (props.uid !== null) return (
         <nav>
-          <NavLink href="/dashboard/loaner">Dashboard</NavLink>
+          <NavLink href="/dashboard">Dashboard</NavLink>
           <NavLink href="/account">Account</NavLink>
           <NavLink href="/" onClick={props.onLogout}>Log Out</NavLink>
         </nav>
