@@ -1,12 +1,25 @@
 import React from 'react';
 import { Card, CardBody, CardTitle, Row, Col } from 'reactstrap'
 import { LOANER } from '../utils/helpers';
+import Highlighter from "react-highlight-words";
 
 const ItemCard = (props) => {
 
-  const {image, title, category, user, startDate, endDate, loanStatus, gridView} = props;
+  const {image, title, category, user, startDate, endDate, loanStatus, gridView, searchText} = props;
 
   const userView = window.location.pathname.slice(-6);
+
+  const renderText = (text) => {
+    return <Highlighter
+              highlightStyle={{
+                backgroundColor: 'var(--orange-color)',
+                padding: 0,
+              }}
+              searchWords={[searchText]}
+              autoEscape={true}
+              textToHighlight={text}
+            />
+  }
   
   return (
     <>
@@ -15,19 +28,19 @@ const ItemCard = (props) => {
           <Card className='item-card'>
             <img alt="item-img" src={image} />
             <CardBody>
-              <CardTitle tag="h3" style={{marginBottom: '0.5rem'}}>{title}</CardTitle>
+              <CardTitle tag="h3" style={{marginBottom: '0.5rem'}}>{renderText(title)}</CardTitle>
               <div>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Category: </p>
+                    <p className='attribute'>Category: </p>
                   </Col>
                   <Col>
-                    <p>{category}</p>
+                    <p>{renderText(category)}</p>
                   </Col>
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Loan Status: </p>
+                    <p className='attribute'>Loan Status: </p>
                   </Col>
                   <Col>
                     <p>{loanStatus ? "On loan" : "Not loaned"}</p>
@@ -35,7 +48,7 @@ const ItemCard = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
+                    <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col>
                     <p>{user}</p>
@@ -43,7 +56,7 @@ const ItemCard = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Start date: </p>
+                    <p className='attribute'>Start date: </p>
                   </Col>
                   <Col>
                     <p>{startDate}</p>
@@ -51,7 +64,7 @@ const ItemCard = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>End date: </p>
+                    <p className='attribute'>End date: </p>
                   </Col>
                   <Col>
                     <p>{endDate}</p>
@@ -76,7 +89,7 @@ const ItemCard = (props) => {
                 <Col>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Category: </p>
+                    <p className='attribute'>Category: </p>
                   </Col>
                   <Col>
                     <p>{category}</p>
@@ -84,7 +97,7 @@ const ItemCard = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
+                    <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col>
                     <p>{user}</p>
@@ -92,7 +105,7 @@ const ItemCard = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>Start date: </p>
+                    <p className='attribute'>Start date: </p>
                   </Col>
                   <Col>
                     <p>{startDate}</p>
@@ -100,7 +113,7 @@ const ItemCard = (props) => {
                 </Row>
                 <Row>
                   <Col>
-                    <p className='card-subtitle'>End date: </p>
+                    <p className='attribute'>End date: </p>
                   </Col>
                   <Col>
                     <p>{endDate}</p>

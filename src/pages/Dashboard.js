@@ -1,5 +1,5 @@
 import React, { useEffect, useState} from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
@@ -23,7 +23,6 @@ const ED = "end date decending"
 const image = 'https://picsum.photos/300/200';
 
 const LoanerDashboard = (props) => {
-  const navigate = useNavigate();
   const [gridView, setGridView] = useState(true);
   const [userView, setUserView] = useState(LOANER);
   const [loading, setLoading] = useState(true);
@@ -50,6 +49,8 @@ const LoanerDashboard = (props) => {
     category: [],
     user: []
   });
+
+  const [searchText, setSearchText] = useState('');
 
 
 
@@ -149,6 +150,7 @@ const LoanerDashboard = (props) => {
             }
             loanStatus={item.being_loaned}
             gridView={gridView}
+            searchText={searchText}
           />
         </Link>
       </Col>
@@ -160,7 +162,6 @@ const LoanerDashboard = (props) => {
   const handleUserSwitch = (e) => {
     const newView = userViewSwitch(userView);
     setUserView(newView);
-    navigate(`/dashboard/${newView}`);
   };
 
 
@@ -281,10 +282,42 @@ const LoanerDashboard = (props) => {
 
   }
 
+  const handleSearch = (e) => {
+    const currText = e.target.value;
+    setSearchText(currText)
+    const items = userView === LOANER ? loanerItems : loaneeItems;
 
-  console.log('items', loanerItems)
-  console.log('filters', filters)
-  console.log('results', loanerFilters.results)
+    const resItems = items.filter(item => {
+      if (
+        (item.item_name && item.item_name.toLowerCase().includes(currText)) ||
+        (item.category && item.category.toLowerCase().includes(currText)) ||
+        (item.loanee_name && item.loanee_name.toLowerCase().includes(currText)) ||
+        (item.loaner_name && item.loaner_name.toLowerCase().includes(currText)) 
+      ) {
+        return item
+      } 
+    })
+
+    // console.log('search items', resItems)
+
+    if (userView === LOANER) {
+      setLoanerFilters({
+        ...loanerFilters,
+        results: resItems
+      })
+    } else {
+      setLoaneeFilters({
+        ...loaneeFilters,
+        results: resItems
+      })
+    }
+
+  }
+
+
+  // console.log('items', loanerItems)
+  // console.log('filters', filters)
+  // console.log('loaner results', loanerFilters.results)
 
 
   return (
@@ -335,7 +368,7 @@ const LoanerDashboard = (props) => {
                   {gridView ? <AiOutlineUnorderedList size={30} /> : <TbLayoutGrid size={30} />}
                 </span>
                 <div>
-                  <input type="search" placeholder="Search for items" />
+                  <input type="search" onChange={handleSearch} placeholder="Search for items" />
                 </div>
                 <a className="icon-plus" href="/add-item">
                   <AiFillPlusCircle size={45} color="#0073e6" />
