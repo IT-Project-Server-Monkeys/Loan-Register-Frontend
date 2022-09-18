@@ -10,6 +10,7 @@ import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { LOANER, userViewSwitch, compArr } from '../utils/helpers';
 import dateFormat from 'dateformat';
+import ReactTooltip from 'react-tooltip';
 
 /* constants */
 const STATUS = "status";
@@ -295,7 +296,9 @@ const LoanerDashboard = (props) => {
         (item.loaner_name && item.loaner_name.toLowerCase().includes(currText)) 
       ) {
         return item
-      } 
+      } else {
+        return null;
+      }
     })
 
     // console.log('search items', resItems)
@@ -319,7 +322,7 @@ const LoanerDashboard = (props) => {
   // console.log('filters', filters)
   // console.log('loaner results', loanerFilters.results)
 
-
+ 
   return (
     <div className="page-margin dashboard">
       <Row>
@@ -364,25 +367,45 @@ const LoanerDashboard = (props) => {
           <Row className="bg-light-blue" style={{ height: '5rem' }}>
             <div className="dashboard-nav">
               <div style={{ width: '40%', maxWidth: '25rem' }}>
-                <span className="icon-blue" onClick={() => setGridView(!gridView)}>
-                  {gridView ? <AiOutlineUnorderedList size={30} /> : <TbLayoutGrid size={30} />}
+                <span 
+                  className="icon-blue" 
+                  data-for={gridView ? 'item-view' : 'item-view'} 
+                  data-tip 
+                  onClick={() => setGridView(!gridView)}
+                >
+                  {
+                    gridView ? 
+                      <AiOutlineUnorderedList size={30} /> 
+                    : 
+                      <TbLayoutGrid size={30} />
+                  }
                 </span>
+                <ReactTooltip id='item-view'>
+                  <span>{gridView ? 'List view' : 'Grid view'}</span>
+                </ReactTooltip>
                 <div>
                   <input type="search" onChange={handleSearch} placeholder="Search for items" />
                 </div>
-                <a className="icon-plus" href="/add-item">
+                <a className="icon-plus" href="/add-item" data-for='add-item' data-tip='Add item'>
                   <AiFillPlusCircle size={45} color="#0073e6" />
                 </a>
+                <ReactTooltip id='add-item' />
+                 
               </div>
               <div style={{ width: '12%', maxWidth: '8rem' }}>
-                <span className="icon-blue">
+                <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
                   <MdQueryStats size={30} />
                 </span>
-                <span className="icon-blue" onClick={handleUserSwitch}>
+                <ReactTooltip id='view-stats' />
+                <span className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
                   <AiOutlineUserSwitch size={30} />
                 </span>
+                <ReactTooltip id='user-view'>
+                  <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
+                </ReactTooltip>
               </div>
             </div>
+            
           </Row>
           <Row>
             {loading ?
@@ -401,6 +424,7 @@ const LoanerDashboard = (props) => {
 };
 
 export default LoanerDashboard;
+
 
 
 const dateOptions = [
