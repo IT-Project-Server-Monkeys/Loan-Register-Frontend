@@ -21,7 +21,22 @@ const SD = "start date decending"
 const EA = "end date ascending"
 const ED = "end date decending"
 
+const dateOptions = [
+  { label: 'Start date ascending ↑', value: SA },
+  { label: 'Start date descending ↓', value: SD },
+  { label: 'End date ascending ↑', value: EA },
+  { label: 'End date decending ↓', value: ED },
+];
+const statusOptions = [
+  { label: 'On Loan', value: 'Current' },
+  { label: 'On-Time Return', value: 'On Time Return' },
+  { label: 'Early Return', value: 'Early Return' },
+  { label: 'Late Return', value: 'Late Return' },
+  { label: 'Not Loaned', value: 'Not Loaned' },
+];
+
 const image = 'https://picsum.photos/300/200';
+
 
 const LoanerDashboard = (props) => {
   const [gridView, setGridView] = useState(true);
@@ -166,8 +181,9 @@ const LoanerDashboard = (props) => {
   };
 
 
+
   const handleSortByDate = (val) => {
-    const res = userView === LOANER ? loanerItems : loaneeItems;
+    var res = userView === LOANER ? loanerItems : loaneeItems;
     switch (val) {
       case SA:
         res.sort((a, b) => {
@@ -190,6 +206,7 @@ const LoanerDashboard = (props) => {
         })
         break;
       default:
+        res = []
         break;
     }
 
@@ -220,7 +237,6 @@ const LoanerDashboard = (props) => {
     var results = null;  // final results
       
     if (userView === LOANER) {
-      
 
       if (filters.status.length > 0) {
         res1 = loanerItems.filter(item => filters.status.includes(item.loan_status))
@@ -236,12 +252,14 @@ const LoanerDashboard = (props) => {
       if (res1 === null && res2 === null && res3 === null) {
         // no filter selected
         results = loanerItems;
+        // console.log('???', loanerItems)
       } else {
         results = intersection(res1, res2);
         results = intersection(results, res3)
       }
 
-      if (filters.sortedItems !== []) {
+      if (filters.sortedItems.length > 0) {
+        // console.log('!!!')
         results = intersection(filters.sortedItems, results)
       }
     
@@ -269,7 +287,7 @@ const LoanerDashboard = (props) => {
         results = intersection(results, res3)
       }
 
-      if (filters.sortedItems !== []) {
+      if (filters.sortedItems.length > 0) {
         results = intersection(filters.sortedItems, results)
       }
       
@@ -427,19 +445,7 @@ export default LoanerDashboard;
 
 
 
-const dateOptions = [
-  { label: 'Start date ascending ↑', value: SA },
-  { label: 'Start date descending ↓', value: SD },
-  { label: 'End date ascending ↑', value: EA },
-  { label: 'End date decending ↓', value: ED },
-];
-const statusOptions = [
-  { label: 'On Loan', value: 'Current' },
-  { label: 'On-Time Return', value: 'On Time Return' },
-  { label: 'Early Return', value: 'Early Return' },
-  { label: 'Late Return', value: 'Late Return' },
-  { label: 'Not Loaned', value: 'Not Loaned' },
-];
+
 
 
 const renderOptions = (list) => {
