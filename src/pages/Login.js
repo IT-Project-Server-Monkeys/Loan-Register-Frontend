@@ -28,7 +28,7 @@ const Login = (props) => {
           <div className="h3">
               Password:
           </div>
-          <input type="text" placeholder="Enter password" className={"input-box"}/>
+          <input type="password" placeholder="Enter password" className={"input-box"}/>
         </div>
         <a href="/signup" className="a">Forgot password?</a>
         <a href="/signup" className="a">New user?</a>
