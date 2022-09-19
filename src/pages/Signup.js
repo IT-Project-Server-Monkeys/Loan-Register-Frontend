@@ -3,6 +3,7 @@ import "../styles/Signup.scss";
 import { TextBkgBox, TextButton } from '../components';
 import API from "../utils/api";
 import { useState, useEffect } from 'react';
+import bcrypt from 'bcryptjs';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -17,12 +18,23 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let uid = null;
     let isValid = true;
     let newUser = {};
     let randomUsername = Math.random().toString(16).substring(2, 10);
 
-    // TODO: check if email is unique
-    // TODO: hash passwords
+    // check if it is a unique email
+    await API(`users?email=${email}`)
+      .then((res) => {
+        console.log(res);
+        uid = res.data[0]._id;
+        console.log(uid); 
+      })
+      .catch((err) => console.log(err));
+    
+    if (uid != null) {
+      isValid = false;
+    }
 
     // check if pwd and confirm pwd are the same
     if (pwd !== confirmPwd) {
@@ -30,11 +42,18 @@ const Signup = () => {
       isValid = false;
     } 
     
+    // for testing purposes
+    isValid = false;
+
     if (isValid === true) {
       // randomly generate username
       newUser.display_name = randomUsername;
       newUser.login_email = email;
-      newUser.hashed_password = pwd;
+
+      var hash = bcrypt.hashSync(pwd);
+      // hash pwd before sending to db
+      newUser.hashed_password = hash;
+      console.log(hash);
   
       await API(`/users`, {    
         method: "post",

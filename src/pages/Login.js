@@ -2,32 +2,50 @@ import { useRef, useState, useEffect } from 'react';
 import "../styles/Login.scss";
 import { TextBkgBox, TextButton } from '../components';
 import API from "../utils/api";
+import bcrypt from 'bcryptjs';
 
 const Login = (props) => {
-  const userRef = useRef();
+  const emailRef = useRef();
   const errRef = useRef();
 
-  const [user, setUser] = useState('');
+  const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
 
   // automatically focus on first input box
   useEffect(() => {
-    userRef.current.focus();
+    emailRef.current.focus();
   }, [])
 
   // remove error message if user or pwd input is being adjusted
   useEffect(() => {
     setErrMsg('');
-  }, [user, pwd])
+  }, [email, pwd])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     let uid = null;
+    let hash = null;
 
-    // TODO: add checking of hashed passwords
+    // check if pwd given matches with hashed password
+    await API(`users?email=${email}`)
+    .then((res) => {
+      // console.log(res);
+      hash = res.data[0].hashed_password;
+      console.log(hash); 
+    })
+    .catch((err) => console.log(err));
 
-    await API(`users?password=${pwd}&email=${user}`)
+    if (hash != null) {
+      // if there is a password, compare both passwords
+      bcrypt.compare(pwd, hash).then((res) => {
+        if (res === true) {
+          console.log("successful pwd match");
+        }
+      });
+    }
+
+    await API(`users?password=${hash}&email=${email}`)
       .then((res) => {
         console.log(res);
         uid = res.data[0]._id;
@@ -38,7 +56,7 @@ const Login = (props) => {
     if (uid != null) {
       props.onLogin(uid);
       window.location.href='/dashboard/loaner';
-      setUser('');
+      setEmail('');
       setPwd('');
 
     } else {
@@ -60,9 +78,9 @@ const Login = (props) => {
           <form onSubmit={handleSubmit}>
             <div className={"inline-flex"}>
               <div className="h3">
-                Username:
+                Email:
               </div>
-              <input type="text" placeholder="Enter username" className={"input-box"} id="username" ref={userRef} onChange={(e) => setUser(e.target.value)} value={user} required />
+              <input type="text" placeholder="Enter email" className={"input-box"} id="email" ref={emailRef} onChange={(e) => setEmail(e.target.value)} value={email} required />
             </div>
             <div className={"inline-flex"}>
               <div className="h3">
