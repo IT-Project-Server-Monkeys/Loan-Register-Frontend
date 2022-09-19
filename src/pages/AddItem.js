@@ -4,14 +4,19 @@ import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import noImg from "../images/noImage_300x375.png";
 
 const AddItem = (props) => {
   const redirect = useNavigate();
+
   const [itemImg, setItemImg] = useState(null);
-  const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
+  const [displayImg, setDisplayImg] = useState(noImg);
+  const [sizeWarn, setSizeWarn] = useState(false);
+
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
   const [newCateg, setNewCateg] = useState("");
+  
   const [submitting, setSubmitting] = useState(false);
 
   const [categOpen, setCategOpen] = useState(false);
@@ -32,13 +37,31 @@ const AddItem = (props) => {
   }
 
   // item img changing
-  const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
+  const handleChgImg = (e) => {
+    const img = e.target.files[0];
+    if (img.size > 51200) setSizeWarn(true); // 50KB size limit
+    else {
+      setSizeWarn(false);
+      changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    }
+  };
 
   // save item and post to server
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    await saveItem(e, null, categList, setCategList, itemImg, props.uid, true);
+    let imgString = "";
+
+    if (itemImg !== null) {
+      imgString = await new Promise((resolve) => {
+        let fileReader = new FileReader();
+        fileReader.onload = () =>
+          resolve(fileReader.result.replace('data:', '').replace(/^.+,/, ''));
+        fileReader.readAsDataURL(itemImg);
+      });
+    }
+
+    await saveItem(e, null, categList, setCategList, imgString, props.uid, true);
     redirect(`/dashboard`);
   }
 
@@ -56,7 +79,9 @@ const AddItem = (props) => {
           </label>
         </div>
         
-        <p className={"item-status"}>&nbsp;</p>
+        {sizeWarn ?
+            <h4 className={"big-img-warn warning"}>Image must be under 50KB.</h4>
+          : null}
         <div className={"item-info"}>
           <form id="editItem" onSubmit={handleSaveItem}>
             <table><tbody>

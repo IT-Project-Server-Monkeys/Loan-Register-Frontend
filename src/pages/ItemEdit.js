@@ -6,7 +6,6 @@ import { RiImageAddFill } from 'react-icons/ri'
 import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
-// import noImg from "../images/noImageAlt_300x375.png";
 
 const ItemEdit = (props) => {
   const redirect = useNavigate();
