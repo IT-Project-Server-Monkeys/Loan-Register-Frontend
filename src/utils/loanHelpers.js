@@ -6,6 +6,7 @@ const fetchAllLoanees = async (setAllLoanees) => {
   await API.get(`/users?all=1`)
     .then((res) => res.data.forEach((l) => {fetchedData[l.display_name] = l._id}))
     .catch((err) => console.log(err));
+
   setAllLoanees(fetchedData);
 }
 

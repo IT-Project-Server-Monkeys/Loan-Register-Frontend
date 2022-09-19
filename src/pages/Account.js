@@ -107,14 +107,14 @@ const Account = (props) => {
             field="display_name" value={newName} setVal={setNewName}
           />
         </div>
-        { nameWarn !== "" ? <h4 className="acct-warn">The display name "{nameWarn}" is taken.</h4> : null }
+        { nameWarn !== "" ? <h4 className="warning">The display name "{nameWarn}" is taken.</h4> : null }
         <div className={"inline-flex"}>
           <h3>Email:</h3>
           <ToggleInput disabled={emailSub} saveInput={saveEmail} type="email"
             field="login_email" value={newEmail} setVal={setNewEmail}
           />
         </div>
-        { emailWarn !== "" ? <h4 className="acct-warn">The email "{emailWarn}" is taken.</h4> : null }
+        { emailWarn !== "" ? <h4 className="warning">The email "{emailWarn}" is taken.</h4> : null }
         <a href="/change-password">
           <TextButton>Change password</TextButton>
         </a>

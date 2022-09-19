@@ -4,7 +4,7 @@ import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
-import { createLoan, editLoan, fetchLoan, returnLoan } from "../utils/loanHelpers";
+import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
@@ -21,7 +21,10 @@ const ItemDetails = (props) => {
   const [modal, setModal] = useState(false);
 
   const [loaneeName, setLoaneeName] = useState("");
-  const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
+  const [allLoanees, setAllLoanees] = useState({"Test User 2": "62fd8a9df04410afbc6df31e"});
+  // useEffect(() => fetchAllLoanees(setAllLoanees), []);
+  const [suggestedLoanees, setSuggestedLoanees] = useState([]);
+  useEffect(() => setSuggestedLoanees(Object.keys(allLoanees)), [allLoanees]);
 
   const [loanDate, setLoanDate] = useState(dateFormat(new Date(), 'dd/mm/yyyy'));
   const [returnDate, setReturnDate] = useState("");
@@ -160,7 +163,12 @@ const ItemDetails = (props) => {
                 </tr>
               </> : null}
               </tbody></table>
-            <p>Description:<br />{item.description !== "" ? item.description : "(No description.)"}</p>
+            <p>Description:<br />{ typeof(item.description) != "string"
+              ? item.description
+              : item.description.split("\n").map((line, i) => {
+                return <span key={i}>{line}<br /></span>
+              }) // react-string-replace didn't work :/
+            }</p>
           </div>
         </div>
 
@@ -177,8 +185,8 @@ const ItemDetails = (props) => {
         <LoanForm modal={modal} toggle={toggle} item={item}
           newLoan={!item.being_loaned} loaneeValue={loaneeName}
           onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
-          suggestedLoanees={suggestedLoanees} changeLoanee={changeLoanee}
-          selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
+          allLoanees={allLoanees} suggestedLoanees={suggestedLoanees}
+          changeLoanee={changeLoanee} selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
           lnDateValue={loanDate} rtnDateValue={returnDate}
           chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
         />

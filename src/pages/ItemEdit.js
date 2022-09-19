@@ -119,7 +119,7 @@ const ItemEdit = (props) => {
           </div>
           
           {sizeWarn ?
-            <p className={"big-img-warn"}>Image must be under 50KB.</p>
+            <h4 className={"big-img-warn warning"}>Image must be under 50KB.</h4>
           : null}
           <div className={"item-info"}>
             <form id="editItem" onSubmit={handleSaveItem}>
