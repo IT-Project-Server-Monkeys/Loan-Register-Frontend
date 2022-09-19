@@ -28,11 +28,12 @@ const dateOptions = [
   { label: 'End date decending ↓', value: ED },
 ];
 const statusOptions = [
-  { label: 'On Loan', value: 'Current' },
+  { label: 'On Loan', value: 'On Laon' },
   { label: 'On-Time Return', value: 'On Time Return' },
   { label: 'Early Return', value: 'Early Return' },
   { label: 'Late Return', value: 'Late Return' },
-  { label: 'Not Loaned', value: 'Not Loaned' },
+  { label: 'Overdue', value: 'Overdue' },
+  { label: 'Available', value: 'Avaliable' },
 ];
 
 // const image = 'https://picsum.photos/300/200';
