@@ -404,16 +404,20 @@ const LoanerDashboard = (props) => {
                 <div>
                   <input type="search" onChange={handleSearch} placeholder="Search for items" />
                 </div>
-                <a className="icon-plus" href="/add-item" data-for='add-item' data-tip='Add item'>
-                  <AiFillPlusCircle size={45} color="#0073e6" />
-                </a>
+                <Link to="/add-item">
+                  <span className="icon-plus" data-for='add-item' data-tip='Add item'>
+                    <AiFillPlusCircle size={45} color="#0073e6" />
+                  </span>
+                </Link>
                 <ReactTooltip id='add-item' />
                  
               </div>
               <div style={{ width: '12%', maxWidth: '8rem' }}>
-                <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
-                  <MdQueryStats size={30} />
-                </span>
+                <Link to="/stats" style={{display: 'flex'}}>
+                  <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
+                    <MdQueryStats size={30} />
+                  </span>
+                </Link>
                 <ReactTooltip id='view-stats' />
                 <span className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
                   <AiOutlineUserSwitch size={30} />

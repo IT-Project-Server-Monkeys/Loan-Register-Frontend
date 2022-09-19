@@ -26,7 +26,7 @@ const ItemCard = (props) => {
       {
         gridView ?
           <Card className='item-card'>
-            <div style={{maxHeight: '13rem'}}>
+            <div style={{height: '13rem'}}>
               <img alt="item-img" src={image} width='100%' height='100%' />
             </div>
             <CardBody>

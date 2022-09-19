@@ -110,6 +110,9 @@
 
   img {
     border-radius: 20px 20px 0 0;
+    // object-fit: contain;
+    // object-fit: cover;
+    object-fit: fill;  
   }
 
   p {
@@ -139,7 +142,7 @@
 
   img {
     border-radius: 20px 0 0 20px;
-    object-fit: cover;
+    object-fit: fill;
   }
   p {
     margin-bottom: 0;
