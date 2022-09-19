@@ -64,8 +64,11 @@
     }
   }
 
+
+
 }
 
+// MultiSelect styles
 .msl-vars {
   margin-top: 1rem;
   --input-width: 100% !important;
@@ -73,6 +76,7 @@
   --line-height: 2rem !important;
   --font-size: 1.2rem !important;
   background-color: white;
+  --menu-max-height: 12rem !important;
   
   .msl {
     border: none !important;

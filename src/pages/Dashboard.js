@@ -35,7 +35,7 @@ const statusOptions = [
   { label: 'Not Loaned', value: 'Not Loaned' },
 ];
 
-const image = 'https://picsum.photos/300/200';
+// const image = 'https://picsum.photos/300/200';
 
 
 const LoanerDashboard = (props) => {
