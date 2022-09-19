@@ -26,7 +26,9 @@ const ItemCard = (props) => {
       {
         gridView ?
           <Card className='item-card'>
-            <img alt="item-img" src={image} />
+            <div style={{height: '13rem'}}>
+              <img alt="item-img" src={image} width='100%' height='100%' />
+            </div>
             <CardBody>
               <CardTitle tag="h3" style={{marginBottom: '0.5rem'}}>{renderText(title)}</CardTitle>
               <div>
@@ -34,7 +36,7 @@ const ItemCard = (props) => {
                   <Col>
                     <p className='attribute'>Category: </p>
                   </Col>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p>{renderText(category)}</p>
                   </Col>
                 </Row>
@@ -42,7 +44,7 @@ const ItemCard = (props) => {
                   <Col>
                     <p className='attribute'>Loan Status: </p>
                   </Col>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p>{loanStatus ? "On loan" : "Not loaned"}</p>
                   </Col>
                 </Row>
@@ -50,7 +52,7 @@ const ItemCard = (props) => {
                   <Col>
                     <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p>{user}</p>
                   </Col>
                 </Row>
@@ -87,40 +89,40 @@ const ItemCard = (props) => {
               </Row>
               <Row style={{alignItems: 'center'}}>
                 <Col>
-                <Row>
-                  <Col>
-                    <p className='attribute'>Category: </p>
-                  </Col>
-                  <Col>
-                    <p>{category}</p>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
-                  </Col>
-                  <Col>
-                    <p>{user}</p>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <p className='attribute'>Start date: </p>
-                  </Col>
-                  <Col>
-                    <p>{startDate}</p>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    <p className='attribute'>End date: </p>
-                  </Col>
-                  <Col>
-                    <p>{endDate}</p>
-                  </Col>
-                </Row>
+                  <Row>
+                    <Col md='5'>
+                      <p className='attribute'>Category: </p>
+                    </Col>
+                    <Col>
+                      <p>{category}</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md='5'>
+                      <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
+                    </Col>
+                    <Col>
+                      <p>{user}</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md='5'>
+                      <p className='attribute'>Start date: </p>
+                    </Col>
+                    <Col>
+                      <p>{startDate}</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md='5'>
+                      <p className='attribute'>End date: </p>
+                    </Col>
+                    <Col>
+                      <p>{endDate}</p>
+                    </Col>
+                  </Row>
                 </Col>
-                <Col className='d-flex justify-content-end' style={{marginRight: '3rem', marginTop: '-1.5rem'}}>
+                <Col md='4' className='d-flex justify-content-end' style={{marginRight: '3rem', marginTop: '-1.5rem'}}>
                   <h3>{loanStatus ? "On loan" : "Not loaned"}</h3>
                 </Col>
               </Row>

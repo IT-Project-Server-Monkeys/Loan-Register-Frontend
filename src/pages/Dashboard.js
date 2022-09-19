@@ -28,14 +28,15 @@ const dateOptions = [
   { label: 'End date decending ↓', value: ED },
 ];
 const statusOptions = [
-  { label: 'On Loan', value: 'Current' },
+  { label: 'On Loan', value: 'On Laon' },
   { label: 'On-Time Return', value: 'On Time Return' },
   { label: 'Early Return', value: 'Early Return' },
   { label: 'Late Return', value: 'Late Return' },
-  { label: 'Not Loaned', value: 'Not Loaned' },
+  { label: 'Overdue', value: 'Overdue' },
+  { label: 'Available', value: 'Avaliable' },
 ];
 
-const image = 'https://picsum.photos/300/200';
+// const image = 'https://picsum.photos/300/200';
 
 
 const LoanerDashboard = (props) => {
@@ -152,7 +153,7 @@ const LoanerDashboard = (props) => {
           state={{item: {...getItemById(item.item_id), item_owner: userId}}}
         >
           <ItemCard
-            image={image}
+            image={item.image_url}
             title={item.item_name}
             category={item.category}
             user={item.loanee_name ? item.loanee_name : item.loaner_name}
@@ -404,16 +405,20 @@ const LoanerDashboard = (props) => {
                 <div>
                   <input type="search" onChange={handleSearch} placeholder="Search for items" />
                 </div>
-                <a className="icon-plus" href="/add-item" data-for='add-item' data-tip='Add item'>
-                  <AiFillPlusCircle size={45} color="#0073e6" />
-                </a>
+                <Link to="/add-item">
+                  <span className="icon-plus" data-for='add-item' data-tip='Add item'>
+                    <AiFillPlusCircle size={45} color="#0073e6" />
+                  </span>
+                </Link>
                 <ReactTooltip id='add-item' />
                  
               </div>
               <div style={{ width: '12%', maxWidth: '8rem' }}>
-                <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
-                  <MdQueryStats size={30} />
-                </span>
+                <Link to="/stats" style={{display: 'flex'}}>
+                  <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
+                    <MdQueryStats size={30} />
+                  </span>
+                </Link>
                 <ReactTooltip id='view-stats' />
                 <span className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
                   <AiOutlineUserSwitch size={30} />

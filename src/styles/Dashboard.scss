@@ -64,8 +64,11 @@
     }
   }
 
+
+
 }
 
+// MultiSelect styles
 .msl-vars {
   margin-top: 1rem;
   --input-width: 100% !important;
@@ -73,6 +76,7 @@
   --line-height: 2rem !important;
   --font-size: 1.2rem !important;
   background-color: white;
+  --menu-max-height: 12rem !important;
   
   .msl {
     border: none !important;
@@ -98,7 +102,7 @@
     border-radius: 0 0 20px 20px;
   }
 
-  .card-title, p {
+  .card-title, p, span {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -106,6 +110,9 @@
 
   img {
     border-radius: 20px 20px 0 0;
+    // object-fit: contain;
+    // object-fit: cover;
+    object-fit: fill;  
   }
 
   p {
@@ -135,7 +142,7 @@
 
   img {
     border-radius: 20px 0 0 20px;
-    object-fit: cover;
+    object-fit: fill;
   }
   p {
     margin-bottom: 0;
