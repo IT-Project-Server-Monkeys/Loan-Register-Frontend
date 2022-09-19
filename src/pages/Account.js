@@ -18,14 +18,13 @@ const Account = (props) => {
     let fetchedData = [];
     setNameSub(true);
     setNewName(<Loading />);
-    // TODO check if name is in db
-    // await API.get(`/users?display_name=${name}`)
-    //   .then((res) => {fetchedData = res.data})
-    //   .catch((err) => console.log(err));
+    await API.get(`/users?display_name=${name}`)
+      .then((res) => {fetchedData = res.data})
+      .catch((err) => console.log(err));  
+    setNameSub(false);
 
     if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
       let formData = { _id: props.uid, display_name: name};
-      console.log(formData);
       await API(`/users`, {
         method: "put", data: formData,
         headers: { "Content-Type": "application/json" },
@@ -38,25 +37,19 @@ const Account = (props) => {
       setNameWarn(name);
       setNewName(userInfo.display_name);
     }
-
-    setNameSub(false);
   }
 
   const saveEmail = async (email) => {
     let fetchedData = [];
     setEmailSub(true);
     setNewEmail(<Loading />);
-
-    // turn on submitting mode
     await API.get(`/users?email=${email}`)
       .then((res) => {fetchedData = res.data})
       .catch((err) => console.log(err));
-
-    console.log(fetchedData);
+    setEmailSub(false);
 
     if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
       let formData = { _id: props.uid, login_email: email};
-      console.log(formData);
       await API(`/users`, {
         method: "put", data: formData,
         headers: { "Content-Type": "application/json" },
@@ -70,7 +63,6 @@ const Account = (props) => {
       setNewEmail(userInfo.login_email);
     }
 
-    setEmailSub(false);
   }
 
   // get user data from server, querying using userId recorded in the app's session
@@ -116,7 +108,7 @@ const Account = (props) => {
         </div>
         { emailWarn !== "" ? <h4 className="warning">The email "{emailWarn}" is taken.</h4> : null }
         <a href="/change-password">
-          <TextButton>Change password</TextButton>
+          <TextButton disabled={nameSub || emailSub}>Change password</TextButton>
         </a>
       </TextBkgBox>
     </div>
