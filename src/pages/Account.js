@@ -23,7 +23,7 @@ const Account = (props) => {
     //   .then((res) => {fetchedData = res.data})
     //   .catch((err) => console.log(err));
 
-    if (fetchedData.length == 0 || fetchedData[0]._id == props.uid) {
+    if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
       let formData = { _id: props.uid, display_name: name};
       console.log(formData);
       await API(`/users`, {
@@ -54,7 +54,7 @@ const Account = (props) => {
 
     console.log(fetchedData);
 
-    if (fetchedData.length == 0 || fetchedData[0]._id == props.uid) {
+    if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
       let formData = { _id: props.uid, login_email: email};
       console.log(formData);
       await API(`/users`, {

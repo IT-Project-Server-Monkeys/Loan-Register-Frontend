@@ -18,13 +18,11 @@ const ItemDetails = (props) => {
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
   });
-  const [modal, setModal] = useState(false);
+  const [lnFormOpen, setLnFormOpen] = useState(false);
 
   const [loaneeName, setLoaneeName] = useState("");
   const [allLoanees, setAllLoanees] = useState({"Test User 2": "62fd8a9df04410afbc6df31e"});
-  // useEffect(() => fetchAllLoanees(setAllLoanees), []);
   const [suggestedLoanees, setSuggestedLoanees] = useState([]);
-  useEffect(() => setSuggestedLoanees(Object.keys(allLoanees)), [allLoanees]);
 
   const [loanDate, setLoanDate] = useState(dateFormat(new Date(), 'dd/mm/yyyy'));
   const [returnDate, setReturnDate] = useState("");
@@ -35,7 +33,7 @@ const ItemDetails = (props) => {
   const itemDetails = location.state ? location.state.item : null;
 
   const toggle = () => {
-    setModal(!modal);
+    setLnFormOpen(!lnFormOpen);
     if (item.being_loaned) {
       setLoaneeName(item.loanee_name);
       setLoanDate(item.loan_start_date);
@@ -87,7 +85,8 @@ const ItemDetails = (props) => {
     })
   }
 
-  useEffect(() => setSubmitting(false), []);
+  useEffect(() => { setSubmitting(false); fetchAllLoanees(setAllLoanees); }, []);
+  useEffect(() => setSuggestedLoanees(Object.keys(allLoanees)), [allLoanees]);
 
   // get and show item data
   useEffect(() => {
@@ -182,7 +181,7 @@ const ItemDetails = (props) => {
           }
         </div>
 
-        <LoanForm modal={modal} toggle={toggle} item={item}
+        <LoanForm modal={lnFormOpen} toggle={toggle} item={item}
           newLoan={!item.being_loaned} loaneeValue={loaneeName}
           onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
           allLoanees={allLoanees} suggestedLoanees={suggestedLoanees}
