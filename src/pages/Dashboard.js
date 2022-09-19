@@ -152,7 +152,7 @@ const LoanerDashboard = (props) => {
           state={{item: {...getItemById(item.item_id), item_owner: userId}}}
         >
           <ItemCard
-            image={image}
+            image={item.image_url}
             title={item.item_name}
             category={item.category}
             user={item.loanee_name ? item.loanee_name : item.loaner_name}
