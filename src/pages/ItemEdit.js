@@ -31,7 +31,7 @@ const ItemEdit = (props) => {
   const [noAccess, setNoAccess] = useState(false);
 
   const location = useLocation();
-  const itemDetails = location.state ? location.state.item : null;
+  const dbData = location.state ? location.state.item : null;
 
   const [categOpen, setCategOpen] = useState(false);
   const categShow = () => {
@@ -40,9 +40,13 @@ const ItemEdit = (props) => {
 
   // get and show item data
   useEffect(() => {
-    if (itemDetails === null) fetchItem(itemId, setItem);
-    else setItem(itemDetails);
-  }, [itemId, itemDetails]);
+    console.log(dbData);
+    if (dbData === null) fetchItem(itemId, setItem);
+    else {
+      setItem(dbData);
+      redirect(`/item-details/${itemId}`, {state: null});
+    }
+  }, [itemId, dbData]);
 
   useEffect(() => {
     if (item.item_owner == null) return;
