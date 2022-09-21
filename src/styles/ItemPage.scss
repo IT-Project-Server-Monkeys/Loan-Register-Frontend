@@ -68,6 +68,10 @@ main .item-page {
     .item-info {
       grid-area: inf;
 
+      td:first-child, span:first-child {
+        font-weight: bold;
+      }
+
       table {
         td {
           padding-right: 1.5rem;
@@ -83,6 +87,7 @@ main .item-page {
         width: -webkit-fill-available;
         height: 240px;
         border-radius: 5px;
+        margin-top: 0.5rem;
       }
 
       .input-dropdown {

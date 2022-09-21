@@ -8,6 +8,7 @@ import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "..
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
+import ReactTooltip from "react-tooltip";
 
 const ItemDetails = (props) => {
   const redirect = useNavigate();
@@ -121,7 +122,10 @@ const ItemDetails = (props) => {
       <div className={"item-page"}>
 
         <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
-          <button className={"edit-item icon-blue"}><MdEdit size={40} /></button>
+          <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
+            <MdEdit size={40} />
+          </button>
+          <ReactTooltip id='edit-item'>Edit item</ReactTooltip>
         </Link>
         
         <div className={"item-details"}>
@@ -158,7 +162,7 @@ const ItemDetails = (props) => {
                 </tr>
               </> : null}
               </tbody></table>
-            <p>Description:<br />{ typeof(item.description) != "string"
+            <p><span>Description:</span><br />{ typeof(item.description) != "string"
               ? item.description
               : item.description.split("\n").map((line, i) => {
                 return <span key={i}>{line}<br /></span>

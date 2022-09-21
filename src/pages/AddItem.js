@@ -110,7 +110,7 @@ const AddItem = (props) => {
                 <td>&nbsp;</td>
               </tr>
               </tbody></table>
-            <p>Description:<br />
+            <p><span>Description:</span><br />
               <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder="(Optional) Enter description..." />
             </p>
           </form>

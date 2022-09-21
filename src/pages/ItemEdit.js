@@ -152,7 +152,7 @@ const ItemEdit = (props) => {
                   <td>&nbsp;</td>
                 </tr>
                 </tbody></table>
-              <p>Description:<br />
+              <p><span>Description:</span><br />
                 <textarea name="newDesc" style={{width: "-webkit-fill-available"}}
                   value={newDesc} onChange={e => setNewDesc(e.target.value)}
                   placeholder="(Optional) Enter description..." />
