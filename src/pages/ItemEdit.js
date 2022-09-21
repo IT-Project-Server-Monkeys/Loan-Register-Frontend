@@ -40,13 +40,13 @@ const ItemEdit = (props) => {
 
   // get and show item data
   useEffect(() => {
-    console.log(dbData);
+    // console.log(dbData);
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       setItem(dbData);
       redirect(`/item-details/${itemId}`, {state: null});
     }
-  }, [itemId, dbData]);
+  }, [itemId, dbData, redirect]);
 
   useEffect(() => {
     if (item.item_owner == null) return;
