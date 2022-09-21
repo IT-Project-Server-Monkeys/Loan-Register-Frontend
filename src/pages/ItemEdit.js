@@ -18,7 +18,6 @@ const ItemEdit = (props) => {
 
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState(noImg);
-  const [sizeWarn, setSizeWarn] = useState(false);
 
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
@@ -76,12 +75,7 @@ const ItemEdit = (props) => {
 
   // item img changing
   const handleChgImg = (e) => {
-    const img = e.target.files[0];
-    if (img.size > 51200) setSizeWarn(true); // 50KB size limit
-    else {
-      setSizeWarn(false);
-      changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
-    }
+    changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
   };
 
   // save item and post to server
@@ -121,9 +115,6 @@ const ItemEdit = (props) => {
             </label>
           </div>
           
-          {sizeWarn ?
-            <h4 className={"big-img-warn warning"}>Image must be under 50KB.</h4>
-          : null}
           <div className={"item-info"}>
             <form id="editItem" onSubmit={handleSaveItem}>
               <table><tbody>
@@ -132,7 +123,7 @@ const ItemEdit = (props) => {
                   <td>
                     <input name="newName" className={"input-box"} type="text"
                       value={newName} onChange={e => setNewName(e.target.value)}
-                      placeholder="Enter name..."
+                      placeholder="Enter name..." required
                     />
                   </td>
                 </tr>
@@ -141,7 +132,7 @@ const ItemEdit = (props) => {
                   <td>
                     <InputDropdown dropdownOpen={categOpen} toggle={categShow}
                       name="newCateg" placeholder="Enter category..."
-                      value={newCateg} changeOption={handleChgCg}
+                      value={newCateg} changeOption={handleChgCg} required
                     >
                       {categList.map((c) => {
                         return <Deletable askRm
