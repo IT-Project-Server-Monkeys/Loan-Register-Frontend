@@ -30,9 +30,14 @@ const Login = (props) => {
     // check if pwd given matches with hashed password
     await API(`users?email=${email}`)
     .then((res) => {
-      // console.log(res);
-      hash = res.data[0].hashed_password;
-      console.log(hash); 
+
+      if (res.data.length != 0) {
+        hash = res.data[0].hashed_password;
+        // console.log(hash); 
+        uid = res.data[0]._id;
+        // console.log(uid); 
+      }
+
     })
     .catch((err) => console.log(err));
 
@@ -40,27 +45,17 @@ const Login = (props) => {
       // if there is a password, compare both passwords
       bcrypt.compare(pwd, hash).then((res) => {
         if (res === true) {
-          console.log("successful pwd match");
+          props.onLogin(uid);
+          window.location.href='/dashboard/loaner';
+          setEmail('');
+          setPwd('');
+        } else {
+          setErrMsg('Incorrect Credentials');
+          errRef.current.focus();
         }
       });
-    }
-
-    await API(`users?password=${hash}&email=${email}`)
-      .then((res) => {
-        console.log(res);
-        uid = res.data[0]._id;
-        console.log(uid); 
-      })
-      .catch((err) => console.log(err));
-    
-    if (uid != null) {
-      props.onLogin(uid);
-      window.location.href='/dashboard/loaner';
-      setEmail('');
-      setPwd('');
-
     } else {
-      setErrMsg('Login Failed');
+      setErrMsg('Incorrect Credentials');
       errRef.current.focus();
     }
 
@@ -84,7 +79,7 @@ const Login = (props) => {
             </div>
             <div className={"inline-flex"}>
               <div className="h3">
-                  Password:
+                Password:
               </div>
               <input type="password" placeholder="Enter password" className={"input-box"} id="password" onChange={(e) => setPwd(e.target.value)} value={pwd} required />
             </div>
