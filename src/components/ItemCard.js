@@ -28,7 +28,7 @@ const ItemCard = (props) => {
           <Card className='item-card'>
             <div style={{height: '13rem'}}>
               {
-                image && <img alt="item-image" src={image} width='100%' height='100%' />
+                image && <img alt="item-img" src={image} width='100%' height='100%' />
               }
             </div>
             <CardBody>
