@@ -30,23 +30,38 @@ const fetchLoan = async (itemId, setItem) => {
 }
 
 const createLoan = (input, redirect) => {
-  let formData = { status: "Current", ...input };
-  if (input.loan_start_date === null || input.loan_start_date === "")
-    formData.loan_start_date = new Date();
+  let formData = { ...input };
+
+  const today = new Date();
+  const dateDiff = today - new Date(Date.parse(formData.intended_return_date));
+  if (dateDiff > 0) formData.status = "Overdue";
+  else formData.status = "On Loan";
+
   saveLoan(formData, true, redirect);
 
 }
 
-const editLoan = (formData, redirect) => saveLoan(formData, false, redirect);
+const editLoan = (input, redirect) => {
+  let formData = { ...input };
+  
+  const today = new Date();
+  const dateDiff = today - new Date(Date.parse(formData.intended_return_date));
+  if (dateDiff > 0) formData.status = "Overdue";
+  else formData.status = "On Loan";
+
+  saveLoan(formData, false, redirect)
+};
 
 const returnLoan = async (item, redirect) => {
   const actual_return_date = new Date();
   const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
 
-  let loanFormData = { _id: item.loan_id, actual_return_date: actual_return_date };
-  if (dateDiff > 0) saveLoan({...loanFormData, status: "Late Return"});
-  else if (dateDiff > -86400000) saveLoan({...loanFormData, status: "On Time Return"});
-  else saveLoan({...loanFormData, status: "Early Return"}, false, redirect);
+  let formData = { _id: item.loan_id, actual_return_date: actual_return_date };
+  if (dateDiff > 0) formData.status = "Late Return";
+  else if (dateDiff > -86400000) formData.status = "On Time Return";
+  else formData.status = "Early Return";
+
+  saveLoan(formData, false, redirect);
 }
 
 const saveLoan = async (formData, newItem, redirect) => {

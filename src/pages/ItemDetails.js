@@ -8,6 +8,7 @@ import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "..
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
+import ReactTooltip from "react-tooltip";
 
 const ItemDetails = (props) => {
   const redirect = useNavigate();
@@ -30,7 +31,7 @@ const ItemDetails = (props) => {
   const [noAccess, setNoAccess] = useState(false);
 
   const location = useLocation()
-  const itemDetails = location.state ? location.state.item : null;
+  const dbData = location.state ? location.state.item : null;
 
   const toggle = () => {
     setLnFormOpen(!lnFormOpen);
@@ -55,9 +56,7 @@ const ItemDetails = (props) => {
       ...input, item_id: itemId, loaner_id: props.uid
     }, () => {
       redirect(`/item-details/${itemId}`, {state: {item: {
-        item_owner: item.item_owner, item_id: item.item_id, being_loaned: true,
-        item_name: item.item_name, category: item.category,
-        description: item.description, image_url: item.image_url
+        ...item, being_loaned: true, loan_id: null
       }}});
       window.location.reload();
     })
@@ -66,9 +65,7 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await editLoan({ _id: item.loan_id, ...input }, () => {
       redirect(`/item-details/${itemId}`, {state: {item: {
-        item_owner: item.item_owner, item_id: item.item_id, being_loaned: true,
-        item_name: item.item_name, category: item.category,
-        description: item.description, image_url: item.image_url
+        ...item, being_loaned: true, loan_id: null
       }}});
       window.location.reload();
     })
@@ -77,9 +74,7 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await returnLoan(item, () => {
       redirect(`/item-details/${itemId}`, {state: {item: {
-        item_owner: item.item_owner, item_id: item.item_id, being_loaned: false,
-        item_name: item.item_name, category: item.category,
-        description: item.description, image_url: item.image_url
+        ...item, being_loaned: false, loan_id: null
       }}});
       window.location.reload();
     })
@@ -90,11 +85,13 @@ const ItemDetails = (props) => {
 
   // get and show item data
   useEffect(() => {
-    if (itemDetails === null) fetchItem(itemId, setItem);
-    else setItem({...itemDetails, loan_id: null, loanee_name: <Loading />,
-      loan_start_date: <Loading />, intended_return_date: <Loading />
-    });
-  }, [itemId, itemDetails]);
+    if (dbData === null) fetchItem(itemId, setItem);
+    else {
+      setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
+        loan_start_date: <Loading />, intended_return_date: <Loading /> });
+      redirect(`/item-details/${itemId}`, {state: null});
+    }
+  }, [itemId, dbData, redirect]);
 
   useEffect (() => {
     if (item.item_owner == null) return;
@@ -105,7 +102,7 @@ const ItemDetails = (props) => {
     }
 
     if (item.being_loaned) {
-      if (item.loan_id == null) {
+      if (item.loan_id === undefined || item.loan_id == null) {
         fetchLoan(item.item_id, setItem);
       } else {
         setLoaneeName(item.loanee_name);
@@ -125,7 +122,10 @@ const ItemDetails = (props) => {
       <div className={"item-page"}>
 
         <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
-          <button className={"edit-item icon-blue"}><MdEdit size={40} /></button>
+          <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
+            <MdEdit size={40} />
+          </button>
+          <ReactTooltip id='edit-item'>Edit item</ReactTooltip>
         </Link>
         
         <div className={"item-details"}>
@@ -162,7 +162,7 @@ const ItemDetails = (props) => {
                 </tr>
               </> : null}
               </tbody></table>
-            <p>Description:<br />{ typeof(item.description) != "string"
+            <p><span>Description:</span><br />{ typeof(item.description) != "string"
               ? item.description
               : item.description.split("\n").map((line, i) => {
                 return <span key={i}>{line}<br /></span>

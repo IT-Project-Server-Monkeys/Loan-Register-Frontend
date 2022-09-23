@@ -53,20 +53,24 @@ main .item-page {
       }
     }
 
-    .item-status, .big-img-warn {
+    .item-status /*, .big-img-warn*/ {
       grid-area: sta;
       font-weight: bold;
       width: 300px;
       margin-top: 1rem;
     }
 
-    .big-img-warn {
-      text-align: center;
-      font-size: 1.25rem;
-    }
+    // .big-img-warn {
+    //   text-align: center;
+    //   font-size: 1.25rem;
+    // }
 
     .item-info {
       grid-area: inf;
+
+      td:first-child, span:first-child {
+        font-weight: bold;
+      }
 
       table {
         td {
@@ -83,6 +87,7 @@ main .item-page {
         width: -webkit-fill-available;
         height: 240px;
         border-radius: 5px;
+        margin-top: 0.5rem;
       }
 
       .input-dropdown {
