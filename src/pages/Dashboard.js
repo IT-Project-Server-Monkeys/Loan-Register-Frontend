@@ -172,6 +172,8 @@ const LoanerDashboard = (props) => {
         </Link>
       </Col>
     ))
+
+
   };
 
 
@@ -345,7 +347,7 @@ const LoanerDashboard = (props) => {
   return (
     <div className="page-margin dashboard">
       <Row>
-        <Col md="3" className="bg-light-blue filter-container">
+        <Col className="bg-light-blue filter-container">
           <h3 style={{ marginBottom: '2rem' }}>
             View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
           </h3>
@@ -382,7 +384,7 @@ const LoanerDashboard = (props) => {
           />
           <Button onClick={applyFilters}>Apply Filters</Button>
         </Col>
-        <Col style={{ marginLeft: '4rem' }}>
+        <Col md='8'>
           <Row className="bg-light-blue" style={{ height: '5rem' }}>
             <div className="dashboard-nav">
               <div style={{ width: '40%', maxWidth: '25rem' }}>

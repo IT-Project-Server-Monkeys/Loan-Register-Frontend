@@ -42,6 +42,7 @@
   .filter-container {
     padding: 1rem 2rem 3rem 2rem;
     height: fit-content;
+    margin-right: 4rem;
   }
   
   .filter-box {
@@ -138,6 +139,12 @@
     cursor: pointer;
     transform: scale(1.01);
     transition: ease-in-out 0.2s;
+  }
+
+  h3, p, span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   img {
