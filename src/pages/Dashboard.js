@@ -33,7 +33,7 @@ const statusOptions = [
   { label: 'Early Return', value: 'Early Return' },
   { label: 'Late Return', value: 'Late Return' },
   { label: 'Overdue', value: 'Overdue' },
-  { label: 'Available', value: 'Avaliable' },
+  { label: 'Available', value: null },
 ];
 
 // const image = 'https://picsum.photos/300/200';
@@ -165,7 +165,7 @@ const LoanerDashboard = (props) => {
               item.intended_return_date &&
               dateFormat(item.intended_return_date, 'dd/mm/yyyy')
             }
-            loanStatus={item.being_loaned}
+            loanStatus={item.loan_status}
             gridView={gridView}
             searchText={searchText}
           />

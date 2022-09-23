@@ -45,7 +45,7 @@ const ItemCard = (props) => {
                     <p className='attribute'>Loan Status: </p>
                   </Col>
                   <Col xs='6' sm='6'>
-                    <p>{loanStatus ? "On loan" : "Not loaned"}</p>
+                    <p>{loanStatus ? loanStatus : "Available"}</p>
                   </Col>
                 </Row>
                 <Row>
