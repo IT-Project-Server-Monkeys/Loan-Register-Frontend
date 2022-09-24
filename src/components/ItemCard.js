@@ -27,10 +27,12 @@ const ItemCard = (props) => {
         gridView ?
           <Card className='item-card'>
             <div style={{height: '13rem'}}>
-              <img alt="item-img" src={image} width='100%' height='100%' />
+              {
+                image && <img alt="item-img" src={image} width='100%' height='100%' />
+              }
             </div>
             <CardBody>
-              <CardTitle tag="h3" style={{marginBottom: '0.5rem'}}>{renderText(title)}</CardTitle>
+              <CardTitle tag="h3" style={{marginBottom: '0.5rem', width:'100%'}}>{renderText(title)}</CardTitle>
               <div>
                 <Row>
                   <Col>
@@ -45,7 +47,7 @@ const ItemCard = (props) => {
                     <p className='attribute'>Loan Status: </p>
                   </Col>
                   <Col xs='6' sm='6'>
-                    <p>{loanStatus ? "On loan" : "Not loaned"}</p>
+                    <p>{loanStatus ? loanStatus : "Available"}</p>
                   </Col>
                 </Row>
                 <Row>
@@ -83,9 +85,9 @@ const ItemCard = (props) => {
                 <img alt="item-img" src={image} height='100%' width='100%' />
               </div>
             </Col>
-            <Col style={{paddingTop: '1.5rem', paddingBottom: '1rem'}}>
+            <Col md='8' style={{paddingTop: '1.5rem', paddingBottom: '1rem'}}>
               <Row>
-                <h3>{title}</h3>
+                <h3>{renderText(title)}</h3>
               </Row>
               <Row style={{alignItems: 'center'}}>
                 <Col>
@@ -94,7 +96,7 @@ const ItemCard = (props) => {
                       <p className='attribute'>Category: </p>
                     </Col>
                     <Col>
-                      <p>{category}</p>
+                      <p>{renderText(category)}</p>
                     </Col>
                   </Row>
                   <Row>

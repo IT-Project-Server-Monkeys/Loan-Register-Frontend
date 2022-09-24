@@ -33,7 +33,7 @@ const statusOptions = [
   { label: 'Early Return', value: 'Early Return' },
   { label: 'Late Return', value: 'Late Return' },
   { label: 'Overdue', value: 'Overdue' },
-  { label: 'Available', value: 'Avaliable' },
+  { label: 'Available', value: null },
 ];
 
 // const image = 'https://picsum.photos/300/200';
@@ -165,13 +165,15 @@ const LoanerDashboard = (props) => {
               item.intended_return_date &&
               dateFormat(item.intended_return_date, 'dd/mm/yyyy')
             }
-            loanStatus={item.being_loaned}
+            loanStatus={item.loan_status}
             gridView={gridView}
             searchText={searchText}
           />
         </Link>
       </Col>
     ))
+
+
   };
 
 
@@ -345,7 +347,7 @@ const LoanerDashboard = (props) => {
   return (
     <div className="page-margin dashboard">
       <Row>
-        <Col md="3" className="bg-light-blue filter-container">
+        <Col className="bg-light-blue filter-container">
           <h3 style={{ marginBottom: '2rem' }}>
             View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
           </h3>
@@ -382,7 +384,7 @@ const LoanerDashboard = (props) => {
           />
           <Button onClick={applyFilters}>Apply Filters</Button>
         </Col>
-        <Col style={{ marginLeft: '4rem' }}>
+        <Col md='8'>
           <Row className="bg-light-blue" style={{ height: '5rem' }}>
             <div className="dashboard-nav">
               <div style={{ width: '40%', maxWidth: '25rem' }}>
