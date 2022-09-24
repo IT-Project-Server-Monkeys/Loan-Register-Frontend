@@ -57,36 +57,55 @@ const ItemDetails = (props) => {
   // creates loan
   const handleCrtLn = async (input) => {
     setSubmitting(true);
-    createLoan({
-      ...input, item_id: itemId, loaner_id: props.uid
-    }, () => {
-      navigate(`/item-details/${itemId}`, {state: {item: {
-        ...item, being_loaned: true, loan_id: null
-      }}});
-      window.location.reload();
-    })
+    createLoan(
+      { ...input, item_id: itemId, loaner_id: props.uid },
+      () => {
+        navigate(`/item-details/${itemId}`, {state: {item: {
+          ...item, being_loaned: true, loan_id: null
+        }}});
+        window.location.reload();
+      },
+      () => {
+        setSubmitting(false);
+        alert("There was an error saving your loan. Please try again later.");
+      }
+    )
   };
 
   // edits existing loan
   const handleEdtLn = async (input) => {
     setSubmitting(true);
-    await editLoan({ _id: item.loan_id, ...input }, () => {
-      navigate(`/item-details/${itemId}`, {state: {item: {
-        ...item, being_loaned: true, loan_id: null
-      }}});
-      window.location.reload();
-    })
+    await editLoan(
+      { _id: item.loan_id, ...input },
+      () => {
+        navigate(`/item-details/${itemId}`, {state: {item: {
+          ...item, being_loaned: true, loan_id: null
+        }}});
+        window.location.reload();
+      },
+      () => {
+        setSubmitting(false);
+        alert("There was an error saving your loan. Please try again later.");
+      }
+    )
   }
 
   // returns existing loan
   const handleRtnLn = async () => {
     setSubmitting(true);
-    await returnLoan(item, () => {
-      navigate(`/item-details/${itemId}`, {state: {item: {
-        ...item, being_loaned: false, loan_id: null
-      }}});
-      window.location.reload();
-    })
+    await returnLoan(
+      item,
+      () => {
+        navigate(`/item-details/${itemId}`, {state: {item: {
+          ...item, being_loaned: false, loan_id: null
+        }}});
+        window.location.reload();
+      },
+      () => {
+        setSubmitting(false);
+        alert("There was an error saving your loan. Please try again later.");
+      }
+    )
   }
 
   // get all loanees & set loanee suggest list for loan form
@@ -97,6 +116,7 @@ const ItemDetails = (props) => {
   useEffect(() => {
     if (dbData === null) fetchItem(itemId, setItem);
     else {
+      console.log(dbData);
       setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
         loan_start_date: <Loading />, intended_return_date: <Loading /> });
         navigate(`/item-details/${itemId}`, {state: null});
@@ -133,7 +153,7 @@ const ItemDetails = (props) => {
     <>{noAccess ? <NoAccess /> :
       <div className={"item-page"}>
 
-        <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
+        <Link reloadDocument={false} to={`/item-details/${itemId}/edit`} state={{item: item}}>
           <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
             <MdEdit size={40} />
           </button>
@@ -147,7 +167,11 @@ const ItemDetails = (props) => {
               ? `url(${item.image_url})` : `url(${noImg})`
           }} />
           
-          <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
+          <p className={"item-status"}>Status: {
+            item.loan_status != null
+              ? item.loan_status
+              : item.being_loaned ? "On Loan" : "Available"
+          }</p>
           <div className={"item-info"}>
             <table><tbody>
               <tr>

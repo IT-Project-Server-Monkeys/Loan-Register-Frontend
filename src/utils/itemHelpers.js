@@ -78,14 +78,6 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
   if (newCateg !== "") formData.category = newCateg;
   formData.description = newDesc;
 
-  await API(`/items`, {
-    method: newItem ? "post" : "put", data: formData,
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
-  console.log(formData);
-
   // If new category not currently in user's available categories, put a request to user to add it
   if (newCateg !== "" && !(categList.includes(newCateg))) {
     setCategList((prevCgList) => { return [...prevCgList, newCateg] });
@@ -96,8 +88,19 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .catch((err) => {console.log(err); return false;});
   }
+
+  // update item information
+  await API(`/items`, {
+    method: newItem ? "post" : "put", data: formData,
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((res) => console.log(res))
+    .catch((err) => {console.log(err); return false;});
+  console.log(formData);
+
+  return true;
 }
 
 export { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };

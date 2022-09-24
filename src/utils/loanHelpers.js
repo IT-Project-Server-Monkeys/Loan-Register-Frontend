@@ -32,7 +32,7 @@ const fetchLoan = async (itemId, setItem) => {
 }
 
 // given a new loan creation, complete form data
-const createLoan = (input, navigate) => {
+const createLoan = (input, onSuccess, onFailure) => {
   let formData = { ...input };
 
   const today = new Date();
@@ -40,12 +40,12 @@ const createLoan = (input, navigate) => {
   if (dateDiff > 0) formData.status = "Overdue";
   else formData.status = "On Loan";
 
-  saveLoan(formData, true, navigate);
+  saveLoan(formData, true, onSuccess, onFailure);
 
 }
 
 // given an existing loan edit, complete form data
-const editLoan = (input, navigate) => {
+const editLoan = (input, onSuccess, onFailure) => {
   let formData = { ...input };
   
   const today = new Date();
@@ -53,11 +53,11 @@ const editLoan = (input, navigate) => {
   if (dateDiff > 0) formData.status = "Overdue";
   else formData.status = "On Loan";
 
-  saveLoan(formData, false, navigate)
+  saveLoan(formData, false, onSuccess, onFailure)
 };
 
 // given an existing loan return, complete form data
-const returnLoan = async (item, navigate) => {
+const returnLoan = async (item, onSuccess, onFailure) => {
   const actual_return_date = new Date();
   const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
 
@@ -66,11 +66,11 @@ const returnLoan = async (item, navigate) => {
   else if (dateDiff > -86400000) formData.status = "On Time Return";
   else formData.status = "Early Return";
 
-  saveLoan(formData, false, navigate);
+  saveLoan(formData, false, onSuccess, onFailure);
 }
 
 // sends completed loan form data to server
-const saveLoan = async (formData, newItem, navigate) => {
+const saveLoan = async (formData, newItem, onSuccess, onFailure) => {
 
   // clean form
   for (const prop in formData)
@@ -81,10 +81,8 @@ const saveLoan = async (formData, newItem, navigate) => {
     method: newItem ? "post" : "put", data: formData,
     headers: { "Content-Type": "application/json" },
   })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
-
-    navigate();
+    .then((res) => {console.log(res); onSuccess();})
+    .catch((err) => {console.log(err); onFailure();});
 }
 
 export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };

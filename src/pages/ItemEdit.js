@@ -68,11 +68,17 @@ const ItemEdit = (props) => {
       });
     }
 
-    await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
-    navigate(`/item-details/${itemId}`, {state: {item: {
-      ...item, image_url: displayImg,
-      item_name: newName, category: newCateg, description: newDesc,
-    }}});
+    if (await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false))
+      navigate(`/item-details/${itemId}`, {state: {item: {
+        ...item, image_url: displayImg,
+        item_name: newName, category: newCateg, description: newDesc,
+      }}});
+    else {
+      setSubmitting(false);
+
+      // TODO nicer alert
+      alert("There was an error saving your item. Please try again later.");
+    }
   }
 
   // get list of potential categories for render & modification
