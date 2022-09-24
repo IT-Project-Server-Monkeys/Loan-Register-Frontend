@@ -12,7 +12,7 @@ import ReactTooltip from "react-tooltip";
 
 const ItemDetails = (props) => {
   // page navigation
-  const redirect = useNavigate();
+  const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
   const location = useLocation()
   
@@ -60,7 +60,7 @@ const ItemDetails = (props) => {
     createLoan({
       ...input, item_id: itemId, loaner_id: props.uid
     }, () => {
-      redirect(`/item-details/${itemId}`, {state: {item: {
+      navigate(`/item-details/${itemId}`, {state: {item: {
         ...item, being_loaned: true, loan_id: null
       }}});
       window.location.reload();
@@ -71,7 +71,7 @@ const ItemDetails = (props) => {
   const handleEdtLn = async (input) => {
     setSubmitting(true);
     await editLoan({ _id: item.loan_id, ...input }, () => {
-      redirect(`/item-details/${itemId}`, {state: {item: {
+      navigate(`/item-details/${itemId}`, {state: {item: {
         ...item, being_loaned: true, loan_id: null
       }}});
       window.location.reload();
@@ -82,7 +82,7 @@ const ItemDetails = (props) => {
   const handleRtnLn = async () => {
     setSubmitting(true);
     await returnLoan(item, () => {
-      redirect(`/item-details/${itemId}`, {state: {item: {
+      navigate(`/item-details/${itemId}`, {state: {item: {
         ...item, being_loaned: false, loan_id: null
       }}});
       window.location.reload();
@@ -99,9 +99,9 @@ const ItemDetails = (props) => {
     else {
       setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
         loan_start_date: <Loading />, intended_return_date: <Loading /> });
-      redirect(`/item-details/${itemId}`, {state: null});
+        navigate(`/item-details/${itemId}`, {state: null});
     }
-  }, [itemId, dbData, redirect]);
+  }, [itemId, dbData, navigate]);
 
   // if user does not own item, redirect them away from the page
   // else, fetch any loan data and pre-enter in loan form
@@ -109,7 +109,7 @@ const ItemDetails = (props) => {
     if (item.item_owner == null) return;
     if (props.uid == null || props.uid !== item.item_owner) {
       noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
-        redirect, setNoAccess);
+        navigate, setNoAccess);
       return;
     }
 
@@ -127,7 +127,7 @@ const ItemDetails = (props) => {
       setReturnDate("");
     }
 
-  }, [item, props.uid, redirect])
+  }, [item, props.uid, navigate])
 
   return (
     <>{noAccess ? <NoAccess /> :

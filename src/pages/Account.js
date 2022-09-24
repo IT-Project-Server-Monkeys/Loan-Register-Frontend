@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const Account = (props) => {
   // page navigation
-  const redirect = useNavigate();
+  const navigate = useNavigate();
 
   // form submission
   const [nameSub, setNameSub] = useState(false);
@@ -98,7 +98,7 @@ const Account = (props) => {
       setNewEmail(fetchedData.login_email);
     };
     fetchUser();
-  }, [props.uid, redirect]);
+  }, [props.uid, navigate]);
 
   return (
     <div className={"account-page"}>

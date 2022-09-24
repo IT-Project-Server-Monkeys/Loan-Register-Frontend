@@ -6,7 +6,7 @@ import API from '../utils/api';
 
 const ChangePassword = (props) => {
   // page navigation
-  const redirect = useNavigate();
+  const navigate = useNavigate();
   
   // form submission
   const safePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -50,7 +50,7 @@ const ChangePassword = (props) => {
         .then((res) => console.log(res))
         .catch((err) => console.log(err));
 
-      redirect("/account");
+        navigate("/account");
     }
   };
 

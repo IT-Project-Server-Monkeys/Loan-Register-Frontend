@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable, NoAccess } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
@@ -9,7 +9,7 @@ import noImg from "../images/noImage_300x375.png";
 
 const ItemEdit = (props) => {
   // page navigation
-  const redirect = useNavigate();
+  const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
   const location = useLocation();
   const [submitting, setSubmitting] = useState(false);
@@ -69,7 +69,7 @@ const ItemEdit = (props) => {
     }
 
     await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false);
-    redirect(`/item-details/${itemId}`, {state: {item: {
+    navigate(`/item-details/${itemId}`, {state: {item: {
       ...item, image_url: displayImg,
       item_name: newName, category: newCateg, description: newDesc,
     }}});
@@ -85,9 +85,9 @@ const ItemEdit = (props) => {
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       setItem(dbData);
-      redirect(`/item-details/${itemId}`, {state: null});
+      navigate(`/item-details/${itemId}/edit`, {state: null});
     }
-  }, [itemId, dbData, redirect]);
+  }, [itemId, dbData, navigate]);
 
   // if user is not item owner, redirect them away from page
   // else, loan original information to display on page
@@ -95,7 +95,7 @@ const ItemEdit = (props) => {
     if (item.item_owner == null) return;
     if (props.uid == null || props.uid !== item.item_owner) {
       noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
-        redirect, setNoAccess);
+        navigate, setNoAccess);
       return;
     }
 
@@ -103,7 +103,7 @@ const ItemEdit = (props) => {
     setNewName(item.item_name);
     setNewCateg(item.category);
     setNewDesc(item.description);
-  }, [item, props.uid, redirect])
+  }, [item, props.uid, navigate])
 
   return (
     <>{noAccess ? <NoAccess /> : 
@@ -167,9 +167,9 @@ const ItemEdit = (props) => {
         </div>
 
         <div className={"btn-list"}>
-          <TextButton altStyle
-            onClick={() => redirect(`/item-details/${itemId}`, {state: {item: item}})}
-          >Cancel</TextButton>
+          <Link to={`/item-details/${itemId}`} state={{item: item}}>
+            <TextButton altStyle>Cancel</TextButton>
+          </Link>
           <TextButton form="editItem" type="submit">Save</TextButton>
         </div>
         

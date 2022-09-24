@@ -7,7 +7,7 @@ import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImag
 import noImg from "../images/noImage_300x375.png";
 
 const AddItem = (props) => {
-  const redirect = useNavigate();
+  const navigate = useNavigate();
 
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState(noImg);
@@ -56,7 +56,7 @@ const AddItem = (props) => {
     }
 
     await saveItem(e, null, categList, setCategList, imgString, props.uid, true);
-    redirect(`/dashboard`);
+    navigate(`/dashboard`);
   }
 
   return (
@@ -119,7 +119,7 @@ const AddItem = (props) => {
 
       <div className={"btn-list"}>
         <TextButton altStyle
-          onClick={() => redirect(`/dashboard`)}
+          onClick={() => navigate(`/dashboard`)}
         >Cancel</TextButton>
         <TextButton form="editItem" type="submit">Save</TextButton>
       </div>

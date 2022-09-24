@@ -32,7 +32,7 @@ const fetchLoan = async (itemId, setItem) => {
 }
 
 // given a new loan creation, complete form data
-const createLoan = (input, redirect) => {
+const createLoan = (input, navigate) => {
   let formData = { ...input };
 
   const today = new Date();
@@ -40,12 +40,12 @@ const createLoan = (input, redirect) => {
   if (dateDiff > 0) formData.status = "Overdue";
   else formData.status = "On Loan";
 
-  saveLoan(formData, true, redirect);
+  saveLoan(formData, true, navigate);
 
 }
 
 // given an existing loan edit, complete form data
-const editLoan = (input, redirect) => {
+const editLoan = (input, navigate) => {
   let formData = { ...input };
   
   const today = new Date();
@@ -53,11 +53,11 @@ const editLoan = (input, redirect) => {
   if (dateDiff > 0) formData.status = "Overdue";
   else formData.status = "On Loan";
 
-  saveLoan(formData, false, redirect)
+  saveLoan(formData, false, navigate)
 };
 
 // given an existing loan return, complete form data
-const returnLoan = async (item, redirect) => {
+const returnLoan = async (item, navigate) => {
   const actual_return_date = new Date();
   const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
 
@@ -66,11 +66,11 @@ const returnLoan = async (item, redirect) => {
   else if (dateDiff > -86400000) formData.status = "On Time Return";
   else formData.status = "Early Return";
 
-  saveLoan(formData, false, redirect);
+  saveLoan(formData, false, navigate);
 }
 
 // sends completed loan form data to server
-const saveLoan = async (formData, newItem, redirect) => {
+const saveLoan = async (formData, newItem, navigate) => {
 
   // clean form
   for (const prop in formData)
@@ -84,7 +84,7 @@ const saveLoan = async (formData, newItem, redirect) => {
     .then((res) => console.log(res))
     .catch((err) => console.log(err));
 
-  redirect();
+    navigate();
 }
 
 export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };
