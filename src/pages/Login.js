@@ -31,11 +31,10 @@ const Login = (props) => {
     await API(`users?email=${email}`)
     .then((res) => {
 
+      // if there is no data returned
       if (res.data.length != 0) {
         hash = res.data[0].hashed_password;
-        // console.log(hash); 
         uid = res.data[0]._id;
-        // console.log(uid); 
       }
 
     })

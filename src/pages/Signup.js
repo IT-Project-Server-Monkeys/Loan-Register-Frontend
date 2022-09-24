@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import bcrypt from 'bcryptjs';
 
 const Signup = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
@@ -14,25 +15,52 @@ const Signup = () => {
   // remove error message if input is being adjusted
   useEffect(() => {
     setErrMsg('');
-  }, [email, pwd, confirmPwd])
+  }, [username, email, pwd, confirmPwd])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let uid = null;
     let isValid = true;
     let newUser = {};
-    let randomUsername = Math.random().toString(16).substring(2, 10);
+    // let randomUsername = Math.random().toString(16).substring(2, 10);
+
+    // check if it is a unique username
+    await API(`users?display_name=${username}`)
+      .then((res) => {
+
+        // if there is no data returned
+        if (res.data.length != 0) {
+          setErrMsg("This username is already taken");
+          isValid = false;
+        }
+
+      })
+      .catch((err) => console.log(err));
 
     // check if it is a unique email
     await API(`users?email=${email}`)
       .then((res) => {
-        console.log(res);
-        uid = res.data[0]._id;
-        console.log(uid); 
+
+        // if there is no data returned
+        if (res.data.length != 0) {
+          setErrMsg("This email already has an account");
+          isValid = false;
+        }
+
       })
       .catch((err) => console.log(err));
     
-    if (uid != null) {
+    // check if email is a valid email
+    // following regex expression is referenced from https://www.w3resource.com/javascript/form/email-validation.php
+    const validEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (!validEmail.test(email)) {
+      setErrMsg("Invalid email");
+      isValid = false;
+    }
+
+    // check if pwd is a secure pwd
+    const safePattern = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z])$/;
+    if (!safePattern.test(pwd)) {
+      setErrMsg("Password must be at least 8 characters long, and include at least one lowercase letter, one uppercase letter, one number and one symbol");
       isValid = false;
     }
 
@@ -47,7 +75,8 @@ const Signup = () => {
 
     if (isValid === true) {
       // randomly generate username
-      newUser.display_name = randomUsername;
+      // newUser.display_name = randomUsername;
+      newUser.display_name = username;
       newUser.login_email = email;
 
       var hash = bcrypt.hashSync(pwd);
@@ -82,6 +111,12 @@ const Signup = () => {
           <p className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
 
           <form onSubmit={handleSubmit}>
+            <div className={"inline-flex"}>
+              <div className="h3">
+                Username:
+              </div>
+              <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} required/>
+            </div>
             <div className={"inline-flex"}>
               <div className="h3">
                 Email:
