@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Header, Footer } from './components';
-import { Home, Login, Signup, Dashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword } from './pages';
+import { Home, Login, Signup, Dashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword, ForgotPassword } from './pages';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
@@ -31,6 +31,7 @@ function App() {
     window.sessionStorage.removeItem("uid"); 
     setUid(null);
   }
+
   
   return (
     <div className="App">
@@ -47,6 +48,7 @@ function App() {
             <Route path="/item-history/:id" element={<ItemHistory />} />
             <Route path="/stats" element={<Stats />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/account" element={<Account uid={uid} />} />
             <Route path="/change-password" element={<ChangePassword uid={uid} />} />
           </Routes>
