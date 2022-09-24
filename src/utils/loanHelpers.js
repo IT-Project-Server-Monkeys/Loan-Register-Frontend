@@ -1,6 +1,7 @@
 import API from "./api";
 import dateFormat from 'dateformat';
 
+// get all loanee names & ids from server (for loan form validation)
 const fetchAllLoanees = async (setAllLoanees) => {
   let fetchedData = {};
   await API.get(`/users?all=1`)
@@ -10,6 +11,7 @@ const fetchAllLoanees = async (setAllLoanees) => {
   setAllLoanees(fetchedData);
 }
 
+// get info on an item's current loan
 const fetchLoan = async (itemId, setItem) => {
   let fetchedData = null;
   let loaneeName = "";
@@ -29,6 +31,7 @@ const fetchLoan = async (itemId, setItem) => {
   }});
 }
 
+// given a new loan creation, complete form data
 const createLoan = (input, redirect) => {
   let formData = { ...input };
 
@@ -41,6 +44,7 @@ const createLoan = (input, redirect) => {
 
 }
 
+// given an existing loan edit, complete form data
 const editLoan = (input, redirect) => {
   let formData = { ...input };
   
@@ -52,6 +56,7 @@ const editLoan = (input, redirect) => {
   saveLoan(formData, false, redirect)
 };
 
+// given an existing loan return, complete form data
 const returnLoan = async (item, redirect) => {
   const actual_return_date = new Date();
   const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
@@ -64,6 +69,7 @@ const returnLoan = async (item, redirect) => {
   saveLoan(formData, false, redirect);
 }
 
+// sends completed loan form data to server
 const saveLoan = async (formData, newItem, redirect) => {
 
   // clean form

@@ -5,22 +5,31 @@ import API from '../utils/api';
 import { useNavigate } from "react-router-dom";
 
 const Account = (props) => {
+  // page navigation
   const redirect = useNavigate();
-  const [userInfo, setUserInfo] = useState({});
-  const [newName, setNewName] = useState(<Loading />);
-  const [newEmail, setNewEmail] = useState(<Loading />);
+
+  // form submission
   const [nameSub, setNameSub] = useState(false);
   const [emailSub, setEmailSub] = useState(false);
   const [nameWarn, setNameWarn] = useState("");
   const [emailWarn, setEmailWarn] = useState("");
 
+  // form data
+  const [userInfo, setUserInfo] = useState({});
+  const [newName, setNewName] = useState(<Loading />);
+  const [newEmail, setNewEmail] = useState(<Loading />);
+
+  // if the entered display name is not unique, show warning
+  // else, submit data to the server
   const saveName = async (name) => {
     let fetchedData = [];
     setNameSub(true);
     setNewName(<Loading />);
     await API.get(`/users?display_name=${name}`)
       .then((res) => {fetchedData = res.data})
-      .catch((err) => console.log(err));  
+      .catch((err) => console.log(err));
+
+    // disallow further edit until server GET & PUT requests have been completed
     setNameSub(false);
 
     if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
@@ -39,6 +48,8 @@ const Account = (props) => {
     }
   }
 
+  // if the entered login email is not unique, show warning
+  // else, submit data to the server
   const saveEmail = async (email) => {
     let fetchedData = [];
     setEmailSub(true);
@@ -46,6 +57,8 @@ const Account = (props) => {
     await API.get(`/users?email=${email}`)
       .then((res) => {fetchedData = res.data})
       .catch((err) => console.log(err));
+
+    // disallow further edit until server GET & PUT requests have been completed
     setEmailSub(false);
 
     if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
@@ -77,9 +90,7 @@ const Account = (props) => {
 
       if (fetchedData == null) fetchedData = [{
         _id: props.uid,
-        display_name: "retrieval failed",
-        login_email: "placeholder@mail.com",
-        hashed_password: "thisisapassword",
+        display_name: "Retrieval Failed"
       }];
       
       setUserInfo(fetchedData);

@@ -11,28 +11,31 @@ import dateFormat from 'dateformat';
 import ReactTooltip from "react-tooltip";
 
 const ItemDetails = (props) => {
+  // page navigation
   const redirect = useNavigate();
+  const [noAccess, setNoAccess] = useState(false);
+  const location = useLocation()
+  
+  // item information
   const itemId = useParams().id;
+  const dbData = location.state ? location.state.item : null;
   const [item, setItem] = useState({
     item_name: <Loading />, image_url: noImg,
     category: <Loading />, description: <Loading />,
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
   });
+
+  // loan form
   const [lnFormOpen, setLnFormOpen] = useState(false);
-
   const [loaneeName, setLoaneeName] = useState("");
-  const [allLoanees, setAllLoanees] = useState({"Test User 2": "62fd8a9df04410afbc6df31e"});
+  const [allLoanees, setAllLoanees] = useState({});
   const [suggestedLoanees, setSuggestedLoanees] = useState([]);
-
   const [loanDate, setLoanDate] = useState(dateFormat(new Date(), 'dd/mm/yyyy'));
   const [returnDate, setReturnDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [noAccess, setNoAccess] = useState(false);
-
-  const location = useLocation()
-  const dbData = location.state ? location.state.item : null;
-
+  
+  // open/close loan form with optional existing loan data
   const toggle = () => {
     setLnFormOpen(!lnFormOpen);
     if (item.being_loaned) {
@@ -46,13 +49,15 @@ const ItemDetails = (props) => {
     }
   };
 
+  // typeable + selectable loanee entry via InputDropdown
   const selectLoanee = (ln) => setLoaneeName(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
   const changeLoanee = (e) => setLoaneeName(e.target.value);
 
+  // creates loan
   const handleCrtLn = async (input) => {
     setSubmitting(true);
-    await createLoan({
+    createLoan({
       ...input, item_id: itemId, loaner_id: props.uid
     }, () => {
       redirect(`/item-details/${itemId}`, {state: {item: {
@@ -61,6 +66,8 @@ const ItemDetails = (props) => {
       window.location.reload();
     })
   };
+
+  // edits existing loan
   const handleEdtLn = async (input) => {
     setSubmitting(true);
     await editLoan({ _id: item.loan_id, ...input }, () => {
@@ -70,6 +77,8 @@ const ItemDetails = (props) => {
       window.location.reload();
     })
   }
+
+  // returns existing loan
   const handleRtnLn = async () => {
     setSubmitting(true);
     await returnLoan(item, () => {
@@ -80,6 +89,7 @@ const ItemDetails = (props) => {
     })
   }
 
+  // get all loanees & set loanee suggest list for loan form
   useEffect(() => { setSubmitting(false); fetchAllLoanees(setAllLoanees); }, []);
   useEffect(() => setSuggestedLoanees(Object.keys(allLoanees)), [allLoanees]);
 
@@ -93,6 +103,8 @@ const ItemDetails = (props) => {
     }
   }, [itemId, dbData, redirect]);
 
+  // if user does not own item, redirect them away from the page
+  // else, fetch any loan data and pre-enter in loan form
   useEffect (() => {
     if (item.item_owner == null) return;
     if (props.uid == null || props.uid !== item.item_owner) {

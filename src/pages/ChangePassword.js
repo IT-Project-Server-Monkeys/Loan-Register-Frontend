@@ -5,21 +5,27 @@ import { TextBkgBox, TextButton, Submitting } from "../components";
 import API from '../utils/api';
 
 const ChangePassword = (props) => {
-  const safePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  // page navigation
   const redirect = useNavigate();
+  
+  // form submission
+  const safePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   const [letSubmit, setLetSubmit] = useState(false);
   const [safetyNote, setSafetyNote] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // check if the password has bene retyped in confirm input
   const confirmPwd = () => {
     const newPwd = document.getElementById("newPwd").value;
     const confirmPwd = document.getElementById("confirmPwd").value;
     setLetSubmit(newPwd && confirmPwd === newPwd);
   };
 
+  // submit the new password to the server
   const changePwd = async (event) => {
     event.preventDefault();
     
+    // do not submit if password is unsafe
     let newPwd = document.getElementById("newPwd").value;
     if (!safePattern.test(newPwd)) {
       setSafetyNote(true);
@@ -28,6 +34,7 @@ const ChangePassword = (props) => {
       return;
       
     } else {
+      // block the screen and send the data to the server
 
       // TODO hash password
 

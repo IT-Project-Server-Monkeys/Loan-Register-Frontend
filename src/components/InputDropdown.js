@@ -2,8 +2,8 @@ import React from "react";
 import "../styles/InputDropdown.scss"; // component scoped style
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
+// an input with custom suggestions as a dropdown menu
 const InputDropdown = (props) => {
-
 
   return (
     <Dropdown className={"input-dropdown"} toggle={props.toggle}

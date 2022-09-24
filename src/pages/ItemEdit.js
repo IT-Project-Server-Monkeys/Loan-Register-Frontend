@@ -8,75 +8,49 @@ import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 
 const ItemEdit = (props) => {
+  // page navigation
   const redirect = useNavigate();
+  const [noAccess, setNoAccess] = useState(false);
+  const location = useLocation();
+  const [submitting, setSubmitting] = useState(false);
+  
+  // original item information
   const itemId = useParams().id;
+  const dbData = location.state ? location.state.item : null;
   const [item, setItem] = useState({
     item_name: "Loading...",
     category: "Loading...",
     description: "Loading..."
   });
-
-  const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState(noImg);
 
-  const [categList, setCategList] = useState([]);
-  const [delableCg, setDelableCg] = useState([]);
-
+  // new item image, name, category, description
+  const [itemImg, setItemImg] = useState(null);
   const [newName, setNewName] = useState("");
   const [newCateg, setNewCateg] = useState("");
   const [newDesc, setNewDesc] = useState("");
 
-  const [submitting, setSubmitting] = useState(false);
-  const [noAccess, setNoAccess] = useState(false);
-
-  const location = useLocation();
-  const dbData = location.state ? location.state.item : null;
-
+  // user category list for modifying & selecting
   const [categOpen, setCategOpen] = useState(false);
-  const categShow = () => {
-    if (delableCg.length !== 0) setCategOpen((prevState) => !prevState)
-  };
-
-  // get and show item data
-  useEffect(() => {
-    // console.log(dbData);
-    if (dbData === null) fetchItem(itemId, setItem);
-    else {
-      setItem(dbData);
-      redirect(`/item-details/${itemId}`, {state: null});
-    }
-  }, [itemId, dbData, redirect]);
-
-  useEffect(() => {
-    if (item.item_owner == null) return;
-    if (props.uid == null || props.uid !== item.item_owner) {
-      noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
-        redirect, setNoAccess);
-      return;
-    }
-
-    setDisplayImg(item.image_url !== undefined ? item.image_url : noImg)
-    setNewName(item.item_name);
-    setNewCateg(item.category);
-    setNewDesc(item.description);
-  }, [item, props.uid, redirect])
-
-  // get list of potential categs
-  useEffect(() => {
-    fetchCategs(props.uid, setCategList, setDelableCg);
-  }, [props.uid]);
-
-  // categ changing
-  const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
-  const handleChgCg = (e) => changeCategory(e, setNewCateg);
-  const handleDelCg = (categ) => {
-    deleteCategory(categ, setCategList, props.uid);
-  }
+  const [categList, setCategList] = useState([]);
+  const [delableCg, setDelableCg] = useState([]);
 
   // item img changing
   const handleChgImg = (e) => {
     changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
   };
+
+  // toggle category inputdropdown open/close
+  const categShow = () => {
+    if (delableCg.length !== 0) setCategOpen((prevState) => !prevState)
+  };
+
+  // typeable/selectable category changing via inputdropdown
+  const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
+  const handleChgCg = (e) => changeCategory(e, setNewCateg);
+  const handleDelCg = (categ) => {
+    deleteCategory(categ, setCategList, props.uid);
+  }
 
   // save item and post to server
   const handleSaveItem = async (e) => {
@@ -84,6 +58,7 @@ const ItemEdit = (props) => {
     setSubmitting(true);
     let imgString = "";
 
+    // convert any new images into base64 string
     if (itemImg !== null) {
       imgString = await new Promise((resolve) => {
         let fileReader = new FileReader();
@@ -99,6 +74,36 @@ const ItemEdit = (props) => {
       item_name: newName, category: newCateg, description: newDesc,
     }}});
   }
+
+  // get list of potential categories for render & modification
+  useEffect(() => {
+    fetchCategs(props.uid, setCategList, setDelableCg);
+  }, [props.uid]);
+  
+  // get and show item data
+  useEffect(() => {
+    if (dbData === null) fetchItem(itemId, setItem);
+    else {
+      setItem(dbData);
+      redirect(`/item-details/${itemId}`, {state: null});
+    }
+  }, [itemId, dbData, redirect]);
+
+  // if user is not item owner, redirect them away from page
+  // else, loan original information to display on page
+  useEffect(() => {
+    if (item.item_owner == null) return;
+    if (props.uid == null || props.uid !== item.item_owner) {
+      noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
+        redirect, setNoAccess);
+      return;
+    }
+
+    setDisplayImg(item.image_url !== undefined ? item.image_url : noImg)
+    setNewName(item.item_name);
+    setNewCateg(item.category);
+    setNewDesc(item.description);
+  }, [item, props.uid, redirect])
 
   return (
     <>{noAccess ? <NoAccess /> : 
