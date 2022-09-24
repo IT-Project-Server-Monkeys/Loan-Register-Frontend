@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/Overlay.scss";
 
+// display to notify the user that they do not have access to a page
 const NoAccess = (props) => {
 
   return (

@@ -2,34 +2,20 @@ import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
 import { TextButton, TextBkgBox, InputDropdown, Deletable } from "./";
 import { Modal } from 'reactstrap';
-
-const toLocale = (dateString) => {
-  if (!dateString.includes("-")) return "";
-  return (new Date(Date.parse(dateString))).toLocaleDateString();
-}
-
-// assume locale DD/MM/YYYY format
-const toISO = (dateString) => {
-  if (dateString.includes("-")) return dateString;
-  else if (dateString.includes("/")) {
-    let ds = dateString.split("/");
-    return `${ds[2]}-${ds[1]}-${ds[0]}`;
-  }
-  else return "";
-}
+import { toISO, toLocale } from "../utils/helpers";
 
 const LoanForm = (props) => {
   const [letSubmit, setLetSubmit] = useState(false);
   const [nameWarn, setNameWarn] = useState(false);
   const [dateWarn, setDateWarn] = useState(false);
-  
   const [loaneeOpen, setLoaneeOpen] = useState(false);
+
+  // show/hide loanee input dropdown
   const loaneeShow = () => {
     setLoaneeOpen((prevState) => !prevState)
   };
 
-  useEffect(() => setLetSubmit(!props.newLoan), [props.newLoan]);
-
+  // check if all entries have been put, and that return date is after loan date
   const checkSubmittable = () => {
     const form = document.getElementById("loanForm");
     const lneName = form.loanee.value;
@@ -44,6 +30,7 @@ const LoanForm = (props) => {
     setDateWarn(lnDate !== "" && rtnDate !== "" && !(toISO(lnDate) < toISO(rtnDate)))
   }
 
+  // submits loan form to parent (item detail page)
   const submitHandler = async (e) => {
     e.preventDefault();
 
@@ -53,6 +40,9 @@ const LoanForm = (props) => {
       intended_return_date: toISO(e.target.returnDate.value)
     });
   }
+
+  // checks submittable upon edit
+  useEffect(() => setLetSubmit(!props.newLoan), [props.newLoan]);
 
   return (
     <>

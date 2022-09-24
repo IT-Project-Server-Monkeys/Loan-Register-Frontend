@@ -1,6 +1,7 @@
 import API from "./api";
 import dateFormat from 'dateformat';
 
+// get all loanee names & ids from server (for loan form validation)
 const fetchAllLoanees = async (setAllLoanees) => {
   let fetchedData = {};
   await API.get(`/users?all=1`)
@@ -10,6 +11,7 @@ const fetchAllLoanees = async (setAllLoanees) => {
   setAllLoanees(fetchedData);
 }
 
+// get info on an item's current loan
 const fetchLoan = async (itemId, setItem) => {
   let fetchedData = null;
   let loaneeName = "";
@@ -29,7 +31,8 @@ const fetchLoan = async (itemId, setItem) => {
   }});
 }
 
-const createLoan = (input, redirect) => {
+// given a new loan creation, complete form data
+const createLoan = (input, onSuccess, onFailure) => {
   let formData = { ...input };
 
   const today = new Date();
@@ -37,11 +40,12 @@ const createLoan = (input, redirect) => {
   if (dateDiff > 0) formData.status = "Overdue";
   else formData.status = "On Loan";
 
-  saveLoan(formData, true, redirect);
+  saveLoan(formData, true, onSuccess, onFailure);
 
 }
 
-const editLoan = (input, redirect) => {
+// given an existing loan edit, complete form data
+const editLoan = (input, onSuccess, onFailure) => {
   let formData = { ...input };
   
   const today = new Date();
@@ -49,10 +53,11 @@ const editLoan = (input, redirect) => {
   if (dateDiff > 0) formData.status = "Overdue";
   else formData.status = "On Loan";
 
-  saveLoan(formData, false, redirect)
+  saveLoan(formData, false, onSuccess, onFailure)
 };
 
-const returnLoan = async (item, redirect) => {
+// given an existing loan return, complete form data
+const returnLoan = async (item, onSuccess, onFailure) => {
   const actual_return_date = new Date();
   const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
 
@@ -61,10 +66,11 @@ const returnLoan = async (item, redirect) => {
   else if (dateDiff > -86400000) formData.status = "On Time Return";
   else formData.status = "Early Return";
 
-  saveLoan(formData, false, redirect);
+  saveLoan(formData, false, onSuccess, onFailure);
 }
 
-const saveLoan = async (formData, newItem, redirect) => {
+// sends completed loan form data to server
+const saveLoan = async (formData, newItem, onSuccess, onFailure) => {
 
   // clean form
   for (const prop in formData)
@@ -75,10 +81,8 @@ const saveLoan = async (formData, newItem, redirect) => {
     method: newItem ? "post" : "put", data: formData,
     headers: { "Content-Type": "application/json" },
   })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
-
-  redirect();
+    .then((res) => {console.log(res); onSuccess();})
+    .catch((err) => {console.log(err); onFailure();});
 }
 
 export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };

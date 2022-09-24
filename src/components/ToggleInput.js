@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-// field that switches between display mode and edit mode
+// a text field that switches between display mode and edit mode
 const ToggleInput = (props) => {
   const [editMode, setEditMode] = useState(false);
 

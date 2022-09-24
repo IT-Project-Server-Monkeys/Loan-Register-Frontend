@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Spinner } from "reactstrap";
 import "../styles/Overlay.scss";
 
+// an overlay to block the page while some form data is submitting
 const Submitting = (props) => {
   const [ellipsis, setEllipsis] = useState("");
-
 
   useEffect(() => {
     setInterval(() => {

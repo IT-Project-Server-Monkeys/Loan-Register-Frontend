@@ -1,5 +1,6 @@
 import API from "./api";
 
+// gets item from server
 const fetchItem = async (itemId, setItem) => {
   let fetchedData = null;
   if (itemId == null) return;
@@ -11,6 +12,7 @@ const fetchItem = async (itemId, setItem) => {
   if (fetchedData != null) setItem((i) => {return {...i, ...fetchedData, item_id: itemId}});
 }
 
+// gets user's available categories from server
 const fetchCategs = async (uid, setCategList, setDelableCg) => {
   let fetchedData = null;
   if (uid == null) return;
@@ -23,6 +25,7 @@ const fetchCategs = async (uid, setCategList, setDelableCg) => {
   fetchDelableCg(fetchedData.item_categories, uid, setDelableCg);
 };
 
+// gets the user's unused categories from server
 const fetchDelableCg = async (categList, uid, setDelableCg) => {
   if (uid == null) return;
   let delable = [];
@@ -35,11 +38,13 @@ const fetchDelableCg = async (categList, uid, setDelableCg) => {
   setDelableCg(delable);
 }
 
-// category changing
+// category changing via click input of inputdropdown
 const selectCategory = (categ, setNewCateg) => setNewCateg(categ);
 
+// category changing via keyboard input of inputdropdown
 const changeCategory = (e, setNewCateg) => setNewCateg(e.target.value);
 
+// delete an unused category via inputdropdown deletable
 const deleteCategory = async (categ, setCategList, uid) => {
   setCategList((prev) => prev.filter((c) => c !== categ));
   await API(`/users`, {
@@ -50,13 +55,14 @@ const deleteCategory = async (categ, setCategList, uid) => {
     .catch((err) => console.log(err));
 }
 
-// item image changing
+// selects an image
 const changeImage = (img, setItemImg, displayImg, setDisplayImg) => {
   setItemImg(img);
   URL.revokeObjectURL(displayImg);
   setDisplayImg(URL.createObjectURL(img));
 }
 
+// saves new item information to server
 const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newItem) => {
   e.preventDefault();
   const newName = e.target.newName.value;
@@ -72,15 +78,7 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
   if (newCateg !== "") formData.category = newCateg;
   formData.description = newDesc;
 
-  await API(`/items`, {
-    method: newItem ? "post" : "put", data: formData,
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
-  console.log(formData);
-
-  // if new category not in user current category, put request to user to add it
+  // If new category not currently in user's available categories, put a request to user to add it
   if (newCateg !== "" && !(categList.includes(newCateg))) {
     setCategList((prevCgList) => { return [...prevCgList, newCateg] });
 
@@ -90,8 +88,19 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .catch((err) => {console.log(err); return false;});
   }
+
+  // update item information
+  await API(`/items`, {
+    method: newItem ? "post" : "put", data: formData,
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((res) => console.log(res))
+    .catch((err) => {console.log(err); return false;});
+  console.log(formData);
+
+  return true;
 }
 
 export { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
