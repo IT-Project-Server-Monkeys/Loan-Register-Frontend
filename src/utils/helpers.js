@@ -1,3 +1,5 @@
+import dateFormat from 'dateformat';
+
 /* constants */
 
 export const LOANER = 'loaner';
@@ -33,7 +35,7 @@ export const toISO = (dateString) => {
   else return "";
 }
 
-export const toLocale = (dateString) => {
+export const toDDMMYYYY = (dateString) => {
   if (!dateString.includes("-")) return "";
-  return (new Date(Date.parse(dateString))).toLocaleDateString();
+  return dateFormat(Date.parse(dateString), 'dd/mm/yyyy');
 }

@@ -5,7 +5,7 @@ import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../componen
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
 import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "../utils/loanHelpers";
-import { noAccessRedirect } from "../utils/helpers";
+import { noAccessRedirect, toDDMMYYYY } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
 import ReactTooltip from "react-tooltip";
@@ -44,7 +44,7 @@ const ItemDetails = (props) => {
       setReturnDate(item.intended_return_date);
     } else {
       setLoaneeName("");
-      setLoanDate(new Date().toLocaleDateString());
+      setLoanDate(toDDMMYYYY(new Date().toString()));
       setReturnDate("");
     }
   };

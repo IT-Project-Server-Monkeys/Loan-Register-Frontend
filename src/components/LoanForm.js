@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "../styles/LoanForm.scss"; // component scoped style
 import { TextButton, TextBkgBox, InputDropdown, Deletable } from "./";
 import { Modal } from 'reactstrap';
-import { toISO, toLocale } from "../utils/helpers";
+import { toISO, toDDMMYYYY } from "../utils/helpers";
 
 const LoanForm = (props) => {
   const [letSubmit, setLetSubmit] = useState(false);
@@ -81,7 +81,7 @@ const LoanForm = (props) => {
                 }}
                 onBlurCapture={e => {
                   e.target.type="text";
-                  props.chgLnDate(toLocale(e.target.value));
+                  props.chgLnDate(toDDMMYYYY(e.target.value));
                   checkSubmittable();
                 }}
               />
@@ -97,7 +97,7 @@ const LoanForm = (props) => {
                 }}
                 onBlurCapture={e => {
                   e.target.type="text";
-                  props.chgRtnDate(toLocale(e.target.value));
+                  props.chgRtnDate(toDDMMYYYY(e.target.value));
                   checkSubmittable();
                 }}
               />
