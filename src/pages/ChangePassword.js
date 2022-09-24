@@ -5,7 +5,7 @@ import { TextBkgBox, TextButton, Submitting } from "../components";
 import API from '../utils/api';
 
 const ChangePassword = (props) => {
-  const safePattern = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z])$/;
+  const safePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   const redirect = useNavigate();
   const [letSubmit, setLetSubmit] = useState(false);
   const [safetyNote, setSafetyNote] = useState(false);
@@ -72,7 +72,7 @@ const ChangePassword = (props) => {
           </TextButton>
         </form>
       </TextBkgBox>
-      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
+      {submitting ? <Submitting /> : null}
     </div>
   );
 };

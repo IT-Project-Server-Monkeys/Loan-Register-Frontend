@@ -42,6 +42,7 @@
   .filter-container {
     padding: 1rem 2rem 3rem 2rem;
     height: fit-content;
+    margin-right: 4rem;
   }
   
   .filter-box {
@@ -54,8 +55,21 @@
     margin-top: 1rem;
   }
 
+  .btn {
+    margin-top: 2rem;
+    background-color: var(--blue-color);
+    padding: 0.7rem;
+    font-size: large;
+    &:hover {
+      background-color: var(--hover-blue-color) !important;
+    }
+  }
+
+
+
 }
 
+// MultiSelect styles
 .msl-vars {
   margin-top: 1rem;
   --input-width: 100% !important;
@@ -63,6 +77,7 @@
   --line-height: 2rem !important;
   --font-size: 1.2rem !important;
   background-color: white;
+  --menu-max-height: 12rem !important;
   
   .msl {
     border: none !important;
@@ -88,7 +103,7 @@
     border-radius: 0 0 20px 20px;
   }
 
-  .card-title, p {
+  .card-title, p, span {
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
@@ -96,12 +111,15 @@
 
   img {
     border-radius: 20px 20px 0 0;
+    // object-fit: contain;
+    object-fit: cover;
+    // object-fit: fill;  
   }
 
   p {
     margin-bottom: 0;
   }
-  .card-subtitle {
+  .attribute {
     font-weight: 500;
   }
   .row {
@@ -121,6 +139,12 @@
     cursor: pointer;
     transform: scale(1.01);
     transition: ease-in-out 0.2s;
+  }
+
+  h3, p, span {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   img {

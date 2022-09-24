@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import "../styles/InputDropdown.scss"; // component scoped style
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
@@ -10,7 +10,8 @@ const InputDropdown = (props) => {
       isOpen={props.dropdownOpen && props.children.length !== 0} direction="down">
       <DropdownToggle caret>
         <input onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault()}}
-          placeholder={props.placeholder} value={props.value} onChange={props.changeOption}
+          placeholder={props.placeholder} value={props.value}
+          onChange={(e) => props.changeOption(e)}
           type="text" name={props.name} required={props.required} autoComplete="off"
         />
         <span>▾</span>

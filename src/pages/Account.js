@@ -2,22 +2,67 @@ import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput, TextButton, Loading } from '../components';
 import API from '../utils/api';
+import { useNavigate } from "react-router-dom";
 
 const Account = (props) => {
-  const [userInfo, setUserInfo] = useState({
-    display_name: <Loading />,
-    login_email: <Loading />,
-  });
+  const redirect = useNavigate();
+  const [userInfo, setUserInfo] = useState({});
+  const [newName, setNewName] = useState(<Loading />);
+  const [newEmail, setNewEmail] = useState(<Loading />);
+  const [nameSub, setNameSub] = useState(false);
+  const [emailSub, setEmailSub] = useState(false);
+  const [nameWarn, setNameWarn] = useState("");
+  const [emailWarn, setEmailWarn] = useState("");
 
-  const saveInput = async (input) => {
-    let formData = { _id: props.uid, ...input};
-    console.log(formData);
-    await API(`/users`, {
-      method: "put", data: formData,
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => console.log(res))
+  const saveName = async (name) => {
+    let fetchedData = [];
+    setNameSub(true);
+    setNewName(<Loading />);
+    await API.get(`/users?display_name=${name}`)
+      .then((res) => {fetchedData = res.data})
+      .catch((err) => console.log(err));  
+    setNameSub(false);
+
+    if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
+      let formData = { _id: props.uid, display_name: name};
+      await API(`/users`, {
+        method: "put", data: formData,
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+      setNameWarn("");
+      setNewName(name);
+    } else {
+      setNameWarn(name);
+      setNewName(userInfo.display_name);
+    }
+  }
+
+  const saveEmail = async (email) => {
+    let fetchedData = [];
+    setEmailSub(true);
+    setNewEmail(<Loading />);
+    await API.get(`/users?email=${email}`)
+      .then((res) => {fetchedData = res.data})
       .catch((err) => console.log(err));
+    setEmailSub(false);
+
+    if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
+      let formData = { _id: props.uid, login_email: email};
+      await API(`/users`, {
+        method: "put", data: formData,
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+      setEmailWarn("");
+      setNewEmail(email);
+    } else {
+      setEmailWarn(email);
+      setNewEmail(userInfo.login_email);
+    }
+
   }
 
   // get user data from server, querying using userId recorded in the app's session
@@ -25,6 +70,7 @@ const Account = (props) => {
     const fetchUser = async () => {
       let fetchedData = null;
       if (props.uid == null) return;
+
       await API.get(`/users?id=${props.uid}`)
       .then((res) => fetchedData = res.data)
       .catch((err) => console.log(err));
@@ -37,9 +83,11 @@ const Account = (props) => {
       }];
       
       setUserInfo(fetchedData);
+      setNewName(fetchedData.display_name);
+      setNewEmail(fetchedData.login_email);
     };
     fetchUser();
-  }, [props.uid]);
+  }, [props.uid, redirect]);
 
   return (
     <div className={"account-page"}>
@@ -47,18 +95,20 @@ const Account = (props) => {
         <h1>Account</h1>
         <div className={"inline-flex"}>
           <h3>Display name:</h3>
-          <ToggleInput saveInput={saveInput} type="text"
-            field="display_name" initVal={userInfo.display_name}
+          <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
+            field="display_name" value={newName} setVal={setNewName}
           />
         </div>
+        { nameWarn !== "" ? <h4 className="warning">The display name "{nameWarn}" is taken.</h4> : null }
         <div className={"inline-flex"}>
           <h3>Email:</h3>
-          <ToggleInput saveInput={saveInput} type="email"
-            field="login_email" initVal={userInfo.login_email}
+          <ToggleInput disabled={emailSub} saveInput={saveEmail} type="email"
+            field="login_email" value={newEmail} setVal={setNewEmail}
           />
         </div>
+        { emailWarn !== "" ? <h4 className="warning">The email "{emailWarn}" is taken.</h4> : null }
         <a href="/change-password">
-          <TextButton>Change password</TextButton>
+          <TextButton disabled={nameSub || emailSub}>Change password</TextButton>
         </a>
       </TextBkgBox>
     </div>
