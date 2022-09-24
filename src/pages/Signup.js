@@ -21,14 +21,13 @@ const Signup = () => {
     e.preventDefault();
     let isValid = true;
     let newUser = {};
-    // let randomUsername = Math.random().toString(16).substring(2, 10);
 
     // check if it is a unique username
     await API(`users?display_name=${username}`)
       .then((res) => {
 
         // if there is no data returned
-        if (res.data.length != 0) {
+        if (res.data.length !== 0) {
           setErrMsg("This username is already taken");
           isValid = false;
         }
@@ -41,7 +40,7 @@ const Signup = () => {
       .then((res) => {
 
         // if there is no data returned
-        if (res.data.length != 0) {
+        if (res.data.length !== 0) {
           setErrMsg("This email already has an account");
           isValid = false;
         }
@@ -58,7 +57,7 @@ const Signup = () => {
     }
 
     // check if pwd is a secure pwd
-    const safePattern = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9])(?=.*[a-z])$/;
+    const safePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!safePattern.test(pwd)) {
       setErrMsg("Password must be at least 8 characters long, and include at least one lowercase letter, one uppercase letter, one number and one symbol");
       isValid = false;
@@ -71,18 +70,17 @@ const Signup = () => {
     } 
     
     // for testing purposes
-    isValid = false;
+    // isValid = false;
 
     if (isValid === true) {
-      // randomly generate username
-      // newUser.display_name = randomUsername;
+
       newUser.display_name = username;
       newUser.login_email = email;
 
       var hash = bcrypt.hashSync(pwd);
       // hash pwd before sending to db
       newUser.hashed_password = hash;
-      console.log(hash);
+      // console.log(hash);
   
       await API(`/users`, {    
         method: "post",
@@ -90,7 +88,7 @@ const Signup = () => {
         headers: {"Content-Type": "application/json"}
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
       })
       .catch((err) => console.log(err));
       
@@ -136,7 +134,7 @@ const Signup = () => {
               <input type="password" placeholder="Enter password" className={"input-box"} id="confirm-password" onChange={(e) => setConfirmPwd(e.target.value)} value={confirmPwd} required/>
             </div>
             <a href="/login" className="a">Existing user?</a>
-            <TextButton onClick="" className={"button"}>Sign up</TextButton>
+            <TextButton className={"button"}>Sign up</TextButton>
           </form>
         </TextBkgBox>
       </div>

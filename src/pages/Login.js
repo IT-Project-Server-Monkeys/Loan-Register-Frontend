@@ -32,7 +32,7 @@ const Login = (props) => {
     .then((res) => {
 
       // if there is no data returned
-      if (res.data.length != 0) {
+      if (res.data.length !== 0) {
         hash = res.data[0].hashed_password;
         uid = res.data[0]._id;
       }
@@ -45,7 +45,7 @@ const Login = (props) => {
       bcrypt.compare(pwd, hash).then((res) => {
         if (res === true) {
           props.onLogin(uid);
-          window.location.href='/dashboard/loaner';
+          window.location.href='/dashboard';
           setEmail('');
           setPwd('');
         } else {
