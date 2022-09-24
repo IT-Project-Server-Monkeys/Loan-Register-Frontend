@@ -23,59 +23,66 @@ const Account = (props) => {
   // else, submit data to the server
   const saveName = async (name) => {
     let fetchedData = [];
+    const failAlert = "There was an error saving your display name. Please try again later.";
+    const onFail = () => { setNewName(userInfo.display_name); alert(failAlert); }
+    
+    // disallow further edit until server GET & PUT requests have been completed
     setNameSub(true);
     setNewName(<Loading />);
+    
     await API.get(`/users?display_name=${name}`)
       .then((res) => {fetchedData = res.data})
-      .catch((err) => console.log(err));
+      .catch((err) => { console.log(err); fetchedData = false; });
 
-    // disallow further edit until server GET & PUT requests have been completed
-    setNameSub(false);
-
-    if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
+    if (fetchedData === false) onFail();
+    else if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
       let formData = { _id: props.uid, display_name: name};
       await API(`/users`, {
         method: "put", data: formData,
         headers: { "Content-Type": "application/json" },
       })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+        .then((res) => { console.log(res); setNewName(name); })
+        .catch((err) => { console.log(err); onFail(); });
       setNameWarn("");
-      setNewName(name);
     } else {
       setNameWarn(name);
       setNewName(userInfo.display_name);
     }
+
+    setNameSub(false);
   }
 
   // if the entered login email is not unique, show warning
   // else, submit data to the server
   const saveEmail = async (email) => {
     let fetchedData = [];
-    setEmailSub(true);
-    setNewEmail(<Loading />);
-    await API.get(`/users?email=${email}`)
-      .then((res) => {fetchedData = res.data})
-      .catch((err) => console.log(err));
+    const failAlert = "There was an error saving your login email. Please try again later.";
+    const onFail = () => { setNewEmail(userInfo.login_email); alert(failAlert); }
 
     // disallow further edit until server GET & PUT requests have been completed
-    setEmailSub(false);
+    setEmailSub(true);
+    setNewEmail(<Loading />);
 
-    if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
+    await API.get(`/users?email=${email}`)
+      .then((res) => {fetchedData = res.data})
+      .catch((err) => { console.log(err); fetchedData = false; });
+
+    if (fetchedData === false) onFail();
+    else if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
       let formData = { _id: props.uid, login_email: email};
       await API(`/users`, {
         method: "put", data: formData,
         headers: { "Content-Type": "application/json" },
       })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+        .then((res) => { console.log(res); setNewEmail(email); })
+        .catch((err) => { console.log(err); onFail() });
       setEmailWarn("");
-      setNewEmail(email);
     } else {
       setEmailWarn(email);
       setNewEmail(userInfo.login_email);
     }
 
+    setEmailSub(false);
   }
 
   // get user data from server, querying using userId recorded in the app's session

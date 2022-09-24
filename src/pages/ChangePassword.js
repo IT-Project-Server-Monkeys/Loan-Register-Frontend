@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
 import { TextBkgBox, TextButton, Submitting } from "../components";
 import API from '../utils/api';
+import bcrypt from 'bcryptjs';
 
 const ChangePassword = (props) => {
   // page navigation
@@ -31,26 +32,28 @@ const ChangePassword = (props) => {
       setSafetyNote(true);
       document.getElementById("newPwd").value = "";
       document.getElementById("confirmPwd").value = "";
-      return;
       
     } else {
       // block the screen and send the data to the server
-
-      // TODO hash password
-
       setSubmitting(true);
       
-      let formData = {_id: props.uid, hashed_password: newPwd};
+      let formData = {
+        _id: props.uid,
+        hashed_password: bcrypt.hashSync(newPwd)
+      };
       console.log(formData);
 
       await API(`/users`, {
         method: "put", data: formData,
         headers: { "Content-Type": "application/json" },
       })
-        .then((res) => console.log(res))
-        .catch((err) => console.log(err));
+        .then((res) => { console.log(res); navigate("/account"); })
+        .catch((err) => {
+          console.log(err);
+          alert("There was an error saving your password. Please try again later.");
+        });
 
-        navigate("/account");
+      setSubmitting(false);
     }
   };
 
