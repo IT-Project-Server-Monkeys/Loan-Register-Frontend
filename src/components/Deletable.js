@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import "../styles/InputDropdown.scss"; // component scoped style
 
+// a clickable and removable suggestion to be used in an InputDropdown
 const Deletable = (props) => {
   const [confirmRmv, setConfirmRmv] = useState();
 
+  // selecting this suggestion
   const handleSelect = (e) => {
     e.preventDefault();
     props.selectOption(props.children);
   }
+
+  // removing this suggestion
   const handleRemove = (e) => {
     e.preventDefault();
     if (props.canDel) props.deleteOption(props.children);
@@ -33,7 +37,6 @@ const Deletable = (props) => {
         :
           <button onClick={handleRemove}>&#215;</button>
       }
-      
     </div>
   );
 };

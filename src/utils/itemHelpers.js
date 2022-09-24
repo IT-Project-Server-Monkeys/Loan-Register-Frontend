@@ -1,21 +1,19 @@
 import API from "./api";
-import { fetchLoan } from "./loanHelpers";
 
-const fetchItem = async (itemId, setItem, getLoan=true) => {
+// gets item from server
+const fetchItem = async (itemId, setItem) => {
   let fetchedData = null;
   if (itemId == null) return;
 
   await API.get(`/items?_id=${itemId}`)
-    .then((res) => fetchedData = res.data)
+    .then((res) => {fetchedData = res.data})
     .catch((err) => console.log(err));
 
-  if (fetchedData != null) {
-    if (fetchedData.being_loaned && getLoan) await fetchLoan(itemId, setItem);
-    setItem((prevItem) => {return {...prevItem, ...fetchedData}});
-  }
+  if (fetchedData != null) setItem((i) => {return {...i, ...fetchedData, item_id: itemId}});
 }
 
-const fetchCategs = async (uid, setCategList) => {
+// gets user's available categories from server
+const fetchCategs = async (uid, setCategList, setDelableCg) => {
   let fetchedData = null;
   if (uid == null) return;
 
@@ -24,8 +22,10 @@ const fetchCategs = async (uid, setCategList) => {
     .catch((err) => console.log(err));
   
   setCategList(fetchedData.item_categories);
+  fetchDelableCg(fetchedData.item_categories, uid, setDelableCg);
 };
 
+// gets the user's unused categories from server
 const fetchDelableCg = async (categList, uid, setDelableCg) => {
   if (uid == null) return;
   let delable = [];
@@ -38,11 +38,13 @@ const fetchDelableCg = async (categList, uid, setDelableCg) => {
   setDelableCg(delable);
 }
 
-// category changing
+// category changing via click input of inputdropdown
 const selectCategory = (categ, setNewCateg) => setNewCateg(categ);
 
+// category changing via keyboard input of inputdropdown
 const changeCategory = (e, setNewCateg) => setNewCateg(e.target.value);
 
+// delete an unused category via inputdropdown deletable
 const deleteCategory = async (categ, setCategList, uid) => {
   setCategList((prev) => prev.filter((c) => c !== categ));
   await API(`/users`, {
@@ -53,14 +55,15 @@ const deleteCategory = async (categ, setCategList, uid) => {
     .catch((err) => console.log(err));
 }
 
-// item image changing
-const changeImage = (e, setItemImg, displayImg, setDisplayImg) => {
-  setItemImg(e.target.files[0]);
+// selects an image
+const changeImage = (img, setItemImg, displayImg, setDisplayImg) => {
+  setItemImg(img);
   URL.revokeObjectURL(displayImg);
-  setDisplayImg(URL.createObjectURL(e.target.files[0]));
+  setDisplayImg(URL.createObjectURL(img));
 }
 
-const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newItem) => {
+// saves new item information to server
+const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newItem) => {
   e.preventDefault();
   const newName = e.target.newName.value;
   const newCateg = e.target.newCateg.value;
@@ -70,21 +73,12 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
     item_owner: uid,
     being_loaned: false, loan_frequency: 0
   } : { _id: itemId } ;
-  if (itemImg !== null) formData.image = itemImg;
+  if (imgString !== "") formData.image_enc = imgString;
   if (newName !== "") formData.item_name = newName;
   if (newCateg !== "") formData.category = newCateg;
-  if (newDesc !== "") formData.description = newDesc;
-    else formData.description = "(No description.)";
+  formData.description = newDesc;
 
-  await API(`/items`, {
-    method: newItem ? "post" : "put", data: formData,
-    headers: { "Content-Type": "application/json" },
-  })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
-  console.log(formData);
-
-  // if new category not in user current category, put request to user to add it
+  // If new category not currently in user's available categories, put a request to user to add it
   if (newCateg !== "" && !(categList.includes(newCateg))) {
     setCategList((prevCgList) => { return [...prevCgList, newCateg] });
 
@@ -94,8 +88,19 @@ const saveItem = async (e, itemId, categList, setCategList, itemImg, uid, newIte
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .catch((err) => {console.log(err); return false;});
   }
+
+  // update item information
+  await API(`/items`, {
+    method: newItem ? "post" : "put", data: formData,
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((res) => console.log(res))
+    .catch((err) => {console.log(err); return false;});
+  console.log(formData);
+
+  return true;
 }
 
 export { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };

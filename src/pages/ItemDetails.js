@@ -1,35 +1,43 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams, useNavigate, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { LoanForm, TextButton, Loading, Submitting } from '../components';
+import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
-import { createLoan, editLoan, returnLoan } from "../utils/loanHelpers";
+import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "../utils/loanHelpers";
+import { noAccessRedirect } from "../utils/helpers";
+import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
+import ReactTooltip from "react-tooltip";
 
 const ItemDetails = (props) => {
-  const redirect = useNavigate();
+  // page navigation
+  const navigate = useNavigate();
+  const [noAccess, setNoAccess] = useState(false);
+  const location = useLocation()
+  
+  // item information
   const itemId = useParams().id;
-  const baseItem = {
-    item_name: <Loading />, category: <Loading />, description: <Loading />,
-    being_loaned: false, loanee_name: <Loading />,
+  const dbData = location.state ? location.state.item : null;
+  const [item, setItem] = useState({
+    item_name: <Loading />, image_url: noImg,
+    category: <Loading />, description: <Loading />,
+    being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
-  }
-  const [item, setItem] = useState(baseItem);
-  const [modal, setModal] = useState(false);
+  });
 
-  const [loanee_name, setLoaneeName] = useState("");
-  const [suggestedLoanees, setSuggestedLoanees] = useState(["test", "loanee", "suggestions"]);
-
-  const [loanDate, setLoanDate] = useState();
-  const [returnDate, setReturnDate] = useState();
+  // loan form
+  const [lnFormOpen, setLnFormOpen] = useState(false);
+  const [loaneeName, setLoaneeName] = useState("");
+  const [allLoanees, setAllLoanees] = useState({});
+  const [suggestedLoanees, setSuggestedLoanees] = useState([]);
+  const [loanDate, setLoanDate] = useState(dateFormat(new Date(), 'dd/mm/yyyy'));
+  const [returnDate, setReturnDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
-  const location = useLocation();
-  const itemDetails = location.state ? location.state.item : null;
-
+  
+  // open/close loan form with optional existing loan data
   const toggle = () => {
-    setModal(!modal);
+    setLnFormOpen(!lnFormOpen);
     if (item.being_loaned) {
       setLoaneeName(item.loanee_name);
       setLoanDate(item.loan_start_date);
@@ -41,121 +49,185 @@ const ItemDetails = (props) => {
     }
   };
 
+  // typeable + selectable loanee entry via InputDropdown
   const selectLoanee = (ln) => setLoaneeName(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
   const changeLoanee = (e) => setLoaneeName(e.target.value);
 
+  // creates loan
   const handleCrtLn = async (input) => {
     setSubmitting(true);
-    await createLoan({
-      ...input,
-      item_id: itemId,
-      loaner_id: props.uid
-    })
-    // window.location.reload();
+    createLoan(
+      { ...input, item_id: itemId, loaner_id: props.uid },
+      () => {
+        navigate(`/item-details/${itemId}`, {state: {item: {
+          ...item, being_loaned: true, loan_id: null
+        }}});
+        window.location.reload();
+      },
+      () => {
+        setSubmitting(false);
+        alert("There was an error saving your loan. Please try again later.");
+      }
+    )
   };
+
+  // edits existing loan
   const handleEdtLn = async (input) => {
     setSubmitting(true);
-    await editLoan({ _id: item.loan_id, ...input });
-    window.location.reload();
+    await editLoan(
+      { _id: item.loan_id, ...input },
+      () => {
+        navigate(`/item-details/${itemId}`, {state: {item: {
+          ...item, being_loaned: true, loan_id: null
+        }}});
+        window.location.reload();
+      },
+      () => {
+        setSubmitting(false);
+        alert("There was an error saving your loan. Please try again later.");
+      }
+    )
   }
+
+  // returns existing loan
   const handleRtnLn = async () => {
     setSubmitting(true);
-    await returnLoan(item);
-    window.location.reload();
+    await returnLoan(
+      item,
+      () => {
+        navigate(`/item-details/${itemId}`, {state: {item: {
+          ...item, being_loaned: false, loan_id: null
+        }}});
+        window.location.reload();
+      },
+      () => {
+        setSubmitting(false);
+        alert("There was an error saving your loan. Please try again later.");
+      }
+    )
   }
 
-  useEffect(() => setSubmitting(false), []);
-  
-  // get and show item data, if not already provided
-  useEffect(() => {
-    if (itemDetails === null) fetchItem(itemId, setItem)
-    else setItem({
-      ...itemDetails,
-      loan_start_date: dateFormat(itemDetails.loan_start_date, 'dd/mm/yyyy'),
-      intended_return_date: dateFormat(itemDetails.intended_return_date, 'dd/mm/yyyy'),
-    });
-    // TODO clear itemdetails
-    window.history.replaceState({}, document.title);
-  }, [itemId, itemDetails]);
+  // get all loanees & set loanee suggest list for loan form
+  useEffect(() => { setSubmitting(false); fetchAllLoanees(setAllLoanees); }, []);
+  useEffect(() => setSuggestedLoanees(Object.keys(allLoanees)), [allLoanees]);
 
+  // get and show item data
   useEffect(() => {
-  }, [item]);
+    if (dbData === null) fetchItem(itemId, setItem);
+    else {
+      console.log(dbData);
+      setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
+        loan_start_date: <Loading />, intended_return_date: <Loading /> });
+        navigate(`/item-details/${itemId}`, {state: null});
+    }
+  }, [itemId, dbData, navigate]);
 
+  // if user does not own item, redirect them away from the page
+  // else, fetch any loan data and pre-enter in loan form
   useEffect (() => {
     if (item.item_owner == null) return;
     if (props.uid == null || props.uid !== item.item_owner) {
-      // TODO show that user does not have permission to view item
-      if (props.uid == null) redirect("/login");
-      else redirect("/dashboard/loaner");
+      noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
+        navigate, setNoAccess);
       return;
     }
 
-  }, [item, props.uid, redirect])
+    if (item.being_loaned) {
+      if (item.loan_id === undefined || item.loan_id == null) {
+        fetchLoan(item.item_id, setItem);
+      } else {
+        setLoaneeName(item.loanee_name);
+        setLoanDate(item.loan_start_date);
+        setReturnDate(item.intended_return_date);
+      }
+    } else {
+      setLoaneeName("");
+      setLoanDate(new Date().toLocaleDateString());
+      setReturnDate("");
+    }
+
+  }, [item, props.uid, navigate])
 
   return (
-    <div className={"item-page"}>
+    <>{noAccess ? <NoAccess /> :
+      <div className={"item-page"}>
 
-      <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
-        <button className={"edit-item icon-blue"}><MdEdit size={40} /></button>
-      </Link>
-      
-      <div className={"item-details"}>
-
-        <div className={"item-image"} style={{backgroundImage: "url('https://picsum.photos/400/400')" }} />
+        <Link reloadDocument={false} to={`/item-details/${itemId}/edit`} state={{item: item}}>
+          <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
+            <MdEdit size={40} />
+          </button>
+          <ReactTooltip id='edit-item'>Edit item</ReactTooltip>
+        </Link>
         
-        <p className={"item-status"}>Status: {item.being_loaned ? "On Loan" : "Available"}</p>
-        <div className={"item-info"}>
-          <table><tbody>
-            <tr>
-              <td>Name:</td><td>{item.item_name}</td>
-            </tr>
-            <tr>
-              <td>Category:</td><td>{item.category}</td>
-            </tr>
-            <tr>
-              <td>&nbsp;</td>
-            </tr>
-            { item.being_loaned ? <>
+        <div className={"item-details"}>
+
+          <div className={"item-image"} style={{
+            backgroundImage: item.image_url !== undefined
+              ? `url(${item.image_url})` : `url(${noImg})`
+          }} />
+          
+          <p className={"item-status"}>Status: {
+            item.loan_status != null
+              ? item.loan_status
+              : item.being_loaned ? "On Loan" : "Available"
+          }</p>
+          <div className={"item-info"}>
+            <table><tbody>
               <tr>
-                <td>Loanee:</td><td>{item.loanee_name}</td>
+                <td>Name:</td><td>{item.item_name}</td>
               </tr>
               <tr>
-                <td>Date loaned:</td><td>{item.loan_start_date}</td>
-              </tr>
-              <tr>
-                <td>Expected return:</td><td>{item.intended_return_date}</td>
+                <td>Category:</td><td>{item.category}</td>
               </tr>
               <tr>
                 <td>&nbsp;</td>
               </tr>
-            </> : null}
-            </tbody></table>
-          <p>Description:<br />{item.description}</p>
+              { item.being_loaned ? <>
+                <tr>
+                  <td>Loanee:</td><td>{item.loanee_name}</td>
+                </tr>
+                <tr>
+                  <td>Date loaned:</td><td>{item.loan_start_date}</td>
+                </tr>
+                <tr>
+                  <td>Expected return:</td><td>{item.intended_return_date}</td>
+                </tr>
+                <tr>
+                  <td>&nbsp;</td>
+                </tr>
+              </> : null}
+              </tbody></table>
+            <p><span>Description:</span><br />{ typeof(item.description) != "string"
+              ? item.description
+              : item.description.split("\n").map((line, i) => {
+                return <span key={i}>{line}<br /></span>
+              }) // react-string-replace didn't work :/
+            }</p>
+          </div>
         </div>
-      </div>
 
-      <div className={"btn-list"}>
-        <a href="/history"><TextButton>History</TextButton></a>
-        {item.being_loaned ? <>
-          <TextButton onClick={toggle}>Edit Loan</TextButton>
-          <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
-        </> :
-          <TextButton onClick={toggle}>Loan Item</TextButton>
-        }
-      </div>
+        <div className={"btn-list"}>
+          <a href="/history"><TextButton>History</TextButton></a>
+          {item.being_loaned ? <>
+            <TextButton onClick={toggle}>Edit Loan</TextButton>
+            <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
+          </> :
+            <TextButton onClick={toggle}>Loan Item</TextButton>
+          }
+        </div>
 
-      <LoanForm modal={modal} toggle={toggle} item={item}
-        newLoan={!item.being_loaned} loaneeValue={loanee_name}
-        onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
-        suggestedLoanees={suggestedLoanees} changeLoanee={changeLoanee}
-        selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
-        lnDateValue={loanDate} rtnDateValue={returnDate}
-        chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
-      />
-      
-      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
-    </div>
+        <LoanForm modal={lnFormOpen} toggle={toggle} item={item}
+          newLoan={!item.being_loaned} loaneeValue={loaneeName}
+          onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
+          allLoanees={allLoanees} suggestedLoanees={suggestedLoanees}
+          changeLoanee={changeLoanee} selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
+          lnDateValue={loanDate} rtnDateValue={returnDate}
+          chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
+        />
+        {submitting ? <Submitting /> : null}
+      </div>
+    }</>
   );
 };
 

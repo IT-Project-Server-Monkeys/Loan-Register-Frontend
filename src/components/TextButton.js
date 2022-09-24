@@ -1,6 +1,7 @@
 import React from "react";
 import "../styles/Global.scss";
 
+// a large button with text, with two alternative styles
 const TextButton = (props) => {
   return (
     <button

@@ -1,13 +1,17 @@
 import API from "./api";
+import dateFormat from 'dateformat';
 
+// get all loanee names & ids from server (for loan form validation)
 const fetchAllLoanees = async (setAllLoanees) => {
   let fetchedData = {};
   await API.get(`/users?all=1`)
     .then((res) => res.data.forEach((l) => {fetchedData[l.display_name] = l._id}))
     .catch((err) => console.log(err));
+
   setAllLoanees(fetchedData);
 }
 
+// get info on an item's current loan
 const fetchLoan = async (itemId, setItem) => {
   let fetchedData = null;
   let loaneeName = "";
@@ -22,31 +26,51 @@ const fetchLoan = async (itemId, setItem) => {
 
   setItem((initItem) => {return {
     ...initItem, loan_id: fetchedData._id, loanee_name: loaneeName,
-    loan_start_date: new Date(Date.parse(fetchedData.loan_start_date)).toLocaleDateString(),
-    intended_return_date: new Date(Date.parse(fetchedData.intended_return_date)).toLocaleDateString()
+    loan_start_date: dateFormat(fetchedData.loan_start_date, 'dd/mm/yyyy'),
+    intended_return_date: dateFormat(fetchedData.intended_return_date, 'dd/mm/yyyy')
   }});
 }
 
-const createLoan = (input) => {
-  let formData = { status: "Current", ...input };
-  if (input.loan_start_date === null || input.loan_start_date === "")
-    formData.loan_start_date = new Date();
-  saveLoan(formData, true);
+// given a new loan creation, complete form data
+const createLoan = (input, onSuccess, onFailure) => {
+  let formData = { ...input };
+
+  const today = new Date();
+  const dateDiff = today - new Date(Date.parse(formData.intended_return_date));
+  if (dateDiff > 0) formData.status = "Overdue";
+  else formData.status = "On Loan";
+
+  saveLoan(formData, true, onSuccess, onFailure);
+
 }
 
-const editLoan = (formData) => saveLoan(formData, false);
+// given an existing loan edit, complete form data
+const editLoan = (input, onSuccess, onFailure) => {
+  let formData = { ...input };
+  
+  const today = new Date();
+  const dateDiff = today - new Date(Date.parse(formData.intended_return_date));
+  if (dateDiff > 0) formData.status = "Overdue";
+  else formData.status = "On Loan";
 
-const returnLoan = async (item) => {
+  saveLoan(formData, false, onSuccess, onFailure)
+};
+
+// given an existing loan return, complete form data
+const returnLoan = async (item, onSuccess, onFailure) => {
   const actual_return_date = new Date();
   const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
 
-  let loanFormData = { _id: item.loan_id, actual_return_date: actual_return_date };
-  if (dateDiff > 0) saveLoan({...loanFormData, status: "Late Return"});
-  else if (dateDiff > -86400000) saveLoan({...loanFormData, status: "On Time Return"});
-  else saveLoan({...loanFormData, status: "Early Return"}, false);
+  let formData = { _id: item.loan_id, actual_return_date: actual_return_date };
+  if (dateDiff > 0) formData.status = "Late Return";
+  else if (dateDiff > -86400000) formData.status = "On Time Return";
+  else formData.status = "Early Return";
+
+  saveLoan(formData, false, onSuccess, onFailure);
 }
 
-const saveLoan = async (formData, newItem) => {
+// sends completed loan form data to server
+const saveLoan = async (formData, newItem, onSuccess, onFailure) => {
 
   // clean form
   for (const prop in formData)
@@ -57,8 +81,8 @@ const saveLoan = async (formData, newItem) => {
     method: newItem ? "post" : "put", data: formData,
     headers: { "Content-Type": "application/json" },
   })
-    .then((res) => console.log(res))
-    .catch((err) => console.log(err));
+    .then((res) => {console.log(res); onSuccess();})
+    .catch((err) => {console.log(err); onFailure();});
 }
 
 export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };

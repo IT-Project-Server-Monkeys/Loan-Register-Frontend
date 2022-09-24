@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
-import { fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
+import noImg from "../images/noImage_300x375.png";
 
 const AddItem = (props) => {
-  const redirect = useNavigate();
+  const navigate = useNavigate();
+
   const [itemImg, setItemImg] = useState(null);
-  const [displayImg, setDisplayImg] = useState("https://picsum.photos/100/100");
+  const [displayImg, setDisplayImg] = useState(noImg);
+
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
   const [newCateg, setNewCateg] = useState("");
+  
   const [submitting, setSubmitting] = useState(false);
 
   const [categOpen, setCategOpen] = useState(false);
@@ -21,30 +25,38 @@ const AddItem = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.uid, setCategList);
+    fetchCategs(props.uid, setCategList, setDelableCg);
   }, [props.uid]);
-
-  useEffect(() => {
-    fetchDelableCg(categList, props.uid, setDelableCg);
-  }, [categList, props.uid])
 
   // categ changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
-    // TODO popup window
     deleteCategory(categ, setCategList, props.uid);
   }
 
   // item img changing
-  const handleChgImg = (e) => changeImage(e, setItemImg, displayImg, setDisplayImg);
+  const handleChgImg = (e) => {
+    changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+  };
 
   // save item and post to server
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    await saveItem(e, null, categList, setCategList, itemImg, props.uid, true);
-    redirect(`/dashboard/loaner`);
+    let imgString = "";
+
+    if (itemImg !== null) {
+      imgString = await new Promise((resolve) => {
+        let fileReader = new FileReader();
+        fileReader.onload = () =>
+          resolve(fileReader.result.replace('data:', '').replace(/^.+,/, ''));
+        fileReader.readAsDataURL(itemImg);
+      });
+    }
+
+    await saveItem(e, null, categList, setCategList, imgString, props.uid, true);
+    navigate(`/dashboard`);
   }
 
   return (
@@ -61,7 +73,6 @@ const AddItem = (props) => {
           </label>
         </div>
         
-        <p className={"item-status"}>&nbsp;</p>
         <div className={"item-info"}>
           <form id="editItem" onSubmit={handleSaveItem}>
             <table><tbody>
@@ -79,7 +90,7 @@ const AddItem = (props) => {
                 <td>
                   <InputDropdown dropdownOpen={categOpen} toggle={categShow}
                     name="newCateg" placeholder="Enter category..."
-                    value={newCateg} changeOption={handleChgCg}
+                    value={newCateg} changeOption={handleChgCg} required
                   >
                     {categList.map((c) => {
                       return <Deletable askRm
@@ -99,7 +110,7 @@ const AddItem = (props) => {
                 <td>&nbsp;</td>
               </tr>
               </tbody></table>
-            <p>Description:<br />
+            <p><span>Description:</span><br />
               <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder="(Optional) Enter description..." />
             </p>
           </form>
@@ -108,12 +119,11 @@ const AddItem = (props) => {
 
       <div className={"btn-list"}>
         <TextButton altStyle
-          onClick={() => redirect(`/dashboard/loaner`)}
+          onClick={() => navigate(`/dashboard`)}
         >Cancel</TextButton>
         <TextButton form="editItem" type="submit">Save</TextButton>
       </div>
-
-      <Submitting style={submitting ? {display: "flex"} : {display: "none"}} />
+      {submitting ? <Submitting /> : null}
     </div>
   );
 };

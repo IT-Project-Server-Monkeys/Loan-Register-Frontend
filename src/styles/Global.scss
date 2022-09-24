@@ -69,3 +69,13 @@
   border: 1px solid var(--dark-grey-color);
   padding-left: 5.5px;
 }
+
+h4.warning {
+  color: var(--red-color);
+}
+
+.loading-text {
+  color: var(--dark-grey-color) !important;
+  font-style: italic !important;
+  font-weight: normal !important;
+}
