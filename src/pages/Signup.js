@@ -3,8 +3,10 @@ import "../styles/Signup.scss";
 import { TextBkgBox, TextButton } from '../components';
 import API from "../utils/api";
 import { useState, useEffect } from 'react';
+import bcrypt from 'bcryptjs';
 
 const Signup = () => {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
@@ -13,16 +15,53 @@ const Signup = () => {
   // remove error message if input is being adjusted
   useEffect(() => {
     setErrMsg('');
-  }, [email, pwd, confirmPwd])
+  }, [username, email, pwd, confirmPwd])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     let isValid = true;
     let newUser = {};
-    let randomUsername = Math.random().toString(16).substring(2, 10);
 
-    // TODO: check if email is unique
-    // TODO: hash passwords
+    // check if it is a unique username
+    await API(`users?display_name=${username}`)
+      .then((res) => {
+
+        // if there is no data returned
+        if (res.data.length !== 0) {
+          setErrMsg("This username is already taken");
+          isValid = false;
+        }
+
+      })
+      .catch((err) => console.log(err));
+
+    // check if it is a unique email
+    await API(`users?email=${email}`)
+      .then((res) => {
+
+        // if there is no data returned
+        if (res.data.length !== 0) {
+          setErrMsg("This email already has an account");
+          isValid = false;
+        }
+
+      })
+      .catch((err) => console.log(err));
+    
+    // check if email is a valid email
+    // following regex expression is referenced from https://www.w3resource.com/javascript/form/email-validation.php
+    const validEmail = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    if (!validEmail.test(email)) {
+      setErrMsg("Invalid email");
+      isValid = false;
+    }
+
+    // check if pwd is a secure pwd
+    const safePattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!safePattern.test(pwd)) {
+      setErrMsg("Password must be at least 8 characters long, and include at least one lowercase letter, one uppercase letter, one number and one symbol");
+      isValid = false;
+    }
 
     // check if pwd and confirm pwd are the same
     if (pwd !== confirmPwd) {
@@ -30,11 +69,18 @@ const Signup = () => {
       isValid = false;
     } 
     
+    // for testing purposes
+    // isValid = false;
+
     if (isValid === true) {
-      // randomly generate username
-      newUser.display_name = randomUsername;
+
+      newUser.display_name = username;
       newUser.login_email = email;
-      newUser.hashed_password = pwd;
+
+      var hash = bcrypt.hashSync(pwd);
+      // hash pwd before sending to db
+      newUser.hashed_password = hash;
+      // console.log(hash);
   
       await API(`/users`, {    
         method: "post",
@@ -42,7 +88,7 @@ const Signup = () => {
         headers: {"Content-Type": "application/json"}
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
       })
       .catch((err) => console.log(err));
       
@@ -65,6 +111,12 @@ const Signup = () => {
           <form onSubmit={handleSubmit}>
             <div className={"inline-flex"}>
               <div className="h3">
+                Username:
+              </div>
+              <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} required/>
+            </div>
+            <div className={"inline-flex"}>
+              <div className="h3">
                 Email:
               </div>
               <input type="text" placeholder="Enter email" className={"input-box"} id="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
@@ -82,7 +134,7 @@ const Signup = () => {
               <input type="password" placeholder="Enter password" className={"input-box"} id="confirm-password" onChange={(e) => setConfirmPwd(e.target.value)} value={confirmPwd} required/>
             </div>
             <a href="/login" className="a">Existing user?</a>
-            <TextButton onClick="" className={"button"}>Sign up</TextButton>
+            <TextButton className={"button"}>Sign up</TextButton>
           </form>
         </TextBkgBox>
       </div>
