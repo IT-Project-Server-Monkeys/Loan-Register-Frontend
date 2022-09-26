@@ -2,6 +2,10 @@ main .item-page {
   font-size: 1.5rem;
   margin-bottom: 2rem;
 
+  h4 {
+    text-align: center;
+  }
+
   .edit-item {
     border-radius: 50%;
     border: 0;
@@ -13,7 +17,7 @@ main .item-page {
   }
 
   .item-details {
-    margin: 5rem 15% 3rem 15%;
+    margin: 5rem 15% 1.5rem 15%;
     display: grid;
     gap: 1rem;
     grid-template-areas:
@@ -100,6 +104,6 @@ main .item-page {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-
+    margin: 1.5rem auto auto
   }
 }

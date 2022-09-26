@@ -42,7 +42,7 @@ const fetchDelableCg = async (categList, uid, setDelableCg) => {
 const selectCategory = (categ, setNewCateg) => setNewCateg(categ);
 
 // category changing via keyboard input of inputdropdown
-const changeCategory = (categ, setNewCateg) => setNewCateg(categ);
+const changeCategory = (e, setNewCateg) => setNewCateg(e.target.value.slice(0, 22));
 
 // delete an unused category via inputdropdown deletable
 const deleteCategory = async (categ, setCategList, uid) => {

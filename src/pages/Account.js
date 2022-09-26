@@ -11,8 +11,7 @@ const Account = (props) => {
   // form submission
   const [nameSub, setNameSub] = useState(false);
   const [emailSub, setEmailSub] = useState(false);
-  const [nameWarn, setNameWarn] = useState("");
-  const [emailWarn, setEmailWarn] = useState("");
+  const [warning, setWarning] = useState("");
 
   // form data
   const [userInfo, setUserInfo] = useState({});
@@ -29,6 +28,14 @@ const Account = (props) => {
     // disallow further edit until server GET & PUT requests have been completed
     setNameSub(true);
     setNewName(<Loading />);
+
+    // disallow leading/trailing spaces
+    if (/^\s/.test(name) || /\s$/.test(name)) {
+      setWarning("No trailing or leading whitespaces allowed in username.");
+      setNameSub(false);
+      setNewName(userInfo.display_name);
+      return;
+    }
     
     await API.get(`/users?display_name=${name}`)
       .then((res) => {fetchedData = res.data})
@@ -41,11 +48,14 @@ const Account = (props) => {
         method: "put", data: formData,
         headers: { "Content-Type": "application/json" },
       })
-        .then((res) => { console.log(res); setNewName(name); })
+        .then((res) => {
+          console.log(res);
+          setNewName(name);
+          setUserInfo((info) => {return {...info, display_name: name}});
+        })
         .catch((err) => { console.log(err); onFail(); });
-      setNameWarn("");
     } else {
-      setNameWarn(name);
+      setWarning(`The username ${name} is taken.`);
       setNewName(userInfo.display_name);
     }
 
@@ -74,14 +84,16 @@ const Account = (props) => {
         method: "put", data: formData,
         headers: { "Content-Type": "application/json" },
       })
-        .then((res) => { console.log(res); setNewEmail(email); })
+        .then((res) => {
+          console.log(res);
+          setNewEmail(email);
+          setUserInfo((info) => {return {...info, login_email: email}});
+        })
         .catch((err) => { console.log(err); onFail() });
-      setEmailWarn("");
     } else {
-      setEmailWarn(email);
+      setWarning(`The login email ${email} is taken.`);
       setNewEmail(userInfo.login_email);
     }
-
     setEmailSub(false);
   }
 
@@ -114,19 +126,19 @@ const Account = (props) => {
         <div className={"inline-flex"}>
           <h3>Username:</h3>
           <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
-            field="display_name" value={newName} setVal={setNewName} maxLength={20}
+            onToggle={() => setWarning("")} maxLength={20}
+            field="display_name" value={newName} setVal={setNewName}
           />
         </div>
-        { nameWarn !== "" ? <h4 className="warning">The display name "{nameWarn}" is taken.</h4> : null }
         <div className={"inline-flex"}>
           <h3>Email:</h3>
-          <ToggleInput disabled={emailSub} saveInput={saveEmail} type="email"
-            field="login_email" value={newEmail} setVal={setNewEmail}
+          <ToggleInput disabled={emailSub} saveInput={saveEmail} setVal={setNewEmail}
+            field="login_email" value={newEmail} type="email" onToggle={() => setWarning("")}
           />
         </div>
-        { emailWarn !== "" ? <h4 className="warning">The email "{emailWarn}" is taken.</h4> : null }
+        <h4 className="warning">{warning}</h4>
         <a href="/change-password">
-          <TextButton disabled={nameSub || emailSub}>Change password</TextButton>
+          <TextButton disabled={ nameSub || emailSub }>Change password</TextButton>
         </a>
       </TextBkgBox>
     </div>

@@ -17,6 +17,7 @@ const AddItem = (props) => {
   const [newCateg, setNewCateg] = useState("");
   
   const [submitting, setSubmitting] = useState(false);
+  const [warning, setWarning] = useState("");
 
   const [categOpen, setCategOpen] = useState(false);
   const categShow = () => {
@@ -28,7 +29,7 @@ const AddItem = (props) => {
     fetchCategs(props.uid, setCategList, setDelableCg);
   }, [props.uid]);
 
-  // categ changing
+  // category changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
@@ -45,6 +46,18 @@ const AddItem = (props) => {
     e.preventDefault();
     setSubmitting(true);
     let imgString = "";
+
+    // disallow leading/trailing spaces in names & categories
+    if (/^\s/.test(e.target.newName.value) || /\s$/.test(e.target.newName.value)) {
+      setWarning("No trailing or leading whitespaces allowed in item name.");
+      setSubmitting(false);
+      return;
+    }
+    if (/^\s/.test(e.target.newCateg.value) || /\s$/.test(e.target.newCateg.value)) {
+      setWarning("No trailing or leading whitespaces allowed in item category.");
+      setSubmitting(false);
+      return;
+    }
 
     if (itemImg !== null) {
       imgString = await new Promise((resolve) => {
@@ -74,7 +87,7 @@ const AddItem = (props) => {
         </div>
         
         <div className={"item-info"}>
-          <form id="editItem" onSubmit={handleSaveItem}>
+          <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
             <table><tbody>
               <tr>
                 <td>Name:</td>
@@ -116,7 +129,7 @@ const AddItem = (props) => {
           </form>
         </div>
       </div>
-
+      <h4 className="warning">{warning}</h4>
       <div className={"btn-list"}>
         <TextButton altStyle
           onClick={() => navigate(`/dashboard`)}

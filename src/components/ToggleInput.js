@@ -27,7 +27,9 @@ const ToggleInput = (props) => {
             <p>{props.value}</p>
             {props.disabled
               ? <button className="toggle-disabled">Change</button>
-              : <button className="toggle" onClick={() => {setEditMode(true)}}>Change</button>
+              : <button className="toggle" onClick={() => {props.onToggle(); setEditMode(true)}}>
+                  Change
+                </button>
             }
           </>
       }

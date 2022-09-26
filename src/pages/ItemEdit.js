@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable, NoAccess } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
@@ -11,12 +11,12 @@ const ItemEdit = (props) => {
   // page navigation
   const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
-  const location = useLocation();
+  // const location = useLocation();
   const [submitting, setSubmitting] = useState(false);
   
   // original item information
   const itemId = useParams().id;
-  const dbData = location.state ? location.state.item : null;
+  const dbData = /*location.state ? location.state.item :*/ null;
   const [item, setItem] = useState({
     item_name: "Loading...",
     category: "Loading...",
@@ -26,9 +26,10 @@ const ItemEdit = (props) => {
 
   // new item image, name, category, description
   const [itemImg, setItemImg] = useState(null);
-  const [newName, setNewName] = useState("");
-  const [newCateg, setNewCateg] = useState("");
-  const [newDesc, setNewDesc] = useState("");
+  const [newName, setNewName] = useState("Loading...");
+  const [newCateg, setNewCateg] = useState("Loading...");
+  const [newDesc, setNewDesc] = useState("Loading...");
+  const [warning, setWarning] = useState("");
 
   // user category list for modifying & selecting
   const [categOpen, setCategOpen] = useState(false);
@@ -47,7 +48,7 @@ const ItemEdit = (props) => {
 
   // typeable/selectable category changing via inputdropdown
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
-  const handleChgCg = (e) => changeCategory(e.target.value.slice(0, 16), setNewCateg);
+  const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
     deleteCategory(categ, setCategList, props.uid);
   }
@@ -57,6 +58,18 @@ const ItemEdit = (props) => {
     e.preventDefault();
     setSubmitting(true);
     let imgString = "";
+    
+    // disallow leading/trailing spaces
+    if (/^\s/.test(newName) || /\s$/.test(newName)) {
+      setWarning("No trailing or leading whitespaces allowed in item name.");
+      setSubmitting(false);
+      return;
+    }
+    if (/^\s/.test(newCateg) || /\s$/.test(newCateg)) {
+      setWarning("No trailing or leading whitespaces allowed in item category.");
+      setSubmitting(false);
+      return;
+    }
 
     // convert any new images into base64 string
     if (itemImg !== null) {
@@ -69,10 +82,12 @@ const ItemEdit = (props) => {
     }
 
     if (await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false))
-      navigate(`/item-details/${itemId}`, {state: {item: {
-        ...item, image_url: displayImg,
-        item_name: newName, category: newCateg, description: newDesc,
-      }}});
+      navigate(`/item-details/${itemId}`,
+      // {state: {item: {
+      //   ...item, image_url: displayImg,
+      //   item_name: newName, category: newCateg, description: newDesc,
+      // }}}
+      );
     else {
       setSubmitting(false);
 
@@ -127,7 +142,7 @@ const ItemEdit = (props) => {
           </div>
           
           <div className={"item-info"}>
-            <form id="editItem" onSubmit={handleSaveItem}>
+            <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
               <table><tbody>
                 <tr>
                   <td>Name:</td>
@@ -171,9 +186,9 @@ const ItemEdit = (props) => {
             </form>
           </div>
         </div>
-
+        <h4 className="warning">{warning}</h4>
         <div className={"btn-list"}>
-          <Link to={`/item-details/${itemId}`} state={{item: item}}>
+          <Link to={`/item-details/${itemId}`}>
             <TextButton altStyle>Cancel</TextButton>
           </Link>
           <TextButton form="editItem" type="submit">Save</TextButton>

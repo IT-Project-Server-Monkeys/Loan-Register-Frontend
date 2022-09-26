@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
@@ -14,11 +14,11 @@ const ItemDetails = (props) => {
   // page navigation
   const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
-  const location = useLocation()
+  // const location = useLocation()
   
   // item information
   const itemId = useParams().id;
-  const dbData = location.state ? location.state.item : null;
+  const dbData = /*location.state ? location.state.item :*/ null;
   const [item, setItem] = useState({
     item_name: <Loading />, image_url: noImg,
     category: <Loading />, description: <Loading />,
@@ -153,7 +153,7 @@ const ItemDetails = (props) => {
     <>{noAccess ? <NoAccess /> :
       <div className={"item-page"}>
 
-        <Link reloadDocument={false} to={`/item-details/${itemId}/edit`} state={{item: item}}>
+        <Link to={`/item-details/${itemId}/edit`}>
           <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
             <MdEdit size={40} />
           </button>
