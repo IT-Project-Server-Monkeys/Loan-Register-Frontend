@@ -3,7 +3,7 @@ import "../styles/Signup.scss";
 import { TextBkgBox, TextButton } from '../components';
 import API from "../utils/api";
 import { useState, useEffect } from 'react';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs-react';
 
 const Signup = () => {
   const [username, setUsername] = useState('');

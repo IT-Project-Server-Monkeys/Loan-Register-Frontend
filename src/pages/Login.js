@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import "../styles/Login.scss";
 import { TextBkgBox, TextButton } from '../components';
 import API from "../utils/api";
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs-react';
 
 const Login = (props) => {
   const emailRef = useRef();
