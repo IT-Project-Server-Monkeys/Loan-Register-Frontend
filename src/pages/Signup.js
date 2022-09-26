@@ -68,9 +68,6 @@ const Signup = () => {
       setErrMsg("Passwords don't match");
       isValid = false;
     } 
-    
-    // for testing purposes
-    // isValid = false;
 
     if (isValid === true) {
 
@@ -80,7 +77,6 @@ const Signup = () => {
       var hash = bcrypt.hashSync(pwd);
       // hash pwd before sending to db
       newUser.hashed_password = hash;
-      // console.log(hash);
   
       await API(`/users`, {    
         method: "post",
@@ -88,7 +84,6 @@ const Signup = () => {
         headers: {"Content-Type": "application/json"}
       })
       .then((res) => {
-        // console.log(res);
       })
       .catch((err) => console.log(err));
       
