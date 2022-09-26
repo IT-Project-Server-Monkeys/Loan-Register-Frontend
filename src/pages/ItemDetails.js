@@ -60,9 +60,11 @@ const ItemDetails = (props) => {
     createLoan(
       { ...input, item_id: itemId, loaner_id: props.uid },
       () => {
-        navigate(`/item-details/${itemId}`, {state: {item: {
-          ...item, being_loaned: true, loan_id: null
-        }}});
+        navigate(`/item-details/${itemId}`
+        // {state: {item: {
+        //   ...item, being_loaned: true, loan_id: null
+        // }}}
+        );
         window.location.reload();
       },
       () => {
@@ -78,9 +80,11 @@ const ItemDetails = (props) => {
     await editLoan(
       { _id: item.loan_id, ...input },
       () => {
-        navigate(`/item-details/${itemId}`, {state: {item: {
-          ...item, being_loaned: true, loan_id: null
-        }}});
+        navigate(`/item-details/${itemId}`
+        // {state: {item: {
+        //   ...item, being_loaned: true, loan_id: null
+        // }}}
+        );
         window.location.reload();
       },
       () => {
@@ -96,9 +100,11 @@ const ItemDetails = (props) => {
     await returnLoan(
       item,
       () => {
-        navigate(`/item-details/${itemId}`, {state: {item: {
-          ...item, being_loaned: false, loan_id: null
-        }}});
+        navigate(`/item-details/${itemId}`
+        // {state: {item: {
+        //   ...item, being_loaned: false, loan_id: null
+        // }}}
+        );
         window.location.reload();
       },
       () => {
@@ -146,7 +152,7 @@ const ItemDetails = (props) => {
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
-
+    console.log(item.loan_status)
   }, [item, props.uid, navigate])
 
   return (
@@ -167,11 +173,9 @@ const ItemDetails = (props) => {
               ? `url(${item.image_url})` : `url(${noImg})`
           }} />
           
-          <p className={"item-status"}>Status: {
-            item.loan_status != null
-              ? item.loan_status
-              : item.being_loaned ? "On Loan" : "Available"
-          }</p>
+          <p className={"item-status"}>
+            Status: { item.loan_status != null ? item.loan_status : <Loading /> }
+          </p>
           <div className={"item-info"}>
             <table><tbody>
               <tr>

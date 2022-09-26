@@ -9,7 +9,9 @@ const fetchItem = async (itemId, setItem) => {
     .then((res) => {fetchedData = res.data})
     .catch((err) => console.log(err));
 
-  if (fetchedData != null) setItem((i) => {return {...i, ...fetchedData, item_id: itemId}});
+  if (fetchedData != null) setItem((i) => {return {
+    ...i, ...fetchedData, item_id: itemId, loan_status: fetchedData.being_loaned ? null : "Available"
+  }});
 }
 
 // gets user's available categories from server

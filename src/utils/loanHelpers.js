@@ -25,7 +25,7 @@ const fetchLoan = async (itemId, setItem) => {
     .catch(err => console.log(err))
 
   setItem((initItem) => {return {
-    ...initItem, loan_id: fetchedData._id, loanee_name: loaneeName,
+    ...initItem, loan_id: fetchedData._id, loanee_name: loaneeName, loan_status: fetchedData.status,
     loan_start_date: dateFormat(fetchedData.loan_start_date, 'dd/mm/yyyy'),
     intended_return_date: dateFormat(fetchedData.intended_return_date, 'dd/mm/yyyy')
   }});
