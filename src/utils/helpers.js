@@ -39,3 +39,7 @@ export const toDDMMYYYY = (dateString) => {
   if (!dateString.includes("-")) return "";
   return dateFormat(Date.parse(dateString), 'dd/mm/yyyy');
 }
+
+export const noCaseCmp = (a, b) => {
+  return a.toLowerCase().localeCompare(b.toLowerCase());
+}

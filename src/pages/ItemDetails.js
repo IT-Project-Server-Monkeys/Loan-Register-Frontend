@@ -5,7 +5,7 @@ import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../componen
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
 import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "../utils/loanHelpers";
-import { noAccessRedirect, toDDMMYYYY } from "../utils/helpers";
+import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
 import ReactTooltip from "react-tooltip";
@@ -116,7 +116,7 @@ const ItemDetails = (props) => {
 
   // get all loanees & set loanee suggest list for loan form
   useEffect(() => { setSubmitting(false); fetchAllLoanees(setAllLoanees); }, []);
-  useEffect(() => setSuggestedLoanees(Object.keys(allLoanees)), [allLoanees]);
+  useEffect(() => setSuggestedLoanees(Object.keys(allLoanees).sort(noCaseCmp)), [allLoanees]);
 
   // get and show item data
   useEffect(() => {
@@ -152,7 +152,6 @@ const ItemDetails = (props) => {
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
-    console.log(item.loan_status)
   }, [item, props.uid, navigate])
 
   return (
@@ -204,9 +203,11 @@ const ItemDetails = (props) => {
               </tbody></table>
             <p><span>Description:</span><br />{ typeof(item.description) != "string"
               ? item.description
-              : item.description.split("\n").map((line, i) => {
-                return <span key={i}>{line}<br /></span>
-              }) // react-string-replace didn't work :/
+              : item.description === ""
+                ? "(No description.)"
+                : item.description.split("\n").map((line, i) => {
+                  return <span key={i}>{line}<br /></span>
+                }) // react-string-replace didn't work :/
             }</p>
           </div>
         </div>

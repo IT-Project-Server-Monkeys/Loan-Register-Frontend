@@ -1,4 +1,5 @@
 import API from "./api";
+import { noCaseCmp } from "./helpers";
 
 // gets item from server
 const fetchItem = async (itemId, setItem) => {
@@ -23,7 +24,7 @@ const fetchCategs = async (uid, setCategList, setDelableCg) => {
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
   
-  setCategList(fetchedData.item_categories);
+  setCategList(fetchedData.item_categories.sort(noCaseCmp));
   fetchDelableCg(fetchedData.item_categories, uid, setDelableCg);
 };
 

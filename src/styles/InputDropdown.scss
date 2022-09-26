@@ -30,8 +30,14 @@
     }
   }
 
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
   .dropdown-menu {
     width: 285px;
+    max-height: 9.75rem;
+    overflow-y: scroll;
     border: 1px solid var(--dark-grey-color);
 
     .dropdown-item-text {
