@@ -47,7 +47,7 @@ const ItemEdit = (props) => {
 
   // typeable/selectable category changing via inputdropdown
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
-  const handleChgCg = (e) => changeCategory(e, setNewCateg);
+  const handleChgCg = (e) => changeCategory(e.target.value.slice(0, 16), setNewCateg);
   const handleDelCg = (categ) => {
     deleteCategory(categ, setCategList, props.uid);
   }

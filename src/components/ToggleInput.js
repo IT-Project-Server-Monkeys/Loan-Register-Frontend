@@ -16,9 +16,9 @@ const ToggleInput = (props) => {
       {
         editMode ?
           <form className={"inline-form"} onSubmit={handleSave}>
-            <input required type={props.type} className={"input-box"}
-              value={props.value} onChange={event => props.setVal(event.target.value)}
+            <input required type={props.type} className={"input-box"} value={props.value}
               placeholder={`New ${props.field.replace("_", " ")}`}
+              onChange={event => props.setVal(event.target.value.slice(0, props.maxLength))}
             />
             <button className="toggle" type="submit">Save</button>
           </form>

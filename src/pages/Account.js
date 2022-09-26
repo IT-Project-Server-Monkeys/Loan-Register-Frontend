@@ -23,7 +23,7 @@ const Account = (props) => {
   // else, submit data to the server
   const saveName = async (name) => {
     let fetchedData = [];
-    const failAlert = "There was an error saving your display name. Please try again later.";
+    const failAlert = "There was an error saving your username. Please try again later.";
     const onFail = () => { setNewName(userInfo.display_name); alert(failAlert); }
     
     // disallow further edit until server GET & PUT requests have been completed
@@ -112,9 +112,9 @@ const Account = (props) => {
       <TextBkgBox>
         <h1>Account</h1>
         <div className={"inline-flex"}>
-          <h3>Display name:</h3>
+          <h3>Username:</h3>
           <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
-            field="display_name" value={newName} setVal={setNewName}
+            field="display_name" value={newName} setVal={setNewName} maxLength={20}
           />
         </div>
         { nameWarn !== "" ? <h4 className="warning">The display name "{nameWarn}" is taken.</h4> : null }
