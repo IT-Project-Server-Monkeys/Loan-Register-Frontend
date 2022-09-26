@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
 import { TextBkgBox, TextButton, Submitting } from "../components";
 import API from '../utils/api';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs-react';
 
 const ChangePassword = (props) => {
   // page navigation
