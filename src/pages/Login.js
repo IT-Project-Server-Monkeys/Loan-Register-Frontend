@@ -67,21 +67,32 @@ const Login = (props) => {
           <div className="h1">
             Log in to LR!
           </div>
-          <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
+          <h4 ref={errRef} className={errMsg ? "warning" : "offscreen"} aria-live="assertive">{errMsg}</h4>
 
           <form onSubmit={handleSubmit}>
-            <div className={"inline-flex"}>
-              <div className="h3">
-                Email:
-              </div>
-              <input type="text" placeholder="Enter email" className={"input-box"} id="email" ref={emailRef} onChange={(e) => setEmail(e.target.value)} value={email} required />
-            </div>
-            <div className={"inline-flex"}>
-              <div className="h3">
-                Password:
-              </div>
-              <input type="password" placeholder="Enter password" className={"input-box"} id="password" onChange={(e) => setPwd(e.target.value)} value={pwd} required />
-            </div>
+              <table><tbody>
+                <tr>
+                  <td>
+                    <div className="h3">
+                      Email:
+                    </div>
+                  </td>
+                  <td>
+                    <input type="text" placeholder="Enter email" className={"input-box"} id="email" ref={emailRef} onChange={(e) => setEmail(e.target.value)} value={email} required />
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div className="h3">
+                      Password:
+                    </div>
+                  </td>
+                  <td>
+                    <input type="password" placeholder="Enter password" className={"input-box"} id="password" onChange={(e) => setPwd(e.target.value)} value={pwd} required />
+                  </td>
+                </tr>
+              </tbody></table>
             <a href="/forgot-password" className="a">Forgot password?</a>
             <a href="/signup" className="a">New user?</a>
             <TextButton className={"button"}>Login</TextButton>

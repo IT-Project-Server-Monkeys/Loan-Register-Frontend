@@ -1,14 +1,20 @@
 import React from 'react';
 import "../styles/ForgotPassword.scss";
 import { TextBkgBox, TextButton } from '../components';
+import { useState, useEffect } from 'react';
 
 const ForgotPassword = (props) => {
 
-  // temporary login handler. generates random data,
-  // then passes it onto parent via the onLogin provided by parent
-  // TODO remove
+  const [email, setEmail] = useState('');
+  const [errMsg, setErrMsg] = useState('');
+
+  // remove error message if input is being adjusted
+  useEffect(() => {
+    setErrMsg('');
+  }, [email])
+
   const resetPassword = () => {
-    window.location.href='';
+    setErrMsg("This functionality has not been implemented yet");
   };
 
   return (
@@ -18,11 +24,12 @@ const ForgotPassword = (props) => {
           <div className="h1">
             Forgot Password
           </div>
+          <h4 className={errMsg ? "warning" : "offscreen"} aria-live="assertive">{errMsg}</h4>
           <div className={"inline-flex"}>
             <div className="h3">
               Email:
             </div>
-            <input type="text" placeholder="Enter username" className={"input-box"}/>
+            <input type="text" placeholder="Enter email" className={"input-box"} id="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
           </div>
           <TextButton onClick={resetPassword} className={"button"}>Reset Password</TextButton>
         </TextBkgBox>

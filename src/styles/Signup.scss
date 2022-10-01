@@ -1,7 +1,7 @@
 // for signup page
 .sign-up{
     .background{
-        text-align: center;
+
         justify-content: center;
         display: flex;
         background-image: url("../images/backgroundImage.png");
@@ -21,8 +21,7 @@
         height: 700px;
     }
 
-    .errmsg{
-        color: red;
-        font-size: 25px;
+    .warning{
+        text-align: center;
     }
 }
