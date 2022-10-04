@@ -9,30 +9,21 @@ const Home = () => {
 
   return (
     <div className={"landing-page"}>
-      <div className={"img-one"}>
-      </div>
-      <div className={"intro-box"}>
-        <div className={"intro-text"}>
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        </div>
-        <div className={"icon"}>
-        </div>
-      </div>
-      <div className={"flex-box"}>
-        <div className={"img-two"}>
+      <div className={"background"}>
+        <div className={"h1"}>
+          Welcome!
         </div>
         <div className={"text-box"}>
+          Loan Register (LR) is an app that is designed to 
+          improve your loaning experience, making the process 
+          of loaning out and borrowing items simpler and easier than ever before.
         </div>
-      </div>
-      <div className={"flex-box"}>
-        <div className={"text-box"}>
+        <div className={"h3"}>
           Ready to loan an item?
-          <button onClick={redirect} className={"text-btn-default"}>
+        </div>
+        <button onClick={redirect} className={"text-btn-default"}>
             Get Started
-          </button>
-        </div>
-        <div className={"img-three"}>
-        </div>
+        </button>
       </div>
     </div>
 

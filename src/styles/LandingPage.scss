@@ -1,72 +1,35 @@
 .landing-page{
 
-    .img-one{
-        text-align: center;
+    .background{
+        text-align: justify;
         justify-content: center;
         display: flex;
-        background-image: url("../images/landingPageImage2.png");
-        background-repeat: no-repeat;
+        background-image: url("../images/backgroundImage.png");
+        background-repeat: repeat-y;
         min-height: var(--main-height);
-        background-size: 100% 950px;
         align-items: center;
+        flex-direction: column;
+        row-gap: 55px;
     }
 
-    .img-two{
-        text-align: center;
-        justify-content: center;
-        display: flex;
-        background-image: url("../images/landingPageImage2.png");
-        background-repeat: no-repeat;
-        width: 50%;
-        min-height: 520px;
-        align-items: center;
+    .text-btn-default {
+        border: none;
     }
 
-    .img-three{
-        text-align: center;
-        justify-content: center;
-        display: flex;
-        background-image: url("../images/landingPageImage3.png");
-        align-items: center;
-        background-repeat: no-repeat;
-        width: 50%;
-        min-height: 520px;
+    .h1 {
+        font-size: 56px;
     }
 
-    .intro-text{
+    .h3 {
         font-size: 40px;
-        width: 90%;
-    }
-
-    .intro-box{
-        display: flex;
-        border-style: solid none solid none;
-        padding: 1.5rem 5rem 1.5rem 5rem;
-    }
-
-    .flex-box{
-        display: flex;
     }
 
     .text-box{
-        width: 50%;
+        width: 40%;
         height: auto;
-        text-align: center;
-        justify-content: center;
+        text-align: justify;
         display: flex;
-        flex-direction: column;
-        font-size: 40px;
-        align-items: center;
+        font-size: 30px;
     }
 
-    .icon{
-        background-image: url("../images/landingPageIcon.svg");
-        width: 115px;
-        height: 127px;
-        justify-content: center;
-        background-size: auto;
-        background-repeat: no-repeat;
-        display: block;
-        margin: auto;
-    }
 }
