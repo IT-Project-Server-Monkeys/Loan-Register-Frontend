@@ -1,0 +1,109 @@
+main .item-page {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+
+  h4 {
+    text-align: center;
+  }
+
+  .edit-item {
+    border-radius: 50%;
+    border: 0;
+    position: fixed;
+    height: 72px;
+    width: 72px;
+    right: 10%;
+    box-shadow: 2.5px 2.5px 5px var(--dark-grey-color);
+  }
+
+  .item-details {
+    margin: 5rem 15% 1.5rem 15%;
+    display: grid;
+    gap: 1rem;
+    grid-template-areas:
+      "img inf inf"
+      "img inf inf"
+      "sta inf inf";
+
+    .item-image {
+      grid-area: img;
+      position: relative;
+      width: 300px;
+      height: 375px;
+      border-radius: 15px;
+      border: 1px solid var(--black-color);
+      background-color: white;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+      .add-img {
+        position: absolute;
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        border: 2px solid var(--dark-grey-color);
+        font-weight: bold;
+        font-size: 1rem;
+        padding: 0.5rem;
+        right: -18px;
+        bottom: -18px;
+        background-color: var(--white-color);
+        color: var(--black-color);
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    .item-status /*, .big-img-warn*/ {
+      grid-area: sta;
+      font-weight: bold;
+      width: 300px;
+      margin-top: 1rem;
+    }
+
+    // .big-img-warn {
+    //   text-align: center;
+    //   font-size: 1.25rem;
+    // }
+
+    .item-info {
+      grid-area: inf;
+
+      td:first-child, span:first-child {
+        font-weight: bold;
+      }
+
+      table {
+        td {
+          padding-right: 1.5rem;
+        }
+      }
+  
+      .input-box {
+        width: 285px;
+      }
+
+      textarea {
+        resize: none;
+        width: -webkit-fill-available;
+        height: 240px;
+        border-radius: 5px;
+        margin-top: 0.5rem;
+      }
+
+      .input-dropdown {
+        width: 285px;
+      }
+    }
+  }
+
+  .btn-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 1.5rem auto auto
+  }
+}

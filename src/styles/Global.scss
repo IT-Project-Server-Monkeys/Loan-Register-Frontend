@@ -1,0 +1,81 @@
+/* Any style here will be applied globally */
+
+// global variables
+:root {
+  --blue-color: #0073e6;
+  --hover-blue-color: #1e82e7;
+  --light-blue-color: #e6f2ff;
+  --dark-grey-color: #555555;
+  --light-grey-color: #d9d9d9;
+  --orange-color: #eb8f33;
+  --red-color: #db2424;
+  --green-color: #2faa26;
+  --white-color: #ffffff;
+  --black-color: #000000;
+  --main-height: calc(100vh - 7rem);
+}
+
+.bg-blue {
+  background-color: var(--blue-color);
+}
+
+.bg-light-blue {
+  background-color: var(--light-blue-color);
+}
+
+.page-margin {
+  width: 90%;
+  margin: 5rem auto;
+}
+
+.icon-blue {
+  padding: 5px;
+  background-color: var(--blue-color);
+  svg {
+    color: white;
+  }
+  &:hover {
+    cursor: pointer;
+    background-color: var(--hover-blue-color);
+  }
+}
+
+.text-btn-default, .text-btn-alt {
+  width: 250px;
+  height: 60px;
+  border-radius: 15px;
+  box-shadow: none;
+  font-size: 36px;
+  font-weight: bold;
+  margin: 10px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.text-btn-default {
+  background-color: var(--blue-color);
+  border: 2px solid var(--white-color);
+  color: var(--white-color);
+}
+
+.text-btn-alt {
+  background-color: var(--white-color);
+  border: 2px solid var(--blue-color);
+  color: var(--blue-color);
+}
+
+.input-box, textarea {
+  border-radius: 5px;
+  border: 1px solid var(--dark-grey-color);
+  padding-left: 5.5px;
+}
+
+h4.warning {
+  color: var(--red-color);
+}
+
+.loading-text {
+  color: var(--dark-grey-color) !important;
+  font-style: italic !important;
+  font-weight: normal !important;
+}

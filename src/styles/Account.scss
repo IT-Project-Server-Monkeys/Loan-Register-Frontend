@@ -1,0 +1,55 @@
+.account-page {
+  padding: 5rem;
+  
+  .text-bkg-box {
+    margin: auto;
+
+    h1 {
+      margin-bottom: 2rem;
+    }
+
+    h3 {
+      width: 200px;
+      margin: 20px;
+      height: 50px;
+    }
+
+    p {
+      width: 363px;
+      margin: 20px;
+      vertical-align: middle;
+      overflow-x: auto;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
+
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    button {
+      font-size: 36px;
+      line-height: 1.2;
+      height: fit-content;
+      padding: 0.5rem;
+  }
+
+    button.toggle, button.toggle-disabled {
+      width: 75px;
+      background-color: transparent;
+      border: 0;
+      text-decoration: underline;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .toggle {
+      color: var(--blue-color);
+    }
+
+    .toggle-disabled {
+      color: var(--dark-grey-color);
+    }
+
+  }
+}

@@ -1,0 +1,17 @@
+// for login page
+.login{
+    .background{
+
+        justify-content: center;
+        display: flex;
+        background-image: url("../images/backgroundImage.png");
+        background-repeat: repeat-y;
+        min-height: var(--main-height);
+        align-items: center;
+    }
+
+    .errmsg{
+        color: red;
+        font-size: 25px;
+    }
+}

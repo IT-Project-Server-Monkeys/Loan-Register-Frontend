@@ -1,0 +1,35 @@
+.landing-page{
+
+    .background{
+        text-align: justify;
+        justify-content: center;
+        display: flex;
+        background-image: url("../images/landingPageBackground.png");
+        background-repeat: round;
+        min-height: var(--main-height);
+        align-items: center;
+        flex-direction: column;
+        row-gap: 55px;
+    }
+
+    .text-btn-default {
+        border: none;
+    }
+
+    .h1 {
+        font-size: 56px;
+    }
+
+    .h3 {
+        font-size: 40px;
+    }
+
+    .text-box{
+        width: 40%;
+        height: auto;
+        text-align: justify;
+        display: flex;
+        font-size: 30px;
+    }
+
+}

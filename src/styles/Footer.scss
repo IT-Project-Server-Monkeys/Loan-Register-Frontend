@@ -1,0 +1,13 @@
+.bottom-footer {
+  background-color: var(--light-blue-color);
+  color: var(--blue-color);
+  width: 100%;
+  padding: 1rem;
+  font-weight: bold;
+  font-size: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 -1px 0px var(--light-grey-color);
+  z-index: 10;
+}
