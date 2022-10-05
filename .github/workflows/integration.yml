@@ -4,7 +4,7 @@ name: Development
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "develop", "staging", "main" ]
 
 jobs:
   build:
