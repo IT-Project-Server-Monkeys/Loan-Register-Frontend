@@ -129,13 +129,20 @@ const ItemDetails = (props) => {
     }
   }, [itemId, dbData, navigate]);
 
+  // redirect user away from page if user is not logged in
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      setNoAccess(true);
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+  }, [props.loggedIn, navigate])
+
   // if user does not own item, redirect them away from the page
   // else, fetch any loan data and pre-enter in loan form
   useEffect (() => {
     if (item.item_owner == null) return;
-    if (props.uid == null || props.uid !== item.item_owner) {
-      noAccessRedirect(props.uid == null ? "/login" : "/dashboard",
-        navigate, setNoAccess);
+    if (props.uid !== item.item_owner) {
+      noAccessRedirect("/dashboard", navigate, setNoAccess);
       return;
     }
 
