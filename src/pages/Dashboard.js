@@ -370,7 +370,7 @@ const LoanerDashboard = (props) => {
             </h4>
             <h4>Item Display</h4>
             <MultiSelect 
-              placeholder="Hide/Unhide items"
+              placeholder="View hidden/visible items"
               options={displayOptions} 
               // onChange={val => handleFilters(val, USER)}
             />
