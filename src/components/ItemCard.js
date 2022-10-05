@@ -35,7 +35,7 @@ const ItemCard = (props) => {
               <CardTitle tag="h3" style={{marginBottom: '0.5rem', width:'100%'}}>{renderText(title)}</CardTitle>
               <div>
                 <Row>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p className='attribute'>Category: </p>
                   </Col>
                   <Col xs='6' sm='6'>
@@ -43,7 +43,7 @@ const ItemCard = (props) => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p className='attribute'>Loan Status: </p>
                   </Col>
                   <Col xs='6' sm='6'>
@@ -51,7 +51,7 @@ const ItemCard = (props) => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col xs='6' sm='6'>
@@ -59,18 +59,18 @@ const ItemCard = (props) => {
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p className='attribute'>Start date: </p>
                   </Col>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p>{startDate}</p>
                   </Col>
                 </Row>
                 <Row>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p className='attribute'>End date: </p>
                   </Col>
-                  <Col>
+                  <Col xs='6' sm='6'>
                     <p>{endDate}</p>
                   </Col>
                 </Row>

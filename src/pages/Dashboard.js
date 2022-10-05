@@ -20,6 +20,9 @@ const SA = "start date ascending"
 const SD = "start date decending"
 const EA = "end date ascending"
 const ED = "end date decending"
+const ALL = "all"
+const HIDDEN = "hidden"
+const VISIBLE = "visible"
 
 const dateOptions = [
   { label: 'Start date ascending ↑', value: SA },
@@ -36,7 +39,11 @@ const statusOptions = [
   { label: 'Available', value: null },
 ];
 
-// const image = 'https://picsum.photos/300/200';
+const displayOptions = [
+  { label: 'Show all items', value: ALL },
+  { label: 'Show hidden items', value: HIDDEN },
+  { label: 'Show visible items', value: VISIBLE },
+]
 
 
 const LoanerDashboard = (props) => {
@@ -148,7 +155,7 @@ const LoanerDashboard = (props) => {
     }
 
     return items.map((item, i) => (
-      <Col md={gridView ? 4 : 12} xs={gridView ? true : 12} key={i}>
+      <Col lg={gridView ? {size: 4, offset: 0} : 12} md={gridView ? {size: 6, offset: 0} : 12} xs={gridView ? {size: 8, offset: 2} : 12} key={i}>
         <Link to={`/item-details/${item.item_id}`}
           state={{item: {...getItemById(item.item_id), item_owner: userId}}}
         >
@@ -348,17 +355,23 @@ const LoanerDashboard = (props) => {
     <div className="page-margin dashboard">
       <Row>
         <Col className="bg-light-blue filter-container">
-          <h3 style={{ marginBottom: '2rem' }}>
+          <h4 style={{ marginBottom: '2rem' }}>
             View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
-          </h3>
-          <h3>Sort by</h3>
+          </h4>
+          <h4>Item Display</h4>
+          <MultiSelect 
+            placeholder="Hide/Unhide items"
+            options={displayOptions} 
+            // onChange={val => handleFilters(val, USER)}
+          />
+          <h4 style={{ marginTop: '1rem' }}>Sort by</h4>
           <MultiSelect 
             placeholder="Loan Date" 
             singleSelect={true} 
             options={dateOptions} 
             onChange={handleSortByDate}
           />
-          <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
+          <h4 style={{ marginTop: '1rem' }}>Filter by</h4>
           <MultiSelect 
             placeholder="Status" 
             options={statusOptions} 
@@ -404,7 +417,7 @@ const LoanerDashboard = (props) => {
                 <ReactTooltip id='item-view'>
                   <span>{gridView ? 'List view' : 'Grid view'}</span>
                 </ReactTooltip>
-                <div>
+                <div style={{marginLeft: '1rem', marginRight: '1rem'}}>
                   <input type="search" onChange={handleSearch} placeholder="Search for items" />
                 </div>
                 <Link to="/add-item">
@@ -422,7 +435,7 @@ const LoanerDashboard = (props) => {
                   </span>
                 </Link>
                 <ReactTooltip id='view-stats' />
-                <span className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
+                <span style={{marginLeft: '1rem'}} className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
                   <AiOutlineUserSwitch size={30} />
                 </span>
                 <ReactTooltip id='user-view'>
