@@ -1,10 +1,10 @@
 # script for testing "build" in develop branch
 
-name: Development
+name: Production
 
 on:
   push:
-    branches: [ "develop", "staging", "main" ]
+    branches: [ "main" ]
 
 jobs:
   build:
