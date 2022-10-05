@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
-import { TextBkgBox, TextButton, Submitting } from "../components";
+import { TextBkgBox, TextButton, Submitting, NoAccess } from "../components";
 import API from '../utils/api';
 import bcrypt from 'bcryptjs-react';
+import { noAccessRedirect } from "../utils/helpers";
 
 const ChangePassword = (props) => {
   // page navigation
+  const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
   
   // form submission
@@ -57,33 +59,43 @@ const ChangePassword = (props) => {
     }
   };
 
+  // redirect user away from page if user is not logged in
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      setNoAccess(true);
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+  }, [props.loggedIn, navigate])
+
   return (
-    <div className={"change-password"}>
-      <TextBkgBox>
-        <h1>Change password</h1>
-        <form onSubmit={changePwd} onChange={confirmPwd}>
-          {safetyNote ? <span className={"safety-note"}>
-            Password must contain at least: a symbol, a number, a lowercase letter and an uppercase letter.
-          </span> : null}
-          <div className={"inline-flex"}>
-            <h3>New password:</h3>
-            <input required type="password" id="newPwd" minLength={8}
-              placeholder="(Minimum 8 characters.)" className={"input-box"}
-            />
-          </div>
-          <div className={"inline-flex"}>
-            <h3>Confirm password:</h3>
-            <input required type="password" id="confirmPwd"
-              placeholder="Same password as above" className={"input-box"}
-            />
-          </div>
-          <TextButton disabled={!letSubmit} type="submit">
-            Confirm
-          </TextButton>
-        </form>
-      </TextBkgBox>
-      {submitting ? <Submitting /> : null}
-    </div>
+    <>{noAccess ? <NoAccess /> :
+      <div className={"change-password"}>
+        <TextBkgBox>
+          <h1>Change password</h1>
+          <form onSubmit={changePwd} onChange={confirmPwd}>
+            {safetyNote ? <span className={"safety-note"}>
+              Password must contain at least: a symbol, a number, a lowercase letter and an uppercase letter.
+            </span> : null}
+            <div className={"inline-flex"}>
+              <h3>New password:</h3>
+              <input required type="password" id="newPwd" minLength={8}
+                placeholder="(Minimum 8 characters.)" className={"input-box"}
+              />
+            </div>
+            <div className={"inline-flex"}>
+              <h3>Confirm password:</h3>
+              <input required type="password" id="confirmPwd"
+                placeholder="Same password as above" className={"input-box"}
+              />
+            </div>
+            <TextButton disabled={!letSubmit} type="submit">
+              Confirm
+            </TextButton>
+          </form>
+        </TextBkgBox>
+        {submitting ? <Submitting /> : null}
+      </div>
+    }</>
   );
 };
 

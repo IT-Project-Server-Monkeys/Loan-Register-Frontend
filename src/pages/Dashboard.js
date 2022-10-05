@@ -1,14 +1,14 @@
 import React, { useEffect, useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
 import { TbLayoutGrid } from 'react-icons/tb';
 import { MdQueryStats } from 'react-icons/md';
-import { ItemCard } from '../components';
+import { ItemCard, NoAccess } from '../components';
 import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
-import { LOANER, userViewSwitch, compArr } from '../utils/helpers';
+import { LOANER, userViewSwitch, compArr, noAccessRedirect } from '../utils/helpers';
 import dateFormat from 'dateformat';
 import ReactTooltip from 'react-tooltip';
 
@@ -20,6 +20,9 @@ const SA = "start date ascending"
 const SD = "start date decending"
 const EA = "end date ascending"
 const ED = "end date decending"
+const ALL = "all"
+const HIDDEN = "hidden"
+const VISIBLE = "visible"
 
 const dateOptions = [
   { label: 'Start date ascending ↑', value: SA },
@@ -36,10 +39,17 @@ const statusOptions = [
   { label: 'Available', value: null },
 ];
 
-// const image = 'https://picsum.photos/300/200';
+const displayOptions = [
+  { label: 'Show all items', value: ALL },
+  { label: 'Show hidden items', value: HIDDEN },
+  { label: 'Show visible items', value: VISIBLE },
+]
 
 
 const LoanerDashboard = (props) => {
+  const [noAccess, setNoAccess] = useState(false);
+  const navigate = useNavigate();
+
   const [gridView, setGridView] = useState(true);
   const [userView, setUserView] = useState(LOANER);
   const [loading, setLoading] = useState(true);
@@ -69,7 +79,13 @@ const LoanerDashboard = (props) => {
 
   const [searchText, setSearchText] = useState('');
 
-
+  // redirect user away from page if user is not logged in
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      setNoAccess(true);
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+  }, [props.loggedIn, navigate])
 
   const userId = sessionStorage.getItem('uid');
 
@@ -148,7 +164,7 @@ const LoanerDashboard = (props) => {
     }
 
     return items.map((item, i) => (
-      <Col md={gridView ? 4 : 12} xs={gridView ? true : 12} key={i}>
+      <Col lg={gridView ? {size: 4, offset: 0} : 12} md={gridView ? {size: 6, offset: 0} : 12} xs={gridView ? {size: 8, offset: 2} : 12} key={i}>
         <Link to={`/item-details/${item.item_id}`}
           state={{item: {...getItemById(item.item_id), item_owner: userId}}}
         >
@@ -345,106 +361,114 @@ const LoanerDashboard = (props) => {
 
  
   return (
-    <div className="page-margin dashboard">
-      <Row>
-        <Col className="bg-light-blue filter-container">
-          <h3 style={{ marginBottom: '2rem' }}>
-            View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
-          </h3>
-          <h3>Sort by</h3>
-          <MultiSelect 
-            placeholder="Loan Date" 
-            singleSelect={true} 
-            options={dateOptions} 
-            onChange={handleSortByDate}
-          />
-          <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
-          <MultiSelect 
-            placeholder="Status" 
-            options={statusOptions} 
-            onChange={val => handleFilters(val, STATUS)} 
-          />
-          <MultiSelect 
-            placeholder="Category" 
-            options={
-              userView === LOANER ? 
-              renderOptions(loanerFilters.categoryOptions) 
-              : renderOptions(loaneeFilters.categoryOptions)
-            } 
-            onChange={val => handleFilters(val, CATEGORY)}
-          />
-          <MultiSelect 
-            placeholder={userView === LOANER ? "Loanee" : "loaner" }
-            options={
-              userView === LOANER ? 
-              renderOptions(loanerFilters.loaneeOptions) 
-              : renderOptions(loaneeFilters.loanerOptions)
-            } 
-            onChange={val => handleFilters(val, USER)}
-          />
-          <Button onClick={applyFilters}>Apply Filters</Button>
-        </Col>
-        <Col md='8'>
-          <Row className="bg-light-blue" style={{ height: '5rem' }}>
-            <div className="dashboard-nav">
-              <div style={{ width: '40%', maxWidth: '25rem' }}>
-                <span 
-                  className="icon-blue" 
-                  data-for={gridView ? 'item-view' : 'item-view'} 
-                  data-tip 
-                  onClick={() => setGridView(!gridView)}
-                >
-                  {
-                    gridView ? 
-                      <AiOutlineUnorderedList size={30} /> 
-                    : 
-                      <TbLayoutGrid size={30} />
-                  }
-                </span>
-                <ReactTooltip id='item-view'>
-                  <span>{gridView ? 'List view' : 'Grid view'}</span>
-                </ReactTooltip>
-                <div>
-                  <input type="search" onChange={handleSearch} placeholder="Search for items" />
+    <>{noAccess ? <NoAccess /> :
+      <div className="page-margin dashboard">
+        <Row>
+          <Col className="bg-light-blue filter-container">
+            <h4 style={{ marginBottom: '2rem' }}>
+              View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
+            </h4>
+            <h4>Item Display</h4>
+            <MultiSelect 
+              placeholder="View hidden/visible items"
+              options={displayOptions} 
+              // onChange={val => handleFilters(val, USER)}
+            />
+            <h4 style={{ marginTop: '1rem' }}>Sort by</h4>
+            <MultiSelect 
+              placeholder="Loan Date" 
+              singleSelect={true} 
+              options={dateOptions} 
+              onChange={handleSortByDate}
+            />
+            <h4 style={{ marginTop: '1rem' }}>Filter by</h4>
+            <MultiSelect 
+              placeholder="Status" 
+              options={statusOptions} 
+              onChange={val => handleFilters(val, STATUS)} 
+            />
+            <MultiSelect 
+              placeholder="Category" 
+              options={
+                userView === LOANER ? 
+                renderOptions(loanerFilters.categoryOptions) 
+                : renderOptions(loaneeFilters.categoryOptions)
+              } 
+              onChange={val => handleFilters(val, CATEGORY)}
+            />
+            <MultiSelect 
+              placeholder={userView === LOANER ? "Loanee" : "loaner" }
+              options={
+                userView === LOANER ? 
+                renderOptions(loanerFilters.loaneeOptions) 
+                : renderOptions(loaneeFilters.loanerOptions)
+              } 
+              onChange={val => handleFilters(val, USER)}
+            />
+            <Button onClick={applyFilters}>Apply Filters</Button>
+          </Col>
+          <Col md='8'>
+            <Row className="bg-light-blue" style={{ height: '5rem' }}>
+              <div className="dashboard-nav">
+                <div style={{ width: '40%', maxWidth: '25rem' }}>
+                  <span 
+                    className="icon-blue" 
+                    data-for={gridView ? 'item-view' : 'item-view'} 
+                    data-tip 
+                    onClick={() => setGridView(!gridView)}
+                  >
+                    {
+                      gridView ? 
+                        <AiOutlineUnorderedList size={30} /> 
+                      : 
+                        <TbLayoutGrid size={30} />
+                    }
+                  </span>
+                  <ReactTooltip id='item-view'>
+                    <span>{gridView ? 'List view' : 'Grid view'}</span>
+                  </ReactTooltip>
+                  <div style={{marginLeft: '1rem', marginRight: '1rem'}}>
+                    <input type="search" onChange={handleSearch} placeholder="Search for items" />
+                  </div>
+                  <Link to="/add-item">
+                    <span className="icon-plus" data-for='add-item' data-tip='Add item'>
+                      <AiFillPlusCircle size={45} color="#0073e6" />
+                    </span>
+                  </Link>
+                  <ReactTooltip id='add-item' />
+                  
                 </div>
-                <Link to="/add-item">
-                  <span className="icon-plus" data-for='add-item' data-tip='Add item'>
-                    <AiFillPlusCircle size={45} color="#0073e6" />
+                <div style={{ width: '12%', maxWidth: '8rem' }}>
+                  <Link to="/stats" style={{display: 'flex'}}>
+                    <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
+                      <MdQueryStats size={30} />
+                    </span>
+                  </Link>
+                  <ReactTooltip id='view-stats' />
+                  <span style={{marginLeft: '1rem'}} className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
+                    <AiOutlineUserSwitch size={30} />
                   </span>
-                </Link>
-                <ReactTooltip id='add-item' />
-                 
+                  <ReactTooltip id='user-view'>
+                    <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
+                  </ReactTooltip>
+                </div>
               </div>
-              <div style={{ width: '12%', maxWidth: '8rem' }}>
-                <Link to="/stats" style={{display: 'flex'}}>
-                  <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
-                    <MdQueryStats size={30} />
-                  </span>
-                </Link>
-                <ReactTooltip id='view-stats' />
-                <span className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
-                  <AiOutlineUserSwitch size={30} />
-                </span>
-                <ReactTooltip id='user-view'>
-                  <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
-                </ReactTooltip>
-              </div>
-            </div>
-            
-          </Row>
-          <Row>
-            {loading ?
-              <div className="m-5" style={{display: 'flex'}}>
-                <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
-                <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
-              </div> 
-            : 
-              renderItems(userView)
-            }
-          </Row>
-        </Col>
-      </Row>
-    </div>
+              
+            </Row>
+            <Row>
+              {loading ?
+                <div className="m-5" style={{display: 'flex'}}>
+                  <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
+                  <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
+                </div> 
+              : 
+                renderItems(userView)
+              }
+            </Row>
+          </Col>
+        </Row>
+      </div>
+    }</>
   );
 };
 
