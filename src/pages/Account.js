@@ -108,6 +108,7 @@ const Account = (props) => {
 
   // get user data from server, querying using userId recorded in the app's session
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     const fetchUser = async () => {
       let fetchedData = null;
       if (props.uid == null) return;
@@ -126,7 +127,7 @@ const Account = (props) => {
       setNewEmail(fetchedData.login_email);
     };
     fetchUser();
-  }, [props.uid, navigate]);
+  }, [props.loggedIn, props.uid, navigate]);
 
   return (
     <>{noAccess ? <NoAccess /> :

@@ -115,11 +115,16 @@ const ItemDetails = (props) => {
   }
 
   // get all loanees & set loanee suggest list for loan form
-  useEffect(() => { setSubmitting(false); fetchAllLoanees(setAllLoanees); }, []);
+  useEffect(() => {
+    if (props.loggedIn !== true) return;
+    setSubmitting(false);
+    fetchAllLoanees(setAllLoanees);
+  }, [props.loggedIn]);
   useEffect(() => setSuggestedLoanees(Object.keys(allLoanees).sort(noCaseCmp)), [allLoanees]);
 
   // get and show item data
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       console.log(dbData);
@@ -127,11 +132,10 @@ const ItemDetails = (props) => {
         loan_start_date: <Loading />, intended_return_date: <Loading /> });
         navigate(`/item-details/${itemId}`, {state: null});
     }
-  }, [itemId, dbData, navigate]);
+  }, [props.loggedIn, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
-    if (props.loggedIn === undefined) return;
     if (props.loggedIn === false) {
       noAccessRedirect("/login", navigate, setNoAccess);
     }
