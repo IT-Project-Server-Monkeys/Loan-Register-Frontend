@@ -1,12 +1,17 @@
-import React from 'react';
-import { Card, CardBody, CardTitle, Row, Col } from 'reactstrap'
-import { LOANER } from '../utils/helpers';
+import React, { useState } from 'react';
+import { Card, CardBody, CardTitle, Row, Col, Button } from 'reactstrap'
+import { LOANER, VISIBLE, HIDDEN } from '../utils/constants';
 import Highlighter from "react-highlight-words";
+
+
 
 const ItemCard = (props) => {
 
   const {image, title, category, user, startDate, endDate, loanStatus, gridView, searchText} = props;
 
+  const [cardStatus, setCardStatus] = useState(VISIBLE)
+  const [onHover, setOnHover] = useState(false);
+  
   const userView = window.location.pathname.slice(-6);
 
   const renderText = (text) => {
@@ -20,15 +25,34 @@ const ItemCard = (props) => {
               textToHighlight={text}
             />
   }
+
+  const cardStatusHandler = (e) => {
+    e.preventDefault();  // prevent Link to navigate
+    if (cardStatus === VISIBLE) {
+      setCardStatus(HIDDEN);
+    } else {
+      setCardStatus(VISIBLE)
+    }
+    
+  }
   
   return (
     <>
       {
         gridView ?
-          <Card className='item-card'>
-            <div style={{height: '13rem'}}>
+          <Card className='item-card'
+            onMouseEnter={()=>setOnHover(true)}
+            onMouseLeave={()=>setOnHover(false)}
+          >
+            <div style={{height: '13rem', position: 'relative'}}>
               {
-                image !== null && <img alt="item-img" src={image} width='100%' height='100%' />
+                loanStatus === "Available" && onHover &&
+                <Button onClick={cardStatusHandler} className='hide-btn'>
+                  {cardStatus === VISIBLE ? 'Hide' : 'Unhide'}
+                </Button>
+              }
+              {
+                image !== undefined && <img alt="item-img" src={image} width='100%' height='100%' />
               }
             </div>
             <CardBody>

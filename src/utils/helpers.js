@@ -1,9 +1,6 @@
 import dateFormat from 'dateformat';
+import { LOANER, LOANEE } from './constants';
 
-/* constants */
-
-export const LOANER = 'loaner';
-export const LOANEE = 'loanee';
 
 /* helper functions */
 
