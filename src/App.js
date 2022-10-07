@@ -16,27 +16,21 @@ function App() {
   const [uid, setUid] = useState();
   useEffect(() => {
     // TODO: SEE ABOVE, GET SESSION INFO FROM ELSEWHERE
-    if (window.sessionStorage.getItem("loggedIn") === null)
-      window.sessionStorage.setItem("loggedIn", false);
-    
-    setLoggedIn(window.sessionStorage.getItem("loggedIn"));
-    setUid(
-      window.sessionStorage.getItem("uid")
+    setLoggedIn(
+      window.sessionStorage.getItem("loggedIn") === "true" ? true : false
     );
+    setUid(window.sessionStorage.getItem("uid"));
   }, [])
 
   const loginHandler = (uid) => {
     // TODO: STORING IN SESSIONSTORAGE IS VERY UNSAFE, STORE SESSION INFO ELSEWHERE
     window.sessionStorage.setItem("loggedIn", true);
-    setLoggedIn(true);
-
     window.sessionStorage.setItem("uid", uid);
-    setUid(uid);
   }
   
   const logoutHandler = () => {
     // TODO: SEE ABOVE, MAKE SAFER
-    window.sessionStorage.setItem("loggedIn", false);
+    window.sessionStorage.removeItem("loggedIn");
     window.sessionStorage.removeItem("uid"); 
     setUid(null);
   }
@@ -58,7 +52,7 @@ function App() {
             <Route path="/stats" element={<Stats loggedIn={loggedIn} />} />
             <Route path="/signup" element={<Signup loggedIn={loggedIn} />} />
             <Route path="/forgot-password" element={<ForgotPassword loggedIn={loggedIn} />} />
-            <Route path="/account" element={<Account uid={uid} />} />
+            <Route path="/account" element={<Account uid={uid} loggedIn={loggedIn} />} />
             <Route path="/change-password" element={<ChangePassword uid={uid} loggedIn={loggedIn} />} />
           </Routes>
         </Router>

@@ -102,7 +102,6 @@ const Account = (props) => {
   // redirect user away from page if user is not logged in
   useEffect(() => {
     if (props.loggedIn === false) {
-      setNoAccess(true);
       noAccessRedirect("/login", navigate, setNoAccess);
     }
   }, [props.loggedIn, navigate])

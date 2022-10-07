@@ -80,12 +80,11 @@ const LoanerDashboard = (props) => {
   const [searchText, setSearchText] = useState('');
 
   // redirect user away from page if user is not logged in
-  // useEffect(() => {
-  //   if (props.loggedIn === false) {
-  //     setNoAccess(true);
-  //     noAccessRedirect("/login", navigate, setNoAccess);
-  //   }
-  // }, [props.loggedIn, navigate])
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+  }, [props.loggedIn, navigate])
 
   const userId = sessionStorage.getItem('uid');
 
@@ -365,7 +364,7 @@ const LoanerDashboard = (props) => {
 
  
   return (
-    // <>{noAccess ? <NoAccess /> :
+    <>{noAccess ? <NoAccess /> :
       <div className="page-margin dashboard">
         <Row>
           <Col className="bg-light-blue filter-container">
@@ -472,7 +471,7 @@ const LoanerDashboard = (props) => {
           </Col>
         </Row>
       </div>
-    // }</>
+    }</>
   );
 };
 

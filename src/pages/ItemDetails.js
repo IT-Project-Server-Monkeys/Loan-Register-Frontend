@@ -131,6 +131,7 @@ const ItemDetails = (props) => {
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
+    if (props.loggedIn === undefined) return;
     if (props.loggedIn === false) {
       noAccessRedirect("/login", navigate, setNoAccess);
     }
