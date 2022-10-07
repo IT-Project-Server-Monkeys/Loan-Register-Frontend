@@ -2,8 +2,41 @@
   padding: 5rem;
   margin: auto;
   text-align: center;
+  display: grid;
+  grid-template-areas:
+    "head head"
+    "ch1 ch2"
+    "ch3 bar";
+  grid-template-rows: auto 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: 1080px) {
+    display: flex;
+    flex-direction: column;
+  }
 
   h1 {
     font-weight: bold;
+    grid-area: head;
+    margin-bottom: 2rem;
+  }
+
+  .chart-box {
+    border: 5px solid var(--light-blue-color);
+    border-radius: 15px;
+    padding: 10%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  bar-box {
+    grid-area: bar;
+    display: flex;
+    flex-direction: column;
+    padding: 20%;
+
+    .bar-plot {
+      margin: auto
+    }
   }
 }
