@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Stats.scss'
-import API from '../utils/api';
+// import API from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import { NoAccess } from '../components';
 import { noAccessRedirect } from '../utils/helpers';
