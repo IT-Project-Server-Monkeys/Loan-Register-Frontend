@@ -18,8 +18,8 @@ export const compArr = (arr1, arr2) => {
 }
 
 export const noAccessRedirect = (page, navigate, setPopupOpen) => {
-  setPopupOpen(true);
-  setTimeout(() => navigate(page), 3000);
+  // setPopupOpen(true);
+  // setTimeout(() => navigate(page), 3000);
 }
 
 

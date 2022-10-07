@@ -1,5 +1,6 @@
 import API from "./api";
 import dateFormat from 'dateformat';
+import { toISO } from "./helpers";
 
 // get all loanee names & ids from server (for loan form validation)
 const fetchAllLoanees = async (setAllLoanees) => {
@@ -12,7 +13,7 @@ const fetchAllLoanees = async (setAllLoanees) => {
 }
 
 // get info on an item's current loan
-const fetchLoan = async (itemId, setItem) => {
+const fetchCurLoan = async (itemId, setItem) => {
   let fetchedData = null;
   let loaneeName = "";
 
@@ -59,12 +60,13 @@ const editLoan = (input, onSuccess, onFailure) => {
 // given an existing loan return, complete form data
 const returnLoan = async (item, onSuccess, onFailure) => {
   const actual_return_date = new Date();
-  const dateDiff = actual_return_date - new Date(Date.parse(item.intended_return_date));
+  const dateDiff = actual_return_date - new Date(toISO(item.intended_return_date));
 
   let formData = { _id: item.loan_id, actual_return_date: actual_return_date };
-  if (dateDiff > 0) formData.status = "Late Return";
-  else if (dateDiff > -86400000) formData.status = "On Time Return";
-  else formData.status = "Early Return";
+
+  if (Math.abs(dateDiff) < 86400000) formData.status = "On Time Return";
+  else if (dateDiff < 0) formData.status = "Early Return";
+  else formData.status = "Late Return";
 
   saveLoan(formData, false, onSuccess, onFailure);
 }
@@ -85,4 +87,4 @@ const saveLoan = async (formData, newItem, onSuccess, onFailure) => {
     .catch((err) => {console.log(err); onFailure();});
 }
 
-export { fetchAllLoanees, fetchLoan, createLoan, editLoan, returnLoan };
+export { fetchAllLoanees, fetchCurLoan, createLoan, editLoan, returnLoan };

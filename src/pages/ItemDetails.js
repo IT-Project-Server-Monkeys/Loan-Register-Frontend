@@ -4,7 +4,7 @@ import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
-import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "../utils/loanHelpers";
+import { createLoan, editLoan, fetchAllLoanees, fetchCurLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
@@ -132,7 +132,6 @@ const ItemDetails = (props) => {
   // redirect user away from page if user is not logged in
   useEffect(() => {
     if (props.loggedIn === false) {
-      setNoAccess(true);
       noAccessRedirect("/login", navigate, setNoAccess);
     }
   }, [props.loggedIn, navigate])
@@ -148,7 +147,7 @@ const ItemDetails = (props) => {
 
     if (item.being_loaned) {
       if (item.loan_id === undefined || item.loan_id == null) {
-        fetchLoan(item.item_id, setItem);
+        fetchCurLoan(item.item_id, setItem);
       } else {
         setLoaneeName(item.loanee_name);
         setLoanDate(item.loan_start_date);
