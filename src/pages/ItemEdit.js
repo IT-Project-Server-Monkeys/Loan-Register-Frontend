@@ -98,22 +98,23 @@ const ItemEdit = (props) => {
 
   // get list of potential categories for render & modification
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     fetchCategs(props.uid, setCategList, setDelableCg);
-  }, [props.uid]);
+  }, [props.uid, props.loggedIn]);
   
   // get and show item data
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       setItem(dbData);
       navigate(`/item-details/${itemId}/edit`, {state: null});
     }
-  }, [itemId, dbData, navigate]);
+  }, [props.loggedIn, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
     if (props.loggedIn === false) {
-      setNoAccess(true);
       noAccessRedirect("/login", navigate, setNoAccess);
     }
   }, [props.loggedIn, navigate])
@@ -121,6 +122,7 @@ const ItemEdit = (props) => {
   // if user is not item owner, redirect them away from page
   // else, loan original information to display on page
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     if (item.item_owner == null) return;
     if (props.uid !== item.item_owner) {
       noAccessRedirect("/dashboard", navigate, setNoAccess);
@@ -131,7 +133,7 @@ const ItemEdit = (props) => {
     setNewName(item.item_name);
     setNewCateg(item.category);
     setNewDesc(item.description);
-  }, [item, props.uid, navigate])
+  }, [item, props.uid, navigate, props.loggedIn])
 
   return (
     <>{noAccess ? <NoAccess /> : 

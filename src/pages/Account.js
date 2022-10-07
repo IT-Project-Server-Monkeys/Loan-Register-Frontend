@@ -102,13 +102,13 @@ const Account = (props) => {
   // redirect user away from page if user is not logged in
   useEffect(() => {
     if (props.loggedIn === false) {
-      setNoAccess(true);
       noAccessRedirect("/login", navigate, setNoAccess);
     }
   }, [props.loggedIn, navigate])
 
   // get user data from server, querying using userId recorded in the app's session
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     const fetchUser = async () => {
       let fetchedData = null;
       if (props.uid == null) return;
@@ -127,7 +127,7 @@ const Account = (props) => {
       setNewEmail(fetchedData.login_email);
     };
     fetchUser();
-  }, [props.uid, navigate]);
+  }, [props.loggedIn, props.uid, navigate]);
 
   return (
     <>{noAccess ? <NoAccess /> :

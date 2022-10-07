@@ -20,7 +20,6 @@ const Signup = (props) => {
   // redirect user away from page if user is logged in
   useEffect(() => {
     if (props.loggedIn === true) {
-      setNoAccess(true);
       noAccessRedirect("/dashboard", navigate, setNoAccess);
     }
   }, [props.loggedIn, navigate]);

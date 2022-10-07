@@ -93,16 +93,16 @@ const LoanerDashboard = (props) => {
   });  
 
   // redirect user away from page if user is not logged in
-  // useEffect(() => {
-  //   if (props.loggedIn === false) {
-  //     setNoAccess(true);
-  //     noAccessRedirect("/login", navigate, setNoAccess);
-  //   }
-  // }, [props.loggedIn, navigate])
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+  }, [props.loggedIn, navigate])
 
   const userId = sessionStorage.getItem('uid');
 
   useEffect(() => {
+    if (props.loggedIn !== true || userId == null) return;
     API.get('/dashboard?user_id=' + userId)
       .then((res) => {
         console.log('dashboard api', res);
@@ -167,7 +167,7 @@ const LoanerDashboard = (props) => {
       });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.loggedIn]);
 
 
   const getItemById = (id) => {
@@ -415,7 +415,7 @@ const LoanerDashboard = (props) => {
 
  
   return (
-    // <>{noAccess ? <NoAccess /> :
+    <>{noAccess ? <NoAccess /> :
       <div className="page-margin dashboard">
         <Row>
           <Col className="bg-light-blue filter-container">
@@ -530,7 +530,7 @@ const LoanerDashboard = (props) => {
           </Col>
         </Row>
       </div>
-    // }</>
+    }</>
   );
 };
 
