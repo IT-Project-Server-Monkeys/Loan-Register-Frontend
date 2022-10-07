@@ -80,12 +80,12 @@ const LoanerDashboard = (props) => {
   const [searchText, setSearchText] = useState('');
 
   // redirect user away from page if user is not logged in
-  useEffect(() => {
-    if (props.loggedIn === false) {
-      setNoAccess(true);
-      noAccessRedirect("/login", navigate, setNoAccess);
-    }
-  }, [props.loggedIn, navigate])
+  // useEffect(() => {
+  //   if (props.loggedIn === false) {
+  //     setNoAccess(true);
+  //     noAccessRedirect("/login", navigate, setNoAccess);
+  //   }
+  // }, [props.loggedIn, navigate])
 
   const userId = sessionStorage.getItem('uid');
 
@@ -354,6 +354,10 @@ const LoanerDashboard = (props) => {
 
   }
 
+  const handleDisplay = (val) => {
+    
+  }
+
 
   // console.log('items', loanerItems)
   // console.log('filters', filters)
@@ -361,7 +365,7 @@ const LoanerDashboard = (props) => {
 
  
   return (
-    <>{noAccess ? <NoAccess /> :
+    // <>{noAccess ? <NoAccess /> :
       <div className="page-margin dashboard">
         <Row>
           <Col className="bg-light-blue filter-container">
@@ -372,7 +376,7 @@ const LoanerDashboard = (props) => {
             <MultiSelect 
               placeholder="View hidden/visible items"
               options={displayOptions} 
-              // onChange={val => handleFilters(val, USER)}
+              onChange={val => handleDisplay(val)}
             />
             <h4 style={{ marginTop: '1rem' }}>Sort by</h4>
             <MultiSelect 
@@ -468,7 +472,7 @@ const LoanerDashboard = (props) => {
           </Col>
         </Row>
       </div>
-    }</>
+    // }</>
   );
 };
 

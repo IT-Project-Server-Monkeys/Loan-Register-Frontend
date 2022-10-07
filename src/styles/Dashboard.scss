@@ -43,6 +43,7 @@
     padding: 1rem 2rem 3rem 2rem;
     height: fit-content;
     margin-right: 4rem;
+    max-width: 25rem;
   }
   
   .filter-box {
@@ -90,6 +91,7 @@
 .item-card {
   border-radius: 20px !important;
   margin-top: 1.5rem;
+  box-shadow: 4px 4px 4px rgb(0 0 0 / 25%);
 
   &:hover {
     cursor: pointer;
