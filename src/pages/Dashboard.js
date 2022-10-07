@@ -31,7 +31,7 @@ const dateOptions = [
   { label: 'End date decending ↓', value: ED },
 ];
 const statusOptions = [
-  { label: 'On Loan', value: 'On Laon' },
+  { label: 'On Loan', value: 'On Loan' },
   { label: 'On-Time Return', value: 'On Time Return' },
   { label: 'Early Return', value: 'Early Return' },
   { label: 'Late Return', value: 'Late Return' },
@@ -89,6 +89,7 @@ const LoanerDashboard = (props) => {
   const userId = sessionStorage.getItem('uid');
 
   useEffect(() => {
+    if (props.loggedIn !== true || userId == null) return;
     API.get('/dashboard?user_id=' + userId)
       .then((res) => {
         console.log('dashboard api', res);
@@ -141,7 +142,7 @@ const LoanerDashboard = (props) => {
       });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props.loggedIn]);
 
 
   const getItemById = (id) => {
