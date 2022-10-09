@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { Card, CardBody, CardTitle, Row, Col, Button } from 'reactstrap'
-import { LOANER, VISIBLE, HIDDEN } from '../utils/constants';
+import { LOANER } from '../utils/constants';
 import Highlighter from "react-highlight-words";
-
+import dateFormat from 'dateformat';
 
 
 const ItemCard = (props) => {
 
-  const {image, title, category, user, startDate, endDate, loanStatus, gridView, searchText} = props;
+  const {item, gridView, userView, searchText, updateVisibility} = props;
 
-  const [cardStatus, setCardStatus] = useState(VISIBLE)
   const [onHover, setOnHover] = useState(false);
   
-  const userView = window.location.pathname.slice(-6);
+  const userName = item.loanee_name ? item.loanee_name : item.loaner_name;
+  const startDate = item.loan_start_date && dateFormat(item.loan_start_date, 'dd/mm/yyyy')
+  const endDate = item.intended_return_date && dateFormat(item.intended_return_date, 'dd/mm/yyyy')
+  
 
   const renderText = (text) => {
     return <Highlighter
@@ -27,11 +29,11 @@ const ItemCard = (props) => {
   }
 
   const cardStatusHandler = (e) => {
-    e.preventDefault();  // prevent Link to navigate
-    if (cardStatus === VISIBLE) {
-      setCardStatus(HIDDEN);
+    e.preventDefault();  // prevent from navigating
+    if (item.visible === undefined || item.visible === true) {
+      updateVisibility(item._id, false)
     } else {
-      setCardStatus(VISIBLE)
+      updateVisibility(item._id, true)
     }
     
   }
@@ -46,24 +48,24 @@ const ItemCard = (props) => {
           >
             <div style={{height: '13rem', position: 'relative'}}>
               {
-                loanStatus === "Available" && onHover &&
+                item.loan_status === "Available" && onHover &&
                 <Button onClick={cardStatusHandler} className='hide-btn'>
-                  {cardStatus === VISIBLE ? 'Hide' : 'Unhide'}
+                  {item.visible === false ? 'Unhide' : 'Hide'}
                 </Button>
               }
               {
-                image !== undefined && <img alt="item-img" src={image} width='100%' height='100%' />
+                item.image_url !== undefined && <img alt="item-img" src={item.image_url} width='100%' height='100%' />
               }
             </div>
             <CardBody>
-              <CardTitle tag="h3" style={{marginBottom: '0.5rem', width:'100%'}}>{renderText(title)}</CardTitle>
+              <CardTitle tag="h3" style={{marginBottom: '0.5rem', width:'100%'}}>{renderText(item.item_name)}</CardTitle>
               <div>
                 <Row>
                   <Col xs='6' sm='6'>
                     <p className='attribute'>Category: </p>
                   </Col>
                   <Col xs='6' sm='6'>
-                    <p>{renderText(category)}</p>
+                    <p>{renderText(item.category)}</p>
                   </Col>
                 </Row>
                 <Row>
@@ -71,7 +73,7 @@ const ItemCard = (props) => {
                     <p className='attribute'>Loan Status: </p>
                   </Col>
                   <Col xs='6' sm='6'>
-                    <p>{loanStatus ? loanStatus : "Available"}</p>
+                    <p>{item.loan_status ? item.loan_status : "Available"}</p>
                   </Col>
                 </Row>
                 <Row>
@@ -79,7 +81,7 @@ const ItemCard = (props) => {
                     <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col xs='6' sm='6'>
-                    <p>{user}</p>
+                    <p>{userName}</p>
                   </Col>
                 </Row>
                 <Row>
@@ -106,12 +108,14 @@ const ItemCard = (props) => {
           <Row className='item-card-long'>
             <Col md='4' style={{paddingLeft: '0', height: '100%'}}>
               <div style={{height: '100%'}}>
-                <img alt="item-img" src={image} height='100%' width='100%' />
+              {
+                item.image_url !== undefined && <img alt="item-img" src={item.image_url} width='100%' height='100%' />
+              }
               </div>
             </Col>
             <Col md='8' style={{paddingTop: '1.5rem', paddingBottom: '1rem'}}>
               <Row>
-                <h3>{renderText(title)}</h3>
+                <h3>{renderText(item.item_name)}</h3>
               </Row>
               <Row style={{alignItems: 'center'}}>
                 <Col>
@@ -120,7 +124,7 @@ const ItemCard = (props) => {
                       <p className='attribute'>Category: </p>
                     </Col>
                     <Col>
-                      <p>{renderText(category)}</p>
+                      <p>{renderText(item.category)}</p>
                     </Col>
                   </Row>
                   <Row>
@@ -128,7 +132,7 @@ const ItemCard = (props) => {
                       <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                     </Col>
                     <Col>
-                      <p>{user}</p>
+                      <p>{userName}</p>
                     </Col>
                   </Row>
                   <Row>
@@ -149,7 +153,7 @@ const ItemCard = (props) => {
                   </Row>
                 </Col>
                 <Col md='4' className='d-flex justify-content-end' style={{marginRight: '3rem', marginTop: '-1.5rem'}}>
-                  <h3>{loanStatus ? "On loan" : "Not loaned"}</h3>
+                  <h3>{item.loan_status}</h3>
                 </Col>
               </Row>
             </Col>

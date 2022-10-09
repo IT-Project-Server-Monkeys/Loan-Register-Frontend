@@ -10,7 +10,6 @@ import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { userViewSwitch, compArr, noAccessRedirect } from '../utils/helpers';
 import { LOANER } from '../utils/constants';
-import dateFormat from 'dateformat';
 import ReactTooltip from 'react-tooltip';
 
 /* constants */
@@ -42,8 +41,8 @@ const statusOptions = [
 
 const displayOptions = [
   { label: 'Show all items', value: ALL },
-  { label: 'Show hidden items', value: HIDDEN },
   { label: 'Show visible items', value: VISIBLE },
+  { label: 'Show hidden items', value: HIDDEN },
 ]
 
 
@@ -101,6 +100,7 @@ const LoanerDashboard = (props) => {
 
   const userId = sessionStorage.getItem('uid');
 
+  // get all items 
   useEffect(() => {
     if (props.loggedIn !== true || userId == null) return;
     API.get('/dashboard?user_id=' + userId)
@@ -122,13 +122,13 @@ const LoanerDashboard = (props) => {
 
         // update visible items
         setVisibilityController({
-          ...visibilityController,
-          visibleItems: loanerItemsLst,
+          visibleItems: loanerItemsLst.filter(item => item.visible === undefined || item.visible === true),
+          hiddenItems: loanerItemsLst.filter(item => item.visible !== undefined && item.visible === false),
         })
         
         // set items to display
         setDisplayItems({
-          loanerItems: loanerItemsLst,
+          loanerItems: loanerItemsLst.filter(item => item.visible === undefined || item.visible === true),
           loaneeItems: loaneeItemsLst
         })
         
@@ -171,9 +171,9 @@ const LoanerDashboard = (props) => {
 
 
   const getItemById = (id) => {
-    var item = loanerItems.filter(item => item.item_id === id);
+    var item = loanerItems.find(item => item.item_id === id);
     if (!item) {
-      item = loaneeItems.filter(item => item.item_id === id);
+      item = loaneeItems.find(item => item.item_id === id);
     }
 
     if (item) return item[0];
@@ -190,27 +190,22 @@ const LoanerDashboard = (props) => {
     }
 
     return items.map((item, i) => (
-      <Col lg={gridView ? {size: 4, offset: 0} : 12} md={gridView ? {size: 6, offset: 0} : 12} xs={gridView ? {size: 8, offset: 2} : 12} key={i}>
-        <Link to={`/item-details/${item.item_id}`}
+      <Col 
+        lg={gridView ? {size: 4, offset: 0} : 12} 
+        md={gridView ? {size: 6, offset: 0} : 12} 
+        xs={gridView ? {size: 8, offset: 2} : 12} 
+        key={i}
+      >
+        <Link 
+          to={`/item-details/${item.item_id}`}
           state={{item: {...getItemById(item.item_id), item_owner: userId}}}
         >
           <ItemCard
-            itemId={item.item_id}
-            image={item.image_url}
-            title={item.item_name}
-            category={item.category}
-            user={item.loanee_name ? item.loanee_name : item.loaner_name}
-            startDate={
-              item.loan_start_date &&
-              dateFormat(item.loan_start_date, 'dd/mm/yyyy')
-            }
-            endDate={
-              item.intended_return_date &&
-              dateFormat(item.intended_return_date, 'dd/mm/yyyy')
-            }
-            loanStatus={item.loan_status}
+            item={item}           
             gridView={gridView}
+            userView={userView}
             searchText={searchText}
+            updateVisibility={updateVisibility}
           />
         </Link>
       </Col>
@@ -219,8 +214,47 @@ const LoanerDashboard = (props) => {
 
   };
 
+  // update item's visibility
+  const updateVisibility = (id, visible) => {
+    API({
+      method: 'PUT',
+      url: '/items',
+      data: {
+        _id: id,
+        visible: visible
+      }
+    }).then(res => {
+      console.log(res)
+      const item = loanerItems.find(item => item._id === id);
+      if (visible) {
+        // show the item
+        setVisibilityController({
+          visibleItems: [...visibilityController.visibleItems].push(item),
+          hiddenItems: [...visibilityController.hiddenItems].filter(item => item._id !== id),
+        })
+        setDisplayItems({
+          ...displayItems,
+          loanerItems: [...displayItems.loanerItems].push(item)
+        })
+      } else {
+        // hide the item
+        setVisibilityController({
+          visibleItems: [...visibilityController.visibleItems].filter(item => item._id !== id),
+          hiddenItems: [...visibilityController.hiddenItems].push(item)
+        })
+        setDisplayItems({
+          ...displayItems,
+          loanerItems: [...displayItems.loanerItems].filter(item => item._id !== id)
+        })
+      }
+    }).catch(e => {
+      console.log(e)
+    })
 
+  }
 
+  console.log('control', visibilityController)
+  console.log('display', displayItems)
 
 
   const handleUserSwitch = (e) => {
@@ -394,13 +428,13 @@ const LoanerDashboard = (props) => {
       case VISIBLE:
         setDisplayItems({
           ...displayItems,
-          loanerItems: loanerItems.filter(item => item.visible === true)
+          loanerItems: loanerItems.filter(item => item.visible === undefined || item.visible === true)
         })
         return;
       case HIDDEN:
         setDisplayItems({
           ...displayItems,
-          loanerItems: loanerItems.filter(item => item.visible === false)
+          loanerItems: loanerItems.filter(item => item.visible !== undefined && item.visible === false)
         })
         return;
       default:
@@ -427,10 +461,11 @@ const LoanerDashboard = (props) => {
               <>
                 <h4>Item Display</h4>
                 <MultiSelect 
-                  placeholder="View hidden/visible items"
+                  // placeholder='Show all items'
                   singleSelect={true} 
                   options={displayOptions} 
                   onChange={val => handleDisplay(val)}
+                  defaultValue={VISIBLE}
                 />
               </>
               
