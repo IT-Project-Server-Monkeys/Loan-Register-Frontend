@@ -21,7 +21,7 @@ const ItemDetails = (props) => {
   const dbData = null;
   // const dbData = location.state ? location.state.item : null;
   const [item, setItem] = useState({
-    item_name: <Loading />, image_url: noImg,
+    item_name: <Loading />, image_url: "",
     category: <Loading />, description: <Loading />,
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />

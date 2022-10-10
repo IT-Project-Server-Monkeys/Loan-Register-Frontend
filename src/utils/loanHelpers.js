@@ -99,10 +99,6 @@ const returnLoan = async (item, onSuccess, onFailure) => {
 // sends completed loan form data to server
 const saveLoan = async (formData, newItem, onSuccess, onFailure) => {
 
-  // clean form
-  for (const prop in formData)
-    if (formData[prop] === "" || formData[prop] === null) delete formData[prop];
-
   console.log(formData);
   await API(`/loans`, {
     method: newItem ? "post" : "put", data: formData,
