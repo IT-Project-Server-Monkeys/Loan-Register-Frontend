@@ -3,7 +3,7 @@ import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom"
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
-import { fetchItem, makeVisible } from "../utils/itemHelpers";
+import { fetchItem } from "../utils/itemHelpers"; // i've made loan submit helper set visible true
 import { createLoan, editLoan, fetchAllUsernames, fetchCurLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
@@ -86,13 +86,7 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await returnLoan(
       item,
-      () => {
-        // if item is hidden, make it visible
-        if (item.visible === false) {
-          makeVisible(itemId)
-        }
-        window.location.reload()
-      },
+      () => window.location.reload(), // i've made loan submit helper set visible true
       () => {
         setSubmitting(false);
         alert("There was an error saving your loan. Please try again later.");
@@ -170,7 +164,7 @@ const ItemDetails = (props) => {
           }} />
           
           <p className={"item-status"}>
-            Status: { item.loan_status != null ? item.loan_status : <Loading /> }
+            <span>Status:</span> { item.loan_status != null ? item.loan_status : <Loading /> }
           </p>
           <div className={"item-info"}>
             <table><tbody>

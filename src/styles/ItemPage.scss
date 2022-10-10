@@ -7,6 +7,7 @@ main .item-page {
   }
 
   .edit-item {
+    z-index: 2;
     border-radius: 50%;
     border: 0;
     position: fixed;
@@ -18,13 +19,27 @@ main .item-page {
   }
 
   .item-details {
-    padding: 5rem 15% 1.5rem 15%;
+    padding: 5rem 15% 0 15%;
     display: grid;
     gap: 1rem;
     grid-template-areas:
       "img inf inf"
       "img inf inf"
       "sta inf inf";
+
+    @media (max-width: 1080px) {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .item-status {
+        text-align: center;
+      }
+
+      .item-image {
+        margin-bottom: 1rem;
+      }
+    }
 
     .item-image {
       grid-area: img;
@@ -60,17 +75,18 @@ main .item-page {
 
     .item-status /*, .big-img-warn*/ {
       grid-area: sta;
-      font-weight: bold;
+      // font-weight: bold;
       width: 300px;
-      margin-top: 1rem;
+      margin: 0;
+    }
+
+    td:first-child, span:first-child {
+      font-weight: bold;
     }
 
     .item-info {
       grid-area: inf;
 
-      td:first-child, span:first-child {
-        font-weight: bold;
-      }
 
       table {
         td {
@@ -100,6 +116,11 @@ main .item-page {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
-    margin: 1.5rem auto auto
+    margin: 1.5rem auto auto;
+
+    @media (max-width: 840px) {
+      flex-direction: column;
+      align-items: center;
+    }
   }
 }
