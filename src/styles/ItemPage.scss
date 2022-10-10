@@ -12,12 +12,13 @@ main .item-page {
     position: fixed;
     height: 72px;
     width: 72px;
+    top: calc(2 * var(--nav-offset));
     right: 10%;
     box-shadow: 2.5px 2.5px 5px var(--dark-grey-color);
   }
 
   .item-details {
-    margin: 5rem 15% 1.5rem 15%;
+    padding: 5rem 15% 1.5rem 15%;
     display: grid;
     gap: 1rem;
     grid-template-areas:
@@ -63,11 +64,6 @@ main .item-page {
       width: 300px;
       margin-top: 1rem;
     }
-
-    // .big-img-warn {
-    //   text-align: center;
-    //   font-size: 1.25rem;
-    // }
 
     .item-info {
       grid-area: inf;
