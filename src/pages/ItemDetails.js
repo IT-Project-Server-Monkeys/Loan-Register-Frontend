@@ -159,7 +159,7 @@ const ItemDetails = (props) => {
         <div className={"item-details"}>
 
           <div className={"item-image"} style={{
-            backgroundImage: item.image_url !== undefined
+            backgroundImage: item.image_url !== "" && item.image_url != null
               ? `url(${item.image_url})` : `url(${noImg})`
           }} />
           
