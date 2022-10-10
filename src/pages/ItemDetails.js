@@ -87,9 +87,9 @@ const ItemDetails = (props) => {
     await returnLoan(
       item,
       () => {
-        if (!item.visible) {
-          // if item is hidden, make it visible
-          // makeVisible(item.item_id)
+        // if item is hidden, make it visible
+        if (item.visible === false) {
+          makeVisible(itemId)
         }
         window.location.reload()
       },
