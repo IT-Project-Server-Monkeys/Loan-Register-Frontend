@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
+import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
@@ -14,19 +14,18 @@ const ItemDetails = (props) => {
   // page navigation
   const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
-  const location = useLocation()
+  // const location = useLocation()
   
   // item information
   const itemId = useParams().id;
-  const dbData = location.state ? location.state.item : null;
+  const dbData = null;
+  // const dbData = location.state ? location.state.item : null;
   const [item, setItem] = useState({
     item_name: <Loading />, image_url: noImg,
     category: <Loading />, description: <Loading />,
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
   });
-
-  console.log(dbData)
 
   // loan form
   const [lnFormOpen, setLnFormOpen] = useState(false);
@@ -61,10 +60,7 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     createLoan(
       { ...input, item_id: itemId, loaner_id: props.uid },
-      () => {
-        navigate(`/item-details/${itemId}`);
-        window.location.reload();
-      },
+      () => window.location.reload(),
       () => {
         setSubmitting(false);
         alert("There was an error saving your loan. Please try again later.");
@@ -77,10 +73,7 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await editLoan(
       { _id: item.loan_id, ...input },
-      () => {
-        navigate(`/item-details/${itemId}`);
-        window.location.reload();
-      },
+      () => window.location.reload(),
       () => {
         setSubmitting(false);
         alert("There was an error saving your loan. Please try again later.");
@@ -93,10 +86,7 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await returnLoan(
       item,
-      () => {
-        navigate(`/item-details/${itemId}`);
-        window.location.reload();
-      },
+      () => window.location.reload(),
       () => {
         setSubmitting(false);
         alert("There was an error saving your loan. Please try again later.");
