@@ -120,4 +120,18 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
   return true;
 }
 
-export { fetchItem, fetchUserItems, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
+// update the item to be visible
+const makeVisible = (itemId) => {
+  API({
+    method: "put",
+    url: '/items',
+    data: {
+      _id: itemId,
+      visible: true
+    }
+  })
+  .then((res) => console.log(res))
+  .catch((err) => console.log(err));
+}
+
+export { fetchItem, fetchUserItems, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem, makeVisible };

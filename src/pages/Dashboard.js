@@ -103,7 +103,7 @@ const LoanerDashboard = (props) => {
 
   // get all items 
   useEffect(() => {
-    if (props.loggedIn !== true || userId == null) return;
+    // if (props.loggedIn !== true || userId == null) return;
     API.get('/dashboard?user_id=' + userId)
       .then((res) => {
         console.log('dashboard api', res);
@@ -124,15 +124,10 @@ const LoanerDashboard = (props) => {
         // update visible items
         setVisibilityController({
           display: VISIBLE,
-          visibleItems: loanerItemsLst.filter(item => item.visible === undefined || item.visible === true),
-          hiddenItems: loanerItemsLst.filter(item => item.visible !== undefined && item.visible === false),
+          visibleItems: loanerItemsLst.filter(item => item.visible === true),
+          hiddenItems: loanerItemsLst.filter(item => item.visible === false),
         })
-        
-        // set items to display
-        setDisplayItems({
-          loanerItems: loanerItemsLst.filter(item => item.visible === undefined || item.visible === true),
-          loaneeItems: loaneeItemsLst
-        })
+        console.log('ttt', loanerItemsLst)
         
         // get filter data
         var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
@@ -169,7 +164,7 @@ const LoanerDashboard = (props) => {
       });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.loggedIn]);
+  }, []);
 
 
   const getItemById = (id) => {
@@ -429,7 +424,22 @@ const LoanerDashboard = (props) => {
   const handleSearch = (e) => {
     const currText = e.target.value;
     setSearchText(currText)
-    const items = userView === LOANER ? loanerItems : loaneeItems;
+    var items;
+    if (userView === LOANER) {
+      switch (visibilityController.display) {
+        case VISIBLE:
+          items = visibilityController.visibleItems
+          break;
+        case HIDDEN:
+          items = visibilityController.hiddenItems
+          break
+        default:
+          items = loanerItems
+          break;
+      }
+    } else {
+      items = loaneeItems
+    }
 
     const resItems = items.filter(item => {
       if (
@@ -447,14 +457,14 @@ const LoanerDashboard = (props) => {
     // console.log('search items', resItems)
 
     if (userView === LOANER) {
-      setLoanerFilters({
-        ...loanerFilters,
-        results: resItems
+      setDisplayItems({
+        ...displayItems,
+        loanerItems: resItems
       })
     } else {
-      setLoaneeFilters({
-        ...loaneeFilters,
-        results: resItems
+      setDisplayItems({
+        ...displayItems,
+        loaneeItems: resItems
       })
     }
 
