@@ -1,6 +1,7 @@
 # Loan-Register-Frontend
 
-Testing version deployed on Heroku: https://loan-register-frontend-dev.herokuapp.com/
+Deployed dev env on Heroku: https://loan-register-frontend-dev.herokuapp.com/
+Deployed staging env https://loan-register-testing.herokuapp.com/
 
 Check out our documentation: [Frontend Documentation](https://servermonkeys.atlassian.net/wiki/spaces/IP/pages/4456449/Frontend+Documentation)
 
