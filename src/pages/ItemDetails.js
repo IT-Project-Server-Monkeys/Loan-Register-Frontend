@@ -3,7 +3,7 @@ import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom"
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
-import { fetchItem } from "../utils/itemHelpers"; // i've made loan submit helper set visible true
+import { fetchItem, makeVisible } from "../utils/itemHelpers";
 import { createLoan, editLoan, fetchAllUsernames, fetchCurLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
@@ -60,7 +60,10 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     createLoan(
       { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
-      () => window.location.reload(),
+      () => {
+        if (!item.visible) makeVisible(itemId);
+        window.location.reload()
+      },
       () => {
         setSubmitting(false);
         alert("There was an error saving your loan. Please try again later.");
@@ -73,7 +76,10 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await editLoan(
       { ...input, _id: item.loan_id, item_image: item.image_url },
-      () => window.location.reload(),
+      () => {
+        if (!item.visible) makeVisible(itemId);
+        window.location.reload()
+      },
       () => {
         setSubmitting(false);
         alert("There was an error saving your loan. Please try again later.");
@@ -86,7 +92,10 @@ const ItemDetails = (props) => {
     setSubmitting(true);
     await returnLoan(
       item,
-      () => window.location.reload(), // i've made loan submit helper set visible true
+      () => {
+        if (!item.visible) makeVisible(itemId);
+        window.location.reload()
+      },
       () => {
         setSubmitting(false);
         alert("There was an error saving your loan. Please try again later.");

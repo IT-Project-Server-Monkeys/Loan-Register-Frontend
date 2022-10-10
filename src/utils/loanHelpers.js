@@ -97,8 +97,7 @@ const returnLoan = async (item, onSuccess, onFailure) => {
 }
 
 // sends completed loan form data to server
-const saveLoan = async (input, newItem, onSuccess, onFailure) => {
-  let formData = {...input, visible: true};
+const saveLoan = async (formData, newItem, onSuccess, onFailure) => {
 
   // clean form
   for (const prop in formData)
