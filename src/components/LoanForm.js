@@ -35,6 +35,7 @@ const LoanForm = (props) => {
     e.preventDefault();
 
     props.onSubmit({
+      loanee_name: e.target.loanee.value,
       loanee_id: props.allLoanees[e.target.loanee.value],
       loan_start_date: toISO(e.target.loanDate.value),
       intended_return_date: toISO(e.target.returnDate.value)

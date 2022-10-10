@@ -5,7 +5,7 @@ import { ChartBox, NoAccess } from '../components';
 import { noAccessRedirect, noCaseCmp } from '../utils/helpers';
 import Plot from 'react-plotly.js';
 import { fetchUserItems } from '../utils/itemHelpers';
-import { fetchAllUsernames, fetchUserLoans } from '../utils/loanHelpers';
+import { fetchUserLoans } from '../utils/loanHelpers';
 
 const pieData = {
   type: 'pie', marker: {colors: ["#0073e6", "#eb8f33"]},
@@ -39,8 +39,6 @@ const Stats = (props) => {
 
   const [freqItems, setFreqItems] = useState({x: [], y: []});
   const [freqLoanees, setFreqLoanees] = useState({x: [], y: []});
-
-  const [lneNames, setLneNames] = useState({});
 
   const clearItems = () => {
     setItemVals([0, 0]);
@@ -86,7 +84,6 @@ const Stats = (props) => {
     if (props.loggedIn !== true || props.uid == null) return;
     fetchUserItems(props.uid, setAllItems);
     fetchUserLoans(props.uid, setAllLoans);
-    fetchAllUsernames(setLneNames, true);
   }, [props]);
 
   useEffect(() => {
@@ -113,6 +110,10 @@ const Stats = (props) => {
 
   useEffect(() => {
     clearLoans();
+    clearLoanees();
+    let lneCounts = {};
+    let sortedLnes = [];
+
     if (allLoans === []) return;
 
     for (let i=0; i<allLoans.length; i++) {
@@ -127,38 +128,27 @@ const Stats = (props) => {
           setRtnLnVals(([timely, late]) => [timely, late+1]);
         else setRtnLnVals(([timely, late]) => [timely+1, late]);
       }
-    }
-  }, [allLoans])
 
-  useEffect(() => {
-    clearLoanees();
-    let lneCounts = {};
-    let sortedLnes = [];
-
-    if (allLoans === [] || lneNames === {}) return;
-
-    for (let i=0; i<allLoans.length; i++) {
-      let loan = allLoans[i];
-
-      if (Object.keys(lneCounts).includes(loan.loanee_id))
-        lneCounts[loan.loanee_id] += 1;
-      else lneCounts[loan.loanee_id] = 1;
+      if (Object.keys(lneCounts).includes(loan.loanee_name))
+        lneCounts[loan.loanee_name] += 1;
+      else lneCounts[loan.loanee_name] = 1;
     }
 
-    sortedLnes = Object.entries(lneCounts);
-    sortedLnes.sort((lne0, lne1) => noCaseCmp(lneNames[lne0[0]], lneNames[lne1[0]]));
+    sortedLnes = Object.entries(lneCounts); // [loanee_name, loan_frequency] pairs
+    sortedLnes.sort((lne0, lne1) => noCaseCmp(lne0[0], lne1[0]));
     sortedLnes.sort((lne0, lne1) => lne0[1] > lne1[1] ? -1 : 1);
 
     for (let i=0; i<Math.min(sortedLnes.length, 3); i++) {
       
-      let lName = breakLine(lneNames[sortedLnes[i][0]]);
+      let lName = breakLine(sortedLnes[i][0]);
 
       setFreqLoanees(fl => {return {
         x: [sortedLnes[i][1]].concat(fl["x"]),
         y: [lName].concat(fl["y"]),
       }});
     }
-  }, [allLoans, lneNames]);
+
+  }, [allLoans])
 
   return (
     <>{noAccess ? <NoAccess /> :
