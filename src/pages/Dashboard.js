@@ -103,7 +103,7 @@ const LoanerDashboard = (props) => {
 
   // get all items 
   useEffect(() => {
-    if (props.loggedIn !== true || userId == null) return;
+    // if (props.loggedIn !== true || userId == null) return;
     API.get('/dashboard?user_id=' + userId)
       .then((res) => {
         console.log('dashboard api', res);
@@ -124,10 +124,10 @@ const LoanerDashboard = (props) => {
         // update visible items
         setVisibilityController({
           display: VISIBLE,
-          visibleItems: loanerItemsLst.filter(item => item.visible === undefined || item.visible === true),
-          hiddenItems: loanerItemsLst.filter(item => item.visible !== undefined && item.visible === false),
+          visibleItems: loanerItemsLst.filter(item => item.visible === true),
+          hiddenItems: loanerItemsLst.filter(item => item.visible === false),
         })
-        
+        console.log('ttt', loanerItemsLst)
         
         // get filter data
         var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
@@ -164,7 +164,7 @@ const LoanerDashboard = (props) => {
       });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.loggedIn]);
+  }, []);
 
 
   const getItemById = (id) => {
