@@ -3,7 +3,7 @@ import { Card, CardBody, CardTitle, Row, Col, Button } from 'reactstrap'
 import { LOANER } from '../utils/constants';
 import Highlighter from "react-highlight-words";
 import dateFormat from 'dateformat';
-
+import { statusColor } from '../utils/constants';
 
 const ItemCard = (props) => {
 
@@ -154,7 +154,7 @@ const ItemCard = (props) => {
                   </Row>
                 </Col>
                 <Col md='4' className='d-flex justify-content-end' style={{marginRight: '3rem', marginTop: '-1.5rem'}}>
-                  <h3>{item.loan_status}</h3>
+                  <h3 style={{color: statusColor[item.loan_status]}}>{item.loan_status}</h3>
                 </Col>
               </Row>
             </Col>

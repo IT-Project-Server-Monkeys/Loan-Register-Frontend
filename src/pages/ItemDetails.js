@@ -204,7 +204,7 @@ const ItemDetails = (props) => {
         </div>
 
         <div className={"btn-list"}>
-          <a href="/history"><TextButton>History</TextButton></a>
+          <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
           {item.being_loaned ? <>
             <TextButton onClick={toggle}>Edit Loan</TextButton>
             <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
