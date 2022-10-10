@@ -16,6 +16,10 @@
     flex-direction: column;
   }
 
+  @media (max-width: 576px) {
+    padding: 3rem 2rem;
+  }
+
   h1 {
     font-weight: bold;
     grid-area: head;

@@ -164,7 +164,7 @@ const ItemDetails = (props) => {
           }} />
           
           <p className={"item-status"}>
-            Status: { item.loan_status != null ? item.loan_status : <Loading /> }
+            <span>Status:</span> { item.loan_status != null ? item.loan_status : <Loading /> }
           </p>
           <div className={"item-info"}>
             <table><tbody>

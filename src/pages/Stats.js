@@ -6,32 +6,35 @@ import { noAccessRedirect, noCaseCmp } from '../utils/helpers';
 import Plot from 'react-plotly.js';
 import { fetchUserItems } from '../utils/itemHelpers';
 import { fetchUserLoans } from '../utils/loanHelpers';
-
-const pieData = {
-  type: 'pie', marker: {colors: ["#0073e6", "#eb8f33"]},
-  hoverlabel: {font: {size: 20}}
-}
-
-const pieLayout = {
-  legend: {orientation: "h", xanchor: "center", x: 0.5},
-  showlegend: true, font: {size: 24}, margin: {t: 0, r: 0, b: 0, l: 0}
-}
-
-const barData = {
-  type: 'bar', orientation: "h", marker: {color: "#0073e6"},
-  cliponaxis: true, hoverlabel: {font: {size: 20}}
-}
-
-const barLayout = {
-  showlegend: false, font: {size: 20},
-  margin: {t: 0, r: 25, b: 0, l: 175},
-  xaxis: {constrain: "domain"},
-  width: 600, height: 225, autosize: false, bargap: 0.5
-}
+import { useMediaQuery } from 'react-responsive';
 
 const Stats = (props) => {
   const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
+  const isTablet = useMediaQuery({ maxDeviceWidth: 840 });
+  const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
+
+  const pieData = {
+    type: 'pie', marker: {colors: ["#0073e6", "#eb8f33"]},
+    hoverlabel: {font: {size: isMobile ? 16 : 20}}
+  }
+
+  const pieLayout = {
+    legend: {orientation: "h", xanchor: "center", x: 0.5},
+    showlegend: true, font: {size: isMobile ? 16 : 24}, margin: {t: 0, r: 0, b: 0, l: 0}
+  }
+
+  const barLayout = {
+    showlegend: false, font: {size: isTablet ? isMobile ? 12 : 16 : 20},
+    margin: {t: 0, r: 25, b: 0, l: isTablet ? isMobile ? 75 : 125 : 175},
+    xaxis: {constrain: "domain"},
+    width: isTablet ? isMobile ? 250 : 400 : 600, height: 225, autosize: false, bargap: 0.5
+  }
+
+  const barData = {
+    type: 'bar', orientation: "h", marker: {color: "#0073e6"},
+    cliponaxis: true, hoverlabel: {font: {size: isMobile ? 16 : 20}}
+  }
   
   const [allItems, setAllItems] = useState([]);
   const [allLoans, setAllLoans] = useState([]);

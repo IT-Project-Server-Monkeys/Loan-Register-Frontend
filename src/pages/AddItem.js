@@ -103,7 +103,7 @@ const AddItem = (props) => {
                   <td>
                     <input required name="newName" autoComplete="off"
                       className={"input-box"} type="text"
-                      placeholder="Enter name..."
+                      placeholder="Enter name..." maxLength={36}
                     />
                   </td>
                 </tr>

@@ -157,7 +157,7 @@ const ItemEdit = (props) => {
                   <td>Name:</td>
                   <td>
                     <input name="newName" className={"input-box"} type="text"
-                      value={newName} onChange={e => setNewName(e.target.value)}
+                      value={newName} onChange={e => setNewName(e.target.value.slice(0, 36))}
                       placeholder="Enter name..." required
                     />
                   </td>
