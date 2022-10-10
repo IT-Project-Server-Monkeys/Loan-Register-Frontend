@@ -24,7 +24,7 @@ const LoanForm = (props) => {
     
     setLetSubmit(
       lneName !== "" && (lneName in props.allLoanees) &&
-      lnDate !== "" && rtnDate !== "" && toISO(lnDate) < toISO(rtnDate)
+      lnDate !== "" && rtnDate !== "" && toISO(lnDate) <= toISO(rtnDate)
     );
     setNameWarn(lneName !== "" && !(lneName in props.allLoanees));
     setDateWarn(lnDate !== "" && rtnDate !== "" && !(toISO(lnDate) <= toISO(rtnDate)))
