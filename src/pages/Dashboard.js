@@ -4,7 +4,7 @@ import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
 import { TbLayoutGrid } from 'react-icons/tb';
-import { MdQueryStats, MdSubdirectoryArrowRight } from 'react-icons/md';
+import { MdQueryStats } from 'react-icons/md';
 import { ItemCard, NoAccess } from '../components';
 import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
@@ -288,7 +288,8 @@ const LoanerDashboard = (props) => {
     }).catch(e => {
       console.log(e)
     })
-
+    
+  // eslint-disable-next-line
   }, [visibilityController])
 
   console.log('control', visibilityController)
