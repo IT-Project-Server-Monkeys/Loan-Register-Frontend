@@ -13,7 +13,7 @@ const fetchItem = async (itemId, setItem) => {
   if (fetchedData != null) setItem((i) => {return {
     ...i, ...fetchedData, item_id: itemId,
     loan_status: fetchedData.being_loaned ? null : "Available",
-    image_url: fetchedData.image_url ? "" : fetchedData.image_url
+    image_url: fetchedData.image_url ? fetchedData.image_url : ""
   }});
 }
 
