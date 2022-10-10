@@ -4,7 +4,7 @@ import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem } from "../utils/itemHelpers";
-import { createLoan, editLoan, fetchAllLoanees, fetchCurLoan, returnLoan } from "../utils/loanHelpers";
+import { createLoan, editLoan, fetchAllUsernames, fetchCurLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
@@ -118,7 +118,7 @@ const ItemDetails = (props) => {
   useEffect(() => {
     if (props.loggedIn !== true) return;
     setSubmitting(false);
-    fetchAllLoanees(setAllLoanees);
+    fetchAllUsernames(setAllLoanees);
   }, [props.loggedIn]);
   useEffect(() => setSuggestedLoanees(Object.keys(allLoanees).sort(noCaseCmp)), [allLoanees]);
 

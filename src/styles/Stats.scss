@@ -9,6 +9,7 @@
     "ch3 bar";
   grid-template-rows: auto 1fr 1fr;
   grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
 
   @media (max-width: 1080px) {
     display: flex;
@@ -22,21 +23,36 @@
   }
 
   .chart-box {
-    border: 5px solid var(--light-blue-color);
+    border: 2.5px solid var(--blue-color);
     border-radius: 15px;
-    padding: 10%;
+    padding: 5%;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+
+    .pie-chart {
+      margin: auto;
+      width: 90%;
+      height: 90%;
+    }
   }
 
-  bar-box {
+  .bar-box {
     grid-area: bar;
     display: flex;
     flex-direction: column;
-    padding: 20%;
+    overflow: scroll;
+    justify-content: space-around;
 
     .bar-plot {
-      margin: auto
+      margin: 2rem auto;
+
+      .plot-container
+      {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+      }
     }
   }
 }

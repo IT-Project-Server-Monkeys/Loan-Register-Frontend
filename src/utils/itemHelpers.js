@@ -15,6 +15,18 @@ const fetchItem = async (itemId, setItem) => {
   }});
 }
 
+// gets all items of a user from server
+const fetchUserItems = async (uid, setItems) => {
+  let fetchedData = null;
+  if (uid == null) return;
+
+  await API.get(`/items?item_owner=${uid}`)
+    .then((res) => fetchedData = res.data)
+    .catch((err) => console.log(err));
+  
+  setItems(fetchedData);
+};
+
 // gets user's available categories from server
 const fetchCategs = async (uid, setCategList, setDelableCg) => {
   let fetchedData = null;
@@ -106,4 +118,4 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
   return true;
 }
 
-export { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
+export { fetchItem, fetchUserItems, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };

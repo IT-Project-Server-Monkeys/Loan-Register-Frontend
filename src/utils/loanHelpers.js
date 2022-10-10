@@ -2,15 +2,27 @@ import API from "./api";
 import dateFormat from 'dateformat';
 import { toISO } from "./helpers";
 
-// get all loanee names & ids from server (for loan form validation)
-const fetchAllLoanees = async (setAllLoanees) => {
+// get all loanee names & ids from server
+const fetchAllUsernames = async (setAllUsers, uids = []) => {
   let fetchedData = {};
   await API.get(`/users?all=1`)
     .then((res) => res.data.forEach((l) => {fetchedData[l.display_name] = l._id}))
     .catch((err) => console.log(err));
 
-  setAllLoanees(fetchedData);
+  setAllUsers(fetchedData);
 }
+
+// gets all loans of a loanee from server
+const fetchUserLoans = async (uid, setLoans) => {
+  let fetchedData = null;
+  if (uid == null) return;
+
+  await API.get(`/loans?loaner_id=${uid}`)
+    .then((res) => fetchedData = res.data)
+    .catch((err) => console.log(err));
+  
+  setLoans(fetchedData);
+};
 
 // get info on an item's current loan
 const fetchCurLoan = async (itemId, setItem) => {
@@ -87,4 +99,4 @@ const saveLoan = async (formData, newItem, onSuccess, onFailure) => {
     .catch((err) => {console.log(err); onFailure();});
 }
 
-export { fetchAllLoanees, fetchCurLoan, createLoan, editLoan, returnLoan };
+export { fetchAllUsernames, fetchUserLoans, fetchCurLoan, createLoan, editLoan, returnLoan };
