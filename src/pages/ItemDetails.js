@@ -59,7 +59,7 @@ const ItemDetails = (props) => {
   const handleCrtLn = async (input) => {
     setSubmitting(true);
     createLoan(
-      { ...input, item_id: itemId, loaner_id: props.uid },
+      { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
       () => window.location.reload(),
       () => {
         setSubmitting(false);
@@ -72,7 +72,7 @@ const ItemDetails = (props) => {
   const handleEdtLn = async (input) => {
     setSubmitting(true);
     await editLoan(
-      { _id: item.loan_id, ...input },
+      { ...input, _id: item.loan_id, item_image: item.image_url },
       () => window.location.reload(),
       () => {
         setSubmitting(false);

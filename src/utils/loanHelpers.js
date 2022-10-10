@@ -15,7 +15,7 @@ const fetchAllUsernames = async (setAllUsers, byUID = false) => {
   setAllUsers(fetchedData);
 }
 
-// gets all loans of a loanee from server
+// gets all loans of a loaner from server
 const fetchUserLoans = async (uid, setLoans) => {
   let fetchedData = null;
   if (uid == null) return;
@@ -23,6 +23,15 @@ const fetchUserLoans = async (uid, setLoans) => {
   await API.get(`/loans?loaner_id=${uid}`)
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
+
+  for (let i=0; i<fetchedData.length; i++) {
+    if (fetchedData[i].loanee_name == null) {
+      await API.get(`/users?id=${fetchedData[i].loanee_id}`)
+        // eslint-disable-next-line
+        .then((res) => fetchedData[i].loanee_name = res.data.display_name)
+        .catch(err => console.log(err))
+    }
+  }
   
   setLoans(fetchedData);
 };
@@ -30,18 +39,19 @@ const fetchUserLoans = async (uid, setLoans) => {
 // get info on an item's current loan
 const fetchCurLoan = async (itemId, setItem) => {
   let fetchedData = null;
-  let loaneeName = "";
 
   await API.get(`/loans?item_id=${itemId}&status=current`)
     .then((res) => fetchedData = res.data[0])
     .catch((err) => console.log(err));
 
-  await API.get(`/users?id=${fetchedData.loanee_id}`)
-    .then((res) => loaneeName = res.data.display_name)
-    .catch(err => console.log(err))
+  if (fetchedData.loanee_name == null) {
+    await API.get(`/users?id=${fetchedData.loanee_id}`)
+      .then((res) => fetchedData.loanee_name = res.data.display_name)
+      .catch(err => console.log(err))
+  }
 
   setItem((initItem) => {return {
-    ...initItem, loan_id: fetchedData._id, loanee_name: loaneeName, loan_status: fetchedData.status,
+    ...initItem, loan_id: fetchedData._id, loanee_name: fetchedData.loanee_name, loan_status: fetchedData.status,
     loan_start_date: dateFormat(fetchedData.loan_start_date, 'dd/mm/yyyy'),
     intended_return_date: dateFormat(fetchedData.intended_return_date, 'dd/mm/yyyy')
   }});
