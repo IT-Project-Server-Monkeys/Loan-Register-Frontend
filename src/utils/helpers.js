@@ -1,9 +1,6 @@
 import dateFormat from 'dateformat';
+import { LOANER, LOANEE } from './constants';
 
-/* constants */
-
-export const LOANER = 'loaner';
-export const LOANEE = 'loanee';
 
 /* helper functions */
 
@@ -41,5 +38,6 @@ export const toDDMMYYYY = (dateString) => {
 }
 
 export const noCaseCmp = (a, b) => {
+  if (typeof(a) !== 'string' || typeof(b) !== 'string') return 0;
   return a.toLowerCase().localeCompare(b.toLowerCase());
 }

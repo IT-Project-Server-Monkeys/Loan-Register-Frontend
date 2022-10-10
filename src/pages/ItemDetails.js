@@ -3,8 +3,8 @@ import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom"
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
 import { MdEdit } from 'react-icons/md';
-import { fetchItem } from "../utils/itemHelpers";
-import { createLoan, editLoan, fetchAllLoanees, fetchLoan, returnLoan } from "../utils/loanHelpers";
+import { fetchItem, makeVisible } from "../utils/itemHelpers";
+import { createLoan, editLoan, fetchAllUsernames, fetchCurLoan, returnLoan } from "../utils/loanHelpers";
 import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
@@ -18,7 +18,8 @@ const ItemDetails = (props) => {
   
   // item information
   const itemId = useParams().id;
-  const dbData = /*location.state ? location.state.item :*/ null;
+  const dbData = null;
+  // const dbData = location.state ? location.state.item : null;
   const [item, setItem] = useState({
     item_name: <Loading />, image_url: noImg,
     category: <Loading />, description: <Loading />,
@@ -58,14 +59,10 @@ const ItemDetails = (props) => {
   const handleCrtLn = async (input) => {
     setSubmitting(true);
     createLoan(
-      { ...input, item_id: itemId, loaner_id: props.uid },
+      { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
       () => {
-        navigate(`/item-details/${itemId}`
-        // {state: {item: {
-        //   ...item, being_loaned: true, loan_id: null
-        // }}}
-        );
-        window.location.reload();
+        if (!item.visible) makeVisible(itemId);
+        window.location.reload()
       },
       () => {
         setSubmitting(false);
@@ -78,14 +75,10 @@ const ItemDetails = (props) => {
   const handleEdtLn = async (input) => {
     setSubmitting(true);
     await editLoan(
-      { _id: item.loan_id, ...input },
+      { ...input, _id: item.loan_id, item_image: item.image_url },
       () => {
-        navigate(`/item-details/${itemId}`
-        // {state: {item: {
-        //   ...item, being_loaned: true, loan_id: null
-        // }}}
-        );
-        window.location.reload();
+        if (!item.visible) makeVisible(itemId);
+        window.location.reload()
       },
       () => {
         setSubmitting(false);
@@ -100,12 +93,8 @@ const ItemDetails = (props) => {
     await returnLoan(
       item,
       () => {
-        navigate(`/item-details/${itemId}`
-        // {state: {item: {
-        //   ...item, being_loaned: false, loan_id: null
-        // }}}
-        );
-        window.location.reload();
+        if (!item.visible) makeVisible(itemId);
+        window.location.reload()
       },
       () => {
         setSubmitting(false);
@@ -115,11 +104,16 @@ const ItemDetails = (props) => {
   }
 
   // get all loanees & set loanee suggest list for loan form
-  useEffect(() => { setSubmitting(false); fetchAllLoanees(setAllLoanees); }, []);
+  useEffect(() => {
+    if (props.loggedIn !== true) return;
+    setSubmitting(false);
+    fetchAllUsernames(setAllLoanees);
+  }, [props.loggedIn]);
   useEffect(() => setSuggestedLoanees(Object.keys(allLoanees).sort(noCaseCmp)), [allLoanees]);
 
   // get and show item data
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       console.log(dbData);
@@ -127,12 +121,11 @@ const ItemDetails = (props) => {
         loan_start_date: <Loading />, intended_return_date: <Loading /> });
         navigate(`/item-details/${itemId}`, {state: null});
     }
-  }, [itemId, dbData, navigate]);
+  }, [props.loggedIn, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
     if (props.loggedIn === false) {
-      setNoAccess(true);
       noAccessRedirect("/login", navigate, setNoAccess);
     }
   }, [props.loggedIn, navigate])
@@ -148,7 +141,7 @@ const ItemDetails = (props) => {
 
     if (item.being_loaned) {
       if (item.loan_id === undefined || item.loan_id == null) {
-        fetchLoan(item.item_id, setItem);
+        fetchCurLoan(item.item_id, setItem);
       } else {
         setLoaneeName(item.loanee_name);
         setLoanDate(item.loan_start_date);
@@ -175,12 +168,12 @@ const ItemDetails = (props) => {
         <div className={"item-details"}>
 
           <div className={"item-image"} style={{
-            backgroundImage: item.image_url !== undefined
+            backgroundImage: item.image_url !== "" && item.image_url != null
               ? `url(${item.image_url})` : `url(${noImg})`
           }} />
           
           <p className={"item-status"}>
-            Status: { item.loan_status != null ? item.loan_status : <Loading /> }
+            <span>Status:</span> { item.loan_status != null ? item.loan_status : <Loading /> }
           </p>
           <div className={"item-info"}>
             <table><tbody>
@@ -220,7 +213,7 @@ const ItemDetails = (props) => {
         </div>
 
         <div className={"btn-list"}>
-          <a href="/history"><TextButton>History</TextButton></a>
+          <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
           {item.being_loaned ? <>
             <TextButton onClick={toggle}>Edit Loan</TextButton>
             <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>

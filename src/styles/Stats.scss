@@ -1,0 +1,62 @@
+.stats-page {
+  padding: 5rem;
+  margin: auto;
+  text-align: center;
+  display: grid;
+  grid-template-areas:
+    "head head"
+    "ch1 ch2"
+    "ch3 bar";
+  grid-template-rows: auto 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1rem;
+
+  @media (max-width: 1080px) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 576px) {
+    padding: 3rem 2rem;
+  }
+
+  h1 {
+    font-weight: bold;
+    grid-area: head;
+    margin-bottom: 2rem;
+  }
+
+  .chart-box {
+    border: 2.5px solid var(--blue-color);
+    border-radius: 15px;
+    padding: 5%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .pie-chart {
+      margin: auto;
+      width: 90%;
+      height: 90%;
+    }
+  }
+
+  .bar-box {
+    grid-area: bar;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    justify-content: space-around;
+
+    .bar-plot {
+      margin: 2rem auto;
+
+      .plot-container
+      {
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  }
+}

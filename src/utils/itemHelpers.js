@@ -11,9 +11,23 @@ const fetchItem = async (itemId, setItem) => {
     .catch((err) => console.log(err));
 
   if (fetchedData != null) setItem((i) => {return {
-    ...i, ...fetchedData, item_id: itemId, loan_status: fetchedData.being_loaned ? null : "Available"
+    ...i, ...fetchedData, item_id: itemId,
+    loan_status: fetchedData.being_loaned ? null : "Available",
+    image_url: fetchedData.image_url ? fetchedData.image_url : ""
   }});
 }
+
+// gets all items of a user from server
+const fetchUserItems = async (uid, setItems) => {
+  let fetchedData = null;
+  if (uid == null) return;
+
+  await API.get(`/items?item_owner=${uid}`)
+    .then((res) => fetchedData = res.data)
+    .catch((err) => console.log(err));
+  
+  setItems(fetchedData);
+};
 
 // gets user's available categories from server
 const fetchCategs = async (uid, setCategList, setDelableCg) => {
@@ -106,4 +120,15 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
   return true;
 }
 
-export { fetchItem, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem };
+// update the item to be visible
+const makeVisible = (itemId) => {
+  API({
+    method: "put",
+    url: '/items',
+    data: { _id: itemId, visible: true }
+  })
+  .then((res) => console.log(res))
+  .catch((err) => console.log(err));
+}
+
+export { fetchItem, fetchUserItems, fetchCategs, fetchDelableCg, selectCategory, changeCategory, deleteCategory, changeImage, saveItem, makeVisible };
