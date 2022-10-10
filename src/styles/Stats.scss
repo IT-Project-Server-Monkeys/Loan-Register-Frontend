@@ -41,7 +41,7 @@
     grid-area: bar;
     display: flex;
     flex-direction: column;
-    overflow: scroll;
+    overflow: hidden;
     justify-content: space-around;
 
     .bar-plot {

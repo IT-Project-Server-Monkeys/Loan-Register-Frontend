@@ -3,10 +3,13 @@ import dateFormat from 'dateformat';
 import { toISO } from "./helpers";
 
 // get all loanee names & ids from server
-const fetchAllUsernames = async (setAllUsers, uids = []) => {
+const fetchAllUsernames = async (setAllUsers, byUID = false) => {
   let fetchedData = {};
   await API.get(`/users?all=1`)
-    .then((res) => res.data.forEach((l) => {fetchedData[l.display_name] = l._id}))
+    .then((res) => res.data.forEach((l) => {
+      if (byUID) fetchedData[l._id] = l.display_name;
+      else fetchedData[l.display_name] = l._id;
+    }))
     .catch((err) => console.log(err));
 
   setAllUsers(fetchedData);

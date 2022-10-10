@@ -60,11 +60,7 @@ const ItemDetails = (props) => {
     createLoan(
       { ...input, item_id: itemId, loaner_id: props.uid },
       () => {
-        navigate(`/item-details/${itemId}`
-        // {state: {item: {
-        //   ...item, being_loaned: true, loan_id: null
-        // }}}
-        );
+        navigate(`/item-details/${itemId}`);
         window.location.reload();
       },
       () => {
@@ -80,11 +76,7 @@ const ItemDetails = (props) => {
     await editLoan(
       { _id: item.loan_id, ...input },
       () => {
-        navigate(`/item-details/${itemId}`
-        // {state: {item: {
-        //   ...item, being_loaned: true, loan_id: null
-        // }}}
-        );
+        navigate(`/item-details/${itemId}`);
         window.location.reload();
       },
       () => {
@@ -100,11 +92,7 @@ const ItemDetails = (props) => {
     await returnLoan(
       item,
       () => {
-        navigate(`/item-details/${itemId}`
-        // {state: {item: {
-        //   ...item, being_loaned: false, loan_id: null
-        // }}}
-        );
+        navigate(`/item-details/${itemId}`);
         window.location.reload();
       },
       () => {
