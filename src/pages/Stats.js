@@ -9,6 +9,7 @@ import { fetchUserLoans } from '../utils/loanHelpers';
 
 const pieData = {
   type: 'pie', marker: {colors: ["#0073e6", "#eb8f33"]},
+  hoverlabel: {font: {size: 20}}
 }
 
 const pieLayout = {
@@ -17,7 +18,8 @@ const pieLayout = {
 }
 
 const barData = {
-  type: 'bar', orientation: "h", marker: {color: "#0073e6"}, cliponaxis: true,
+  type: 'bar', orientation: "h", marker: {color: "#0073e6"},
+  cliponaxis: true, hoverlabel: {font: {size: 20}}
 }
 
 const barLayout = {
@@ -153,7 +155,7 @@ const Stats = (props) => {
   return (
     <>{noAccess ? <NoAccess /> :
       <div className={"stats-page"}>
-        <h1>Statistics with fake data</h1>
+        <h1>Statistics</h1>
         <ChartBox style={{gridArea: "ch1"}}>
           <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
             data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
