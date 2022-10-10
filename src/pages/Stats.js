@@ -55,6 +55,8 @@ const Stats = (props) => {
   const clearLoanees = () => setFreqLoanees({x: [], y: []});
 
   const breakLine = (line) => {
+    if (typeof(line) !== 'string') return line;
+
     let i;
     let curLen = 0;
     let brLine = ""
@@ -89,6 +91,7 @@ const Stats = (props) => {
 
   useEffect(() => {
     clearItems();
+    if (allItems === []) return;
 
     for (let i=0; i<allItems.length; i++) {
       if (allItems[i].being_loaned) setItemVals(([unloaned, loaned]) => [unloaned, loaned+1])
@@ -110,6 +113,7 @@ const Stats = (props) => {
 
   useEffect(() => {
     clearLoans();
+    if (allLoans === []) return;
 
     for (let i=0; i<allLoans.length; i++) {
       let loan = allLoans[i];
@@ -131,7 +135,7 @@ const Stats = (props) => {
     let lneCounts = {};
     let sortedLnes = [];
 
-    if (lneNames === {}) return;
+    if (allLoans === [] || lneNames === {}) return;
 
     for (let i=0; i<allLoans.length; i++) {
       let loan = allLoans[i];

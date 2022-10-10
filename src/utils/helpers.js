@@ -38,5 +38,6 @@ export const toDDMMYYYY = (dateString) => {
 }
 
 export const noCaseCmp = (a, b) => {
+  if (typeof(a) !== 'string' || typeof(b) !== 'string') return 0;
   return a.toLowerCase().localeCompare(b.toLowerCase());
 }
