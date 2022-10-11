@@ -12,7 +12,8 @@
   --green-color: #2faa26;
   --white-color: #ffffff;
   --black-color: #000000;
-  --main-height: calc(100vh - 7rem);
+  --nav-offset: 4.5rem;
+  --main-height: calc(100vh - (2 * var(--nav-offset)));
 }
 
 .bg-blue {

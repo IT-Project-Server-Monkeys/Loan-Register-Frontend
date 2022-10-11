@@ -1,15 +1,15 @@
 import React, { useEffect, useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
 import { TbLayoutGrid } from 'react-icons/tb';
 import { MdQueryStats } from 'react-icons/md';
-import { ItemCard } from '../components';
+import { ItemCard, NoAccess } from '../components';
 import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
-import { LOANER, userViewSwitch, compArr } from '../utils/helpers';
-import dateFormat from 'dateformat';
+import { userViewSwitch, compArr, noAccessRedirect } from '../utils/helpers';
+import { LOANER } from '../utils/constants';
 import ReactTooltip from 'react-tooltip';
 
 /* constants */
@@ -20,6 +20,9 @@ const SA = "start date ascending"
 const SD = "start date decending"
 const EA = "end date ascending"
 const ED = "end date decending"
+const ALL = "all"
+const HIDDEN = "hidden"
+const VISIBLE = "visible"
 
 const dateOptions = [
   { label: 'Start date ascending ↑', value: SA },
@@ -28,7 +31,7 @@ const dateOptions = [
   { label: 'End date decending ↓', value: ED },
 ];
 const statusOptions = [
-  { label: 'On Loan', value: 'On Laon' },
+  { label: 'On Loan', value: 'On Loan' },
   { label: 'On-Time Return', value: 'On Time Return' },
   { label: 'Early Return', value: 'Early Return' },
   { label: 'Late Return', value: 'Late Return' },
@@ -36,27 +39,34 @@ const statusOptions = [
   { label: 'Available', value: null },
 ];
 
-// const image = 'https://picsum.photos/300/200';
+const displayOptions = [
+  { label: 'Show all items', value: ALL },
+  { label: 'Show visible items', value: VISIBLE },
+  { label: 'Show hidden items', value: HIDDEN },
+]
 
 
 const LoanerDashboard = (props) => {
+  const [noAccess, setNoAccess] = useState(false);
+  const navigate = useNavigate();
+
   const [gridView, setGridView] = useState(true);
   const [userView, setUserView] = useState(LOANER);
   const [loading, setLoading] = useState(true);
 
+  // master lists for loaner's and loanee's items, 
+  // should be logically immutable except for atrribute "visible"
   const [loanerItems, setLoanerItems] = useState([]);
   const [loaneeItems, setLoaneeItems] = useState([]);
 
+  // side bar options
   const [loanerFilters, setLoanerFilters] = useState({
     categoryOptions: [],
     loaneeOptions: [],
-    results: []
   });
-  
   const [loaneeFilters, setLoaneeFilters] = useState({
     categoryOptions: [],
     loanerOptions: [],
-    results: []
   });
 
   // filters inputted from the side bar
@@ -69,11 +79,31 @@ const LoanerDashboard = (props) => {
 
   const [searchText, setSearchText] = useState('');
 
+  // only for loaner
+  const [visibilityController, setVisibilityController] = useState({
+    visibleItems: [],
+    hiddenItems: [],
+    display: VISIBLE
+  })
 
+  // items displayed to the user
+  const [displayItems, setDisplayItems] = useState({
+    loanerItems: [],
+    loaneeItems: []
+  });  
+
+  // redirect user away from page if user is not logged in
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+  }, [props.loggedIn, navigate])
 
   const userId = sessionStorage.getItem('uid');
 
+  // get all items 
   useEffect(() => {
+    // if (props.loggedIn !== true || userId == null) return;
     API.get('/dashboard?user_id=' + userId)
       .then((res) => {
         console.log('dashboard api', res);
@@ -82,12 +112,22 @@ const LoanerDashboard = (props) => {
         var loaneeItemsLst = [];
         // separate loaner and loanee items
         for (var item of items) {
-          if (item.user_role === LOANER) loanerItemsLst.push(item);
+          if (item.user_role === LOANER) {
+            loanerItemsLst.push(item);
+          }
           else loaneeItemsLst.push(item);
         }
         setLoanerItems(loanerItemsLst);
         setLoaneeItems(loaneeItemsLst);
         setLoading(false);
+
+        // update visible items
+        setVisibilityController({
+          display: VISIBLE,
+          visibleItems: loanerItemsLst.filter(item => item.visible === true),
+          hiddenItems: loanerItemsLst.filter(item => item.visible === false),
+        })
+        console.log('ttt', loanerItemsLst)
         
         // get filter data
         var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
@@ -99,7 +139,6 @@ const LoanerDashboard = (props) => {
             ...loanerFilters,
             categoryOptions: loanerItemsLst[0].item_categories,
             loaneeOptions: loaneeOptions,
-            results: [...loanerItemsLst]
           })
         }
 
@@ -115,7 +154,6 @@ const LoanerDashboard = (props) => {
             ...loaneeFilters,
             categoryOptions: loaneeCate,
             loanerOptions: loanerOptions,
-            results: [...loaneeItemsLst]
           })
         }
         
@@ -130,44 +168,41 @@ const LoanerDashboard = (props) => {
 
 
   const getItemById = (id) => {
-    var item = loanerItems.filter(item => item.item_id === id);
+    var item = loanerItems.find(item => item.item_id === id);
     if (!item) {
-      item = loaneeItems.filter(item => item.item_id === id);
+      item = loaneeItems.find(item => item.item_id === id);
     }
 
     if (item) return item[0];
     else return null;
   }
 
+
   const renderItems = (view) => {
     var items = [];
     if (view === LOANER) {
-      items = loanerFilters.results;
+      items = displayItems.loanerItems;
     } else {
-      items = loaneeFilters.results;
+      items = displayItems.loaneeItems;
     }
 
     return items.map((item, i) => (
-      <Col md={gridView ? 4 : 12} xs={gridView ? true : 12} key={i}>
-        <Link to={`/item-details/${item.item_id}`}
+      <Col 
+        lg={gridView ? {size: 4, offset: 0} : 12} 
+        md={gridView ? {size: 6, offset: 0} : 12} 
+        xs={gridView ? {size: 8, offset: 2} : 12} 
+        key={i}
+      >
+        <Link 
+          to={`/item-details/${item.item_id}`}
           state={{item: {...getItemById(item.item_id), item_owner: userId}}}
         >
           <ItemCard
-            image={item.image_url}
-            title={item.item_name}
-            category={item.category}
-            user={item.loanee_name ? item.loanee_name : item.loaner_name}
-            startDate={
-              item.loan_start_date &&
-              dateFormat(item.loan_start_date, 'dd/mm/yyyy')
-            }
-            endDate={
-              item.intended_return_date &&
-              dateFormat(item.intended_return_date, 'dd/mm/yyyy')
-            }
-            loanStatus={item.loan_status}
+            item={item}           
             gridView={gridView}
+            userView={userView}
             searchText={searchText}
+            updateVisibility={updateVisibility}
           />
         </Link>
       </Col>
@@ -176,6 +211,89 @@ const LoanerDashboard = (props) => {
 
   };
 
+  // update item's visibility
+  const updateVisibility = (id, visible) => {
+    API({
+      method: 'PUT',
+      url: '/items',
+      data: {
+        _id: id,
+        visible: visible
+      }
+    }).then(res => {
+      console.log(res)
+      const item = loanerItems.find(item => item.item_id === id);
+      if (visible) {
+        // show the item
+        setVisibilityController({
+          ...visibilityController,
+          visibleItems: [...visibilityController.visibleItems, item],
+          hiddenItems: [...visibilityController.hiddenItems].filter(item => item.item_id !== id),
+        })
+
+      } else {
+        // hide the item
+        setVisibilityController({
+          ...visibilityController,
+          visibleItems: [...visibilityController.visibleItems].filter(item => item.item_id !== id),
+          hiddenItems: [...visibilityController.hiddenItems, item]
+        })
+      }
+    }).catch(e => {
+      console.log(e)
+    })
+
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    API.get('/dashboard?user_id=' + userId)
+    .then(res => {
+      console.log('dashboard api', res);
+        const items = res.data;
+        var loanerItemsLst = [];
+        // update loaner items
+        for (var item of items) {
+          if (item.user_role === LOANER) {
+            loanerItemsLst.push(item);
+          }
+        }
+        setLoanerItems(loanerItemsLst);
+        setLoading(false);
+
+        // update display items
+        switch(visibilityController.display) {
+          case ALL:
+            setDisplayItems({
+              ...displayItems,
+              loanerItems: loanerItemsLst
+            })
+            break;
+          case VISIBLE:
+            setDisplayItems({
+              ...displayItems,
+              loanerItems: loanerItemsLst.filter(item => item.visible === undefined || item.visible === true)
+            })
+            break;
+          case HIDDEN:
+            setDisplayItems({
+              ...displayItems,
+              loanerItems: loanerItemsLst.filter(item => item.visible !== undefined && item.visible === false)
+            })
+            break;
+          default:
+            break
+        }
+
+    }).catch(e => {
+      console.log(e)
+    })
+    
+  // eslint-disable-next-line
+  }, [visibilityController])
+
+  console.log('control', visibilityController)
+  console.log('display', displayItems)
 
 
   const handleUserSwitch = (e) => {
@@ -186,7 +304,7 @@ const LoanerDashboard = (props) => {
 
 
   const handleSortByDate = (val) => {
-    var res = userView === LOANER ? loanerItems : loaneeItems;
+    var res = userView === LOANER ? displayItems.loanerItems : displayItems.loaneeItems;
     switch (val) {
       case SA:
         res.sort((a, b) => {
@@ -266,9 +384,9 @@ const LoanerDashboard = (props) => {
         results = intersection(filters.sortedItems, results)
       }
     
-      setLoanerFilters({
-        ...loanerFilters,
-        results: [...results]
+      setDisplayItems({
+        ...displayItems,
+        loanerItems: results
       })
 
     } else {
@@ -295,9 +413,9 @@ const LoanerDashboard = (props) => {
       }
       
 
-      setLoaneeFilters({
-        ...loaneeFilters,
-        results: [...results]
+      setDisplayItems({
+        ...displayItems,
+        loaneeItems: results
       })
     }
 
@@ -307,7 +425,22 @@ const LoanerDashboard = (props) => {
   const handleSearch = (e) => {
     const currText = e.target.value;
     setSearchText(currText)
-    const items = userView === LOANER ? loanerItems : loaneeItems;
+    var items;
+    if (userView === LOANER) {
+      switch (visibilityController.display) {
+        case VISIBLE:
+          items = visibilityController.visibleItems
+          break;
+        case HIDDEN:
+          items = visibilityController.hiddenItems
+          break
+        default:
+          items = loanerItems
+          break;
+      }
+    } else {
+      items = loaneeItems
+    }
 
     const resItems = items.filter(item => {
       if (
@@ -325,17 +458,54 @@ const LoanerDashboard = (props) => {
     // console.log('search items', resItems)
 
     if (userView === LOANER) {
-      setLoanerFilters({
-        ...loanerFilters,
-        results: resItems
+      setDisplayItems({
+        ...displayItems,
+        loanerItems: resItems
       })
     } else {
-      setLoaneeFilters({
-        ...loaneeFilters,
-        results: resItems
+      setDisplayItems({
+        ...displayItems,
+        loaneeItems: resItems
       })
     }
 
+  }
+
+  const handleDisplay = (val) => {
+    switch (val) {
+      case ALL:
+        setVisibilityController({
+          ...visibilityController,
+          display: ALL
+        })
+        setDisplayItems({
+          ...displayItems,
+          loanerItems: loanerItems
+        })
+        return;
+      case VISIBLE:
+        setVisibilityController({
+          ...visibilityController,
+          display: VISIBLE
+        })
+        setDisplayItems({
+          ...displayItems,
+          loanerItems: loanerItems.filter(item => item.visible === undefined || item.visible === true)
+        })
+        return;
+      case HIDDEN:
+        setVisibilityController({
+          ...visibilityController,
+          display: HIDDEN
+        })
+        setDisplayItems({
+          ...displayItems,
+          loanerItems: loanerItems.filter(item => item.visible !== undefined && item.visible === false)
+        })
+        return;
+      default:
+        return;
+    }
   }
 
 
@@ -345,106 +515,123 @@ const LoanerDashboard = (props) => {
 
  
   return (
-    <div className="page-margin dashboard">
-      <Row>
-        <Col className="bg-light-blue filter-container">
-          <h3 style={{ marginBottom: '2rem' }}>
-            View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
-          </h3>
-          <h3>Sort by</h3>
-          <MultiSelect 
-            placeholder="Loan Date" 
-            singleSelect={true} 
-            options={dateOptions} 
-            onChange={handleSortByDate}
-          />
-          <h3 style={{ marginTop: '2rem' }}>Filter by</h3>
-          <MultiSelect 
-            placeholder="Status" 
-            options={statusOptions} 
-            onChange={val => handleFilters(val, STATUS)} 
-          />
-          <MultiSelect 
-            placeholder="Category" 
-            options={
-              userView === LOANER ? 
-              renderOptions(loanerFilters.categoryOptions) 
-              : renderOptions(loaneeFilters.categoryOptions)
-            } 
-            onChange={val => handleFilters(val, CATEGORY)}
-          />
-          <MultiSelect 
-            placeholder={userView === LOANER ? "Loanee" : "loaner" }
-            options={
-              userView === LOANER ? 
-              renderOptions(loanerFilters.loaneeOptions) 
-              : renderOptions(loaneeFilters.loanerOptions)
-            } 
-            onChange={val => handleFilters(val, USER)}
-          />
-          <Button onClick={applyFilters}>Apply Filters</Button>
-        </Col>
-        <Col md='8'>
-          <Row className="bg-light-blue" style={{ height: '5rem' }}>
-            <div className="dashboard-nav">
-              <div style={{ width: '40%', maxWidth: '25rem' }}>
-                <span 
-                  className="icon-blue" 
-                  data-for={gridView ? 'item-view' : 'item-view'} 
-                  data-tip 
-                  onClick={() => setGridView(!gridView)}
-                >
-                  {
-                    gridView ? 
-                      <AiOutlineUnorderedList size={30} /> 
-                    : 
-                      <TbLayoutGrid size={30} />
-                  }
-                </span>
-                <ReactTooltip id='item-view'>
-                  <span>{gridView ? 'List view' : 'Grid view'}</span>
-                </ReactTooltip>
-                <div>
-                  <input type="search" onChange={handleSearch} placeholder="Search for items" />
-                </div>
-                <Link to="/add-item">
-                  <span className="icon-plus" data-for='add-item' data-tip='Add item'>
-                    <AiFillPlusCircle size={45} color="#0073e6" />
-                  </span>
-                </Link>
-                <ReactTooltip id='add-item' />
-                 
-              </div>
-              <div style={{ width: '12%', maxWidth: '8rem' }}>
-                <Link to="/stats" style={{display: 'flex'}}>
-                  <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
-                    <MdQueryStats size={30} />
-                  </span>
-                </Link>
-                <ReactTooltip id='view-stats' />
-                <span className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
-                  <AiOutlineUserSwitch size={30} />
-                </span>
-                <ReactTooltip id='user-view'>
-                  <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
-                </ReactTooltip>
-              </div>
-            </div>
-            
-          </Row>
-          <Row>
-            {loading ?
-              <div className="m-5" style={{display: 'flex'}}>
-                <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
-                <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
-              </div> 
-            : 
-              renderItems(userView)
+    <>{noAccess ? <NoAccess /> :
+      <div className="page-margin dashboard">
+        <Row>
+          <Col className="bg-light-blue filter-container">
+            <h4 style={{ marginBottom: '2rem' }}>
+              View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
+            </h4>
+            {
+              userView === LOANER &&
+              <>
+                <h4>Item Display</h4>
+                <MultiSelect 
+                  // placeholder='Show all items'
+                  singleSelect={true} 
+                  options={displayOptions} 
+                  onChange={val => handleDisplay(val)}
+                  defaultValue={VISIBLE}
+                />
+              </>
+              
             }
-          </Row>
-        </Col>
-      </Row>
-    </div>
+            
+            <h4 style={{ marginTop: '1rem' }}>Sort by</h4>
+            <MultiSelect 
+              placeholder="Loan Date" 
+              singleSelect={true} 
+              options={dateOptions} 
+              onChange={handleSortByDate}
+            />
+            <h4 style={{ marginTop: '1rem' }}>Filter by</h4>
+            <MultiSelect 
+              placeholder="Status" 
+              options={statusOptions} 
+              onChange={val => handleFilters(val, STATUS)} 
+            />
+            <MultiSelect 
+              placeholder="Category" 
+              options={
+                userView === LOANER ? 
+                renderOptions(loanerFilters.categoryOptions) 
+                : renderOptions(loaneeFilters.categoryOptions)
+              } 
+              onChange={val => handleFilters(val, CATEGORY)}
+            />
+            <MultiSelect 
+              placeholder={userView === LOANER ? "Loanee" : "loaner" }
+              options={
+                userView === LOANER ? 
+                renderOptions(loanerFilters.loaneeOptions) 
+                : renderOptions(loaneeFilters.loanerOptions)
+              } 
+              onChange={val => handleFilters(val, USER)}
+            />
+            <Button onClick={applyFilters}>Apply Filters</Button>
+          </Col>
+          <Col md='8'>
+            <Row className="bg-light-blue" style={{ height: '5rem' }}>
+              <div className="dashboard-nav">
+                <div style={{ width: '40%', maxWidth: '25rem' }}>
+                  <span 
+                    className="icon-blue" 
+                    data-for={gridView ? 'item-view' : 'item-view'} 
+                    data-tip 
+                    onClick={() => setGridView(!gridView)}
+                  >
+                    {
+                      gridView ? 
+                        <AiOutlineUnorderedList size={30} /> 
+                      : 
+                        <TbLayoutGrid size={30} />
+                    }
+                  </span>
+                  <ReactTooltip id='item-view'>
+                    <span>{gridView ? 'List view' : 'Grid view'}</span>
+                  </ReactTooltip>
+                  <div style={{marginLeft: '1rem', marginRight: '1rem'}}>
+                    <input type="search" onChange={handleSearch} placeholder="Search for items" />
+                  </div>
+                  <Link to="/add-item">
+                    <span className="icon-plus" data-for='add-item' data-tip='Add item'>
+                      <AiFillPlusCircle size={45} color="#0073e6" />
+                    </span>
+                  </Link>
+                  <ReactTooltip id='add-item' />
+                  
+                </div>
+                <div style={{ width: '12%', maxWidth: '8rem' }}>
+                  <Link to="/stats" style={{display: 'flex'}}>
+                    <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
+                      <MdQueryStats size={30} />
+                    </span>
+                  </Link>
+                  <ReactTooltip id='view-stats' />
+                  <span style={{marginLeft: '1rem'}} className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
+                    <AiOutlineUserSwitch size={30} />
+                  </span>
+                  <ReactTooltip id='user-view'>
+                    <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
+                  </ReactTooltip>
+                </div>
+              </div>
+              
+            </Row>
+            <Row>
+              {loading ?
+                <div className="m-5" style={{display: 'flex'}}>
+                  <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
+                  <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
+                </div> 
+              : 
+                renderItems(userView)
+              }
+            </Row>
+          </Col>
+        </Row>
+      </div>
+    }</>
   );
 };
 

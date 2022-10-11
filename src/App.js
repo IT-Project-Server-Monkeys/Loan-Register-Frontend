@@ -12,22 +12,25 @@ import  'react-multiple-select-dropdown-lite/dist/index.css'
 function App() {
   
   // Get/Set login session
+  const [loggedIn, setLoggedIn] = useState();
   const [uid, setUid] = useState();
   useEffect(() => {
     // TODO: SEE ABOVE, GET SESSION INFO FROM ELSEWHERE
-    setUid(
-      window.sessionStorage.getItem("uid")
+    setLoggedIn(
+      window.sessionStorage.getItem("loggedIn") === "true" ? true : false
     );
+    setUid(window.sessionStorage.getItem("uid"));
   }, [])
 
   const loginHandler = (uid) => {
     // TODO: STORING IN SESSIONSTORAGE IS VERY UNSAFE, STORE SESSION INFO ELSEWHERE
+    window.sessionStorage.setItem("loggedIn", true);
     window.sessionStorage.setItem("uid", uid);
-    setUid(uid);
   }
   
   const logoutHandler = () => {
     // TODO: SEE ABOVE, MAKE SAFER
+    window.sessionStorage.removeItem("loggedIn");
     window.sessionStorage.removeItem("uid"); 
     setUid(null);
   }
@@ -35,22 +38,24 @@ function App() {
   
   return (
     <div className="App">
-      <Header uid={uid} onLogout={logoutHandler} />
+      <Header loggedIn={loggedIn} onLogout={logoutHandler} />
       <main style={{minHeight: 'var(--main-height)'}}>
         <Router>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login onLogin={loginHandler} />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/add-item" element={<AddItem uid={uid} />} />
-            <Route path="/item-details/:id" element={<ItemDetails uid={uid} />} />
-            <Route path="/item-details/:id/edit" element={<ItemEdit uid={uid} />} />
-            <Route path="/item-history/:id" element={<ItemHistory />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/account" element={<Account uid={uid} />} />
-            <Route path="/change-password" element={<ChangePassword uid={uid} />} />
+            <Route path="/login" element={<Login loggedIn={loggedIn} onLogin={loginHandler} />} />
+            <Route path="/dashboard" element={<Dashboard loggedIn={loggedIn} />} />
+            <Route path="/add-item" element={<AddItem loggedIn={loggedIn} uid={uid} />} />
+            <Route path="/item-details/:id" >
+              <Route path="" element={<ItemDetails loggedIn={loggedIn} uid={uid} />} />
+              <Route path="edit" element={<ItemEdit loggedIn={loggedIn} uid={uid} />} />
+              <Route path="history" element={<ItemHistory loggedIn={loggedIn} />} />
+            </Route>
+            <Route path="/stats" element={<Stats uid={uid} loggedIn={loggedIn} />} />
+            <Route path="/signup" element={<Signup loggedIn={loggedIn} />} />
+            <Route path="/forgot-password" element={<ForgotPassword loggedIn={loggedIn} />} />
+            <Route path="/account" element={<Account uid={uid} loggedIn={loggedIn} />} />
+            <Route path="/change-password" element={<ChangePassword uid={uid} loggedIn={loggedIn} />} />
           </Routes>
         </Router>
       </main>

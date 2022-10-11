@@ -24,10 +24,10 @@ const LoanForm = (props) => {
     
     setLetSubmit(
       lneName !== "" && (lneName in props.allLoanees) &&
-      lnDate !== "" && rtnDate !== "" && toISO(lnDate) < toISO(rtnDate)
+      lnDate !== "" && rtnDate !== "" && toISO(lnDate) <= toISO(rtnDate)
     );
     setNameWarn(lneName !== "" && !(lneName in props.allLoanees));
-    setDateWarn(lnDate !== "" && rtnDate !== "" && !(toISO(lnDate) < toISO(rtnDate)))
+    setDateWarn(lnDate !== "" && rtnDate !== "" && !(toISO(lnDate) <= toISO(rtnDate)))
   }
 
   // submits loan form to parent (item detail page)
@@ -35,6 +35,7 @@ const LoanForm = (props) => {
     e.preventDefault();
 
     props.onSubmit({
+      loanee_name: e.target.loanee.value,
       loanee_id: props.allLoanees[e.target.loanee.value],
       loan_start_date: toISO(e.target.loanDate.value),
       intended_return_date: toISO(e.target.returnDate.value)
@@ -102,7 +103,7 @@ const LoanForm = (props) => {
                 }}
               />
             </div>
-            {dateWarn ? <h4 className="warning">Return date must be after loan date.</h4> : null}
+            {dateWarn ? <h4 className="warning">Return date must be on or after loan date.</h4> : null}
             <div className={"btn-list"}>
               <TextButton altStyle type="button" onClick={props.toggle}>Cancel</TextButton>
               <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>

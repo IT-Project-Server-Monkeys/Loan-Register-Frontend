@@ -43,6 +43,7 @@
     padding: 1rem 2rem 3rem 2rem;
     height: fit-content;
     margin-right: 4rem;
+    max-width: 25rem;
   }
   
   .filter-box {
@@ -90,6 +91,17 @@
 .item-card {
   border-radius: 20px !important;
   margin-top: 1.5rem;
+  box-shadow: 4px 4px 4px rgb(0 0 0 / 25%);
+
+  .hide-btn {
+    background-color: var(--light-blue-color);
+    color: var(--blue-color);
+    padding: 5px 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    margin-top: 0;
+  }
 
   &:hover {
     cursor: pointer;
@@ -154,7 +166,7 @@
   p {
     margin-bottom: 0;
   }
-  .card-subtitle {
+  .attribute {
     font-weight: 500;
   }
 

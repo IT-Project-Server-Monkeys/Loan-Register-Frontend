@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
-import { TextBkgBox, ToggleInput, TextButton, Loading } from '../components';
+import { TextBkgBox, ToggleInput, TextButton, Loading, NoAccess } from '../components';
 import API from '../utils/api';
 import { useNavigate } from "react-router-dom";
+import { noAccessRedirect } from "../utils/helpers";
 
 const Account = (props) => {
   // page navigation
+  const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
 
   // form submission
@@ -97,8 +99,16 @@ const Account = (props) => {
     setEmailSub(false);
   }
 
+  // redirect user away from page if user is not logged in
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+  }, [props.loggedIn, navigate])
+
   // get user data from server, querying using userId recorded in the app's session
   useEffect(() => {
+    if (props.loggedIn !== true) return;
     const fetchUser = async () => {
       let fetchedData = null;
       if (props.uid == null) return;
@@ -117,31 +127,33 @@ const Account = (props) => {
       setNewEmail(fetchedData.login_email);
     };
     fetchUser();
-  }, [props.uid, navigate]);
+  }, [props.loggedIn, props.uid, navigate]);
 
   return (
-    <div className={"account-page"}>
-      <TextBkgBox>
-        <h1>Account</h1>
-        <div className={"inline-flex"}>
-          <h3>Username:</h3>
-          <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
-            onToggle={() => setWarning("")} maxLength={20}
-            field="display_name" value={newName} setVal={setNewName}
-          />
-        </div>
-        <div className={"inline-flex"}>
-          <h3>Email:</h3>
-          <ToggleInput disabled={emailSub} saveInput={saveEmail} setVal={setNewEmail}
-            field="login_email" value={newEmail} type="email" onToggle={() => setWarning("")}
-          />
-        </div>
-        <h4 className="warning">{warning}</h4>
-        <a href="/change-password">
-          <TextButton disabled={ nameSub || emailSub }>Change password</TextButton>
-        </a>
-      </TextBkgBox>
-    </div>
+    <>{noAccess ? <NoAccess /> :
+      <div className={"account-page"}>
+        <TextBkgBox>
+          <h1>Account</h1>
+          <div className={"inline-flex"}>
+            <h3>Username:</h3>
+            <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
+              onToggle={() => setWarning("")} maxLength={20}
+              field="display_name" value={newName} setVal={setNewName}
+            />
+          </div>
+          <div className={"inline-flex"}>
+            <h3>Email:</h3>
+            <ToggleInput disabled={emailSub} saveInput={saveEmail} setVal={setNewEmail}
+              field="login_email" value={newEmail} type="email" onToggle={() => setWarning("")}
+            />
+          </div>
+          <h4 className="warning">{warning}</h4>
+          <a href="/change-password">
+            <TextButton disabled={ nameSub || emailSub }>Change password</TextButton>
+          </a>
+        </TextBkgBox>
+      </div>
+    }</>
   );
 };
 
