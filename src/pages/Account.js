@@ -4,11 +4,14 @@ import { TextBkgBox, ToggleInput, TextButton, Loading, NoAccess } from '../compo
 import API from '../utils/api';
 import { useNavigate } from "react-router-dom";
 import { noAccessRedirect } from "../utils/helpers";
+import { useMediaQuery } from "react-responsive";
 
 const Account = (props) => {
   // page navigation
   const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
+  const isTablet = useMediaQuery({ maxDeviceWidth: 1080 });
+  const isMobile = useMediaQuery({ maxDeviceWidth: 670 });
 
   // form submission
   const [nameSub, setNameSub] = useState(false);
@@ -131,25 +134,74 @@ const Account = (props) => {
 
   return (
     <>{noAccess ? <NoAccess /> :
-      <div className={"account-page"}>
-        <TextBkgBox>
+      <div className={`account-page ${isTablet ? isMobile ? "mobile" : "tablet" : ""}`}>
+        <TextBkgBox className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
           <h1>Account</h1>
-          <div className={"inline-flex"}>
-            <h3>Username:</h3>
-            <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
-              onToggle={() => setWarning("")} maxLength={20}
-              field="display_name" value={newName} setVal={setNewName}
-            />
-          </div>
-          <div className={"inline-flex"}>
-            <h3>Email:</h3>
-            <ToggleInput disabled={emailSub} saveInput={saveEmail} setVal={setNewEmail}
-              field="login_email" value={newEmail} type="email" onToggle={() => setWarning("")}
-            />
-          </div>
+          <table><tbody>
+            {isTablet
+              ? 
+                <>
+                  <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                    <td><h3>Username:</h3></td>
+                  </tr>
+                  <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                    <td className="toggle-input">
+                      <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
+                        onToggle={() => setWarning("")} maxLength={20} isMobile={isMobile}
+                        field="display_name" value={newName} setVal={setNewName}
+                      />
+                    </td>
+                  </tr>
+                </>
+              :
+                <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                  <td><h3>Username:</h3></td>
+                  <td className="toggle-input">
+                    <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
+                      onToggle={() => setWarning("")} maxLength={20} isMobile={isMobile}
+                      field="display_name" value={newName} setVal={setNewName}
+                    />
+                  </td>
+                </tr>
+            }
+
+            {
+              isTablet
+              ?
+                <>
+                  <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                    <td><h3>Email:</h3></td>
+                  </tr>
+                  <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                    <td className="toggle-input">
+                      <ToggleInput disabled={emailSub} saveInput={saveEmail}
+                        setVal={setNewEmail} isMobile={isMobile} type="email"
+                        field="login_email" value={newEmail} onToggle={() => setWarning("")}
+                      />
+                    </td>
+                  </tr>
+                </>
+              :
+                <tr>
+                  <td><h3>Email:</h3></td>
+                  <td className="toggle-input">
+                    <ToggleInput disabled={emailSub} saveInput={saveEmail}
+                      setVal={setNewEmail} isMobile={isMobile} type="email"
+                      field="login_email" value={newEmail} onToggle={() => setWarning("")}
+                    />
+                  </td>
+                </tr>
+            }
+
+          </tbody></table>
+
           <h4 className="warning">{warning}</h4>
           <a href="/change-password">
-            <TextButton disabled={ nameSub || emailSub }>Change password</TextButton>
+            <TextButton disabled={ nameSub || emailSub }
+              style={isMobile ? {fontSize: "30px"} : {}}
+            >
+              Change password
+            </TextButton>
           </a>
         </TextBkgBox>
       </div>
