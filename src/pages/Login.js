@@ -84,35 +84,31 @@ const Login = (props) => {
       <>{noAccess ? <NoAccess /> :
         <div className={"login"}>
           <div className={"background"}>
-            <div className={isMobile? "mobile" : ""}>
-    
-              <TextBkgBox>
-                <div className="h1">
-                  Log in to LR!
+            <TextBkgBox className={isMobile ? "mobile" : ""}>
+              <div className="h1">
+                Log in to LR!
+              </div>
+              <h4 ref={errRef} className={errMsg ? "warning" : "offscreen"} aria-live="assertive">{errMsg}</h4>
+  
+              <form onSubmit={handleSubmit}>
+                <div className="mobile-format">
+                  <div className="h3">
+                    Email:
+                  </div>
+                  <input type="text" placeholder="Enter email" className={"input-box"} id="email" ref={emailRef} onChange={(e) => setEmail(e.target.value)} value={email} required />
                 </div>
-                <h4 ref={errRef} className={errMsg ? "warning" : "offscreen"} aria-live="assertive">{errMsg}</h4>
-    
-                <form onSubmit={handleSubmit}>
-                  <div className="mobile-format">
-                    <div className="h3">
-                      Email:
-                    </div>
-                    <input type="text" placeholder="Enter email" className={"input-box"} id="email" ref={emailRef} onChange={(e) => setEmail(e.target.value)} value={email} required />
+                <div className="mobile-format">
+                  <div className="h3">
+                    Password:
                   </div>
-                  <div className="mobile-format">
-                    <div className="h3">
-                      Password:
-                    </div>
-                    <input type="password" placeholder="Enter password" className={"input-box"} id="password" onChange={(e) => setPwd(e.target.value)} value={pwd} required />
-                  </div>
-                  <a href="/forgot-password" className="a">Forgot password?</a>
-                  <a href="/signup" className="a">New user?</a>
-                  <TextButton className={"button"}>Login</TextButton>
-                </form>
-    
-              </TextBkgBox>
-    
-            </div>
+                  <input type="password" placeholder="Enter password" className={"input-box"} id="password" onChange={(e) => setPwd(e.target.value)} value={pwd} required />
+                </div>
+                <a href="/forgot-password" className="a">Forgot password?</a>
+                <a href="/signup" className="a">New user?</a>
+                <TextButton className={"button"}>Login</TextButton>
+              </form>
+  
+            </TextBkgBox>
           </div>
         </div>
       }</>

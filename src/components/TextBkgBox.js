@@ -4,7 +4,10 @@ import "../styles/TextBkgBox.scss";
 // a box with text in it
 const TextBkgBox = (props) => {
   return (
-    <div className={"text-bkg-box"}>{props.children}</div>
+    <div
+      className={`text-bkg-box ${props.className ? props.className : ""}`}
+      style={props.style}
+    >{props.children}</div>
   );
 };
 

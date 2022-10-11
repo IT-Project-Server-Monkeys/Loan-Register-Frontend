@@ -12,45 +12,7 @@
     }
 
     .errmsg{
-        color: red;
+        color: var(--red-color);
         font-size: 25px;
-    }
-
-    .mobile{
-
-        .text-bkg-box{
-            width: 300px;
-            height: fit-content;
-            margin-top: 50px;
-            margin-bottom: 50px;
-        }
-
-        .h1 {
-            font-size: 40px;
-            text-align: center;
-        }
-
-        .h3 {
-            font-size: 25px;
-        }
-
-        .a{
-            font-size: 25px;
-        }
-
-        .mobile-format{
-            margin-bottom: 10px;
-
-        }
-
-        .input-box{
-            width: 250px;
-            margin: 0px;
-        }
-
-        .text-btn-default{
-            width: 200px;
-        }
-
     }
 }
