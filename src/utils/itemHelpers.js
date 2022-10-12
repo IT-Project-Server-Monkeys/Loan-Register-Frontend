@@ -26,7 +26,7 @@ const fetchUserItems = async (uid, setItems) => {
     .then((res) => fetchedData = res.data)
     .catch((err) => console.log(err));
   
-  setItems(fetchedData);
+  if (fetchedData !== null) setItems(fetchedData);
 };
 
 // gets user's available categories from server

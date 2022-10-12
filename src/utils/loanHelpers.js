@@ -33,7 +33,7 @@ const fetchUserLoans = async (uid, setLoans) => {
     }
   }
   
-  setLoans(fetchedData);
+  if (fetchedData !== null) setLoans(fetchedData);
 };
 
 // get info on an item's current loan

@@ -26,7 +26,7 @@ const Stats = (props) => {
 
   const barLayout = {
     showlegend: false, font: {size: isTablet ? isMobile ? 12 : 16 : 20},
-    margin: {t: 0, r: 25, b: 0, l: isTablet ? isMobile ? 75 : 125 : 175},
+    margin: {pad: 20, t: 0, r: 25, b: 0, l: isTablet ? isMobile ? 75 : 125 : 175},
     xaxis: {constrain: "domain"},
     width: isTablet ? isMobile ? 250 : 400 : 600, height: 225, autosize: false, bargap: 0.5
   }
