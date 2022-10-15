@@ -201,14 +201,17 @@ const ItemDetails = (props) => {
                 </tr>
               </> : null}
               </tbody></table>
-            <p><span>Description:</span><br />{ typeof(item.description) != "string"
-              ? item.description
-              : item.description === ""
-                ? "(No description.)"
-                : item.description.split("\n").map((line, i) => {
-                  return <span key={i}>{line}<br /></span>
-                }) // react-string-replace didn't work :/
-            }</p>
+            <p>
+              <span>Description:</span><br />
+              { typeof(item.description) != "string"
+                ? item.description
+                : item.description === ""
+                  ? "(No description.)"
+                  : item.description.split("\n").map((line, i) => {
+                    return <span className="item-desc" key={i}>{line}<br /></span>
+                  }) // react-string-replace didn't work :/
+              }
+            </p>
           </div>
         </div>
 
