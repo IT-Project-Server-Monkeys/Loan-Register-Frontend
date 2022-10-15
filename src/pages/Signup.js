@@ -113,11 +113,13 @@ const Signup = (props) => {
         // set appropriate error messages if server returns error codes
         if (err.response.status === 405) {
           setErrMsg(err.response.data.message);
-          isValid = false;
         } else if (err.response.status === 406) {
           setErrMsg(err.response.data.message);
-          isValid = false;
+        } else {
+          setErrMsg("Error");
         }
+        // if there is any error messages, prevent redirect
+        isValid = false;
       });
 
     }
@@ -145,7 +147,7 @@ const Signup = (props) => {
                   <div className="h3">
                     Username:
                   </div>
-                  <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} maxlength="20" required/>
+                  <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} maxLength="20" required/>
                 </div>
                 <div className="mobile-format">
                   <div className="h3">
