@@ -1,26 +1,17 @@
 .account-page {
   padding: 5rem;
+
+  &.mobile {
+    padding: 2rem;
+  }
   
   .text-bkg-box {
     margin: auto;
+    height: fit-content;
+    padding: 3rem;
 
     h1 {
       margin-bottom: 2rem;
-    }
-
-    h3 {
-      width: 200px;
-      margin: 20px;
-      height: 50px;
-    }
-
-    p {
-      width: 363px;
-      margin: 20px;
-      vertical-align: middle;
-      overflow-x: auto;
-      overflow-y: hidden;
-      white-space: nowrap;
     }
 
     ::-webkit-scrollbar {
@@ -32,23 +23,104 @@
       line-height: 1.2;
       height: fit-content;
       padding: 0.5rem;
-  }
-
-    button.toggle, button.toggle-disabled {
-      width: 75px;
-      background-color: transparent;
-      border: 0;
-      text-decoration: underline;
-      font-size: 1.5rem;
-      font-weight: bold;
     }
 
-    .toggle {
-      color: var(--blue-color);
+    &.tablet {
+      width: fit-content;
     }
 
-    .toggle-disabled {
-      color: var(--dark-grey-color);
+    &.mobile {
+      width: 100%;
+      padding-left: 1rem;
+      padding-right: 1rem;
+
+      table {
+        width: fit-content;
+      }
+    }
+
+    tr {
+      display: flex;
+      width: 620px;
+
+      &.mobile {
+        width: 100%;
+
+        p {
+          width: 100%;
+          max-width: 200px;
+        }
+
+        .inline-form {
+          flex-grow: 2;
+        }
+
+        button.toggle, button.toggle-disabled {
+          width: 56px;
+        }
+      }
+
+      &.tablet {
+        width: 400px;
+
+        p {
+          width: 100%;
+          max-width: 250px;
+        }
+      }
+    }
+
+    td {
+      display: flex;
+      align-items: center;
+
+      &.toggle-input {
+        flex-grow: 2;
+      }
+
+      h3 {
+        width: 200px;
+        margin: 20px;
+        height: 50px;
+      }
+
+      p {
+        flex-grow: 2;
+        margin: 20px;
+        max-width: 231px;
+        overflow: scroll;
+        vertical-align: middle;
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+      }
+
+      .input-box {
+        min-width: 0;
+        width: 100%;
+        max-width: 100%;
+        flex-grow: 2;
+        padding: 0;
+        margin: 20px;
+      }
+
+      button.toggle, button.toggle-disabled {
+        width: 105px;
+        text-align: left;
+        background-color: transparent;
+        border: 0;
+        text-decoration: underline;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+
+      .toggle {
+        color: var(--blue-color);
+      }
+  
+      .toggle-disabled {
+        color: var(--dark-grey-color);
+      }
     }
 
   }

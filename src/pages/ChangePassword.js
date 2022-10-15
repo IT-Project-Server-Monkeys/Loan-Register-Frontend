@@ -5,6 +5,7 @@ import { TextBkgBox, TextButton, Submitting, NoAccess } from "../components";
 import API from '../utils/api';
 import bcrypt from 'bcryptjs-react';
 import { noAccessRedirect } from "../utils/helpers";
+import { useMediaQuery } from "react-responsive";
 
 const ChangePassword = (props) => {
   // page navigation
@@ -16,6 +17,9 @@ const ChangePassword = (props) => {
   const [letSubmit, setLetSubmit] = useState(false);
   const [safetyNote, setSafetyNote] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  // responsive
+  const isMobile = useMediaQuery({ maxDeviceWidth: 760 });
 
   // check if the password has bene retyped in confirm input
   const confirmPwd = () => {
@@ -68,28 +72,67 @@ const ChangePassword = (props) => {
 
   return (
     <>{noAccess ? <NoAccess /> :
-      <div className={"change-password"}>
-        <TextBkgBox>
+      <div className={`change-password ${isMobile ? "mobile" : ""}`}>
+        <TextBkgBox className={isMobile ? "mobile" : ""}>
           <h1>Change password</h1>
           <form onSubmit={changePwd} onChange={confirmPwd}>
             {safetyNote ? <span className={"safety-note"}>
               Password must contain at least: a symbol, a number, a lowercase letter and an uppercase letter.
             </span> : null}
-            <div className={"inline-flex"}>
-              <h3>New password:</h3>
-              <input required type="password" id="newPwd" minLength={8}
-                placeholder="(Minimum 8 characters.)" className={"input-box"}
-              />
-            </div>
-            <div className={"inline-flex"}>
-              <h3>Confirm password:</h3>
-              <input required type="password" id="confirmPwd"
-                placeholder="Same password as above" className={"input-box"}
-              />
-            </div>
-            <TextButton disabled={!letSubmit} type="submit">
-              Confirm
-            </TextButton>
+            <table><tbody>
+              { isMobile
+                ?
+                  <>
+                    <tr>
+                      <td><h3 className="mobile">New password:</h3></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input required type="password" id="newPwd" minLength={8}
+                          placeholder="Min. 8 characters" className={"input-box mobile"}
+                        />
+                      </td>
+                    </tr>
+                  </>
+                :
+                  <tr>
+                    <td><h3>New password:</h3></td>
+                    <td>
+                      <input required type="password" id="newPwd" minLength={8}
+                        placeholder="Min. 8 characters" className={"input-box"}
+                      />
+                    </td>
+                  </tr>
+              }
+
+              { isMobile
+                ?
+                  <>
+                    <tr>
+                      <td><h3 className="mobile">Confirm password:</h3></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <input required type="password" id="confirmPwd"
+                          placeholder="Re-type password" className={"input-box mobile"}
+                        />
+                      </td>
+                    </tr>
+                  </>
+                :
+                  <tr>
+                    <td><h3>Confirm password:</h3></td>
+                    <td>
+                      <input required type="password" id="confirmPwd"
+                        placeholder="Re-type password" className={"input-box"}
+                      />
+                    </td>
+                  </tr>
+              }
+              <tr><td colspan="2" style={{textAlign: "center"}}>
+                <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>
+              </td></tr>
+            </tbody></table>
           </form>
         </TextBkgBox>
         {submitting ? <Submitting /> : null}

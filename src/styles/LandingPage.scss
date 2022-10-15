@@ -5,7 +5,8 @@
         justify-content: center;
         display: flex;
         background-image: url("../images/landingPageBackground.png");
-        background-repeat: round;
+        background-repeat: no-repeat;
+        background-size: cover;
         min-height: var(--main-height);
         align-items: center;
         flex-direction: column;
@@ -24,12 +25,34 @@
         font-size: 40px;
     }
 
-    .text-box{
+    .p{
         width: 40%;
         height: auto;
         text-align: justify;
         display: flex;
-        font-size: 30px;
+        font-size: 25px;
+    }
+
+    .mobile {
+
+        .h1 {
+            font-size: 40px;
+            text-align: center;
+        }
+
+        .h3 {
+            font-size: 30px;
+            text-align: center;
+            width: 80%;
+        }
+
+        .p{
+            width: 80%;
+            height: auto;
+            text-align: justify;
+            display: flex;
+            font-size: 18px;
+        }
     }
 
 }

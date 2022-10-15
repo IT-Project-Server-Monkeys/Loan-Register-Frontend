@@ -121,6 +121,11 @@ const LoanerDashboard = (props) => {
         setLoaneeItems(loaneeItemsLst);
         setLoading(false);
 
+        setDisplayItems({
+          loanerItems: loanerItemsLst,
+          loaneeItems: loaneeItemsLst
+        })
+
         // update visible items
         setVisibilityController({
           display: VISIBLE,

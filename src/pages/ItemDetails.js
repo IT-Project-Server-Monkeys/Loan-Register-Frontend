@@ -21,7 +21,7 @@ const ItemDetails = (props) => {
   const dbData = null;
   // const dbData = location.state ? location.state.item : null;
   const [item, setItem] = useState({
-    item_name: <Loading />, image_url: noImg,
+    item_name: <Loading />, image_url: "",
     category: <Loading />, description: <Loading />,
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
@@ -201,14 +201,17 @@ const ItemDetails = (props) => {
                 </tr>
               </> : null}
               </tbody></table>
-            <p><span>Description:</span><br />{ typeof(item.description) != "string"
-              ? item.description
-              : item.description === ""
-                ? "(No description.)"
-                : item.description.split("\n").map((line, i) => {
-                  return <span key={i}>{line}<br /></span>
-                }) // react-string-replace didn't work :/
-            }</p>
+            <p>
+              <span>Description:</span><br />
+              { typeof(item.description) != "string"
+                ? item.description
+                : item.description === ""
+                  ? "(No description.)"
+                  : item.description.split("\n").map((line, i) => {
+                    return <span className="item-desc" key={i}>{line}<br /></span>
+                  }) // react-string-replace didn't work :/
+              }
+            </p>
           </div>
         </div>
 

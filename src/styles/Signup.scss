@@ -5,7 +5,8 @@
         justify-content: center;
         display: flex;
         background-image: url("../images/backgroundImage.png");
-        background-repeat: repeat-y;
+        background-repeat: no-repeat;
+        background-size: cover;
         min-height: var(--main-height);
         align-items: center;
     }
@@ -15,10 +16,6 @@
         font-weight: bold;
         width: 150px;
         text-align: initial;
-    }
-
-    .text-bkg-box{
-        height: 700px;
     }
 
     .warning{

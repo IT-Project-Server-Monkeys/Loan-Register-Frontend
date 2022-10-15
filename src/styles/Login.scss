@@ -5,13 +5,14 @@
         justify-content: center;
         display: flex;
         background-image: url("../images/backgroundImage.png");
-        background-repeat: repeat-y;
+        background-repeat: no-repeat;
+        background-size: cover;
         min-height: var(--main-height);
         align-items: center;
     }
 
     .errmsg{
-        color: red;
+        color: var(--red-color);
         font-size: 25px;
     }
 }
