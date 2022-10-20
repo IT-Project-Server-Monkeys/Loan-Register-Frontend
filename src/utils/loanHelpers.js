@@ -44,7 +44,7 @@ const fetchCurLoan = async (itemId, setItem) => {
     .then((res) => fetchedData = res.data[0])
     .catch((err) => console.log(err));
 
-  if (fetchedData.loanee_name == null) {
+  if (fetchedData.loanee_name == null || fetchedData.loanee_name === '') {
     await API.get(`/users?id=${fetchedData.loanee_id}`)
       .then((res) => fetchedData.loanee_name = res.data.display_name)
       .catch(err => console.log(err))
