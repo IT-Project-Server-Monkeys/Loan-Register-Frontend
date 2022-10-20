@@ -60,7 +60,7 @@ const Account = (props) => {
         })
         .catch((err) => { console.log(err); onFail(); });
     } else {
-      setWarning(`The username ${name} is taken.`);
+      setWarning(`The username "${name}" is taken.`);
       setNewName(userInfo.display_name);
     }
 

@@ -53,7 +53,7 @@ const ItemDetails = (props) => {
   // typeable + selectable loanee entry via InputDropdown
   const selectLoanee = (ln) => setLoaneeName(ln);
   const deleteLoanee = (ln) => setSuggestedLoanees((prev) => prev.filter((lns) => lns !== ln));
-  const changeLoanee = (e) => setLoaneeName(e.target.value);
+  const changeLoanee = (e) => setLoaneeName(e.target.value.slice(0, 20));
 
   // creates loan
   const handleCrtLn = async (input) => {
