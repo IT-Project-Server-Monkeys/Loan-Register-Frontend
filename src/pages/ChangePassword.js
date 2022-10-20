@@ -76,9 +76,9 @@ const ChangePassword = (props) => {
         <TextBkgBox className={isMobile ? "mobile" : ""}>
           <h1>Change password</h1>
           <form onSubmit={changePwd} onChange={confirmPwd}>
-            {safetyNote ? <span className={"safety-note"}>
+            {safetyNote ? <h4 className={"warning"}>
               Password must contain at least: a symbol, a number, a lowercase letter and an uppercase letter.
-            </span> : null}
+            </h4> : null}
             <table><tbody>
               { isMobile
                 ?

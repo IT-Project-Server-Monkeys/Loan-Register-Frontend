@@ -10,6 +10,10 @@
     height: fit-content;
     padding: 3rem;
 
+    .warning {
+      overflow-wrap: anywhere;
+    }
+
     h1 {
       margin-bottom: 2rem;
     }

@@ -197,7 +197,7 @@ const Account = (props) => {
 
           <h4 className="warning">{warning}</h4>
           <a href="/change-password">
-            <TextButton disabled={ nameSub || emailSub }
+            <TextButton disabled={ nameSub || emailSub } type="button"
               style={isMobile ? {fontSize: "30px"} : {}}
             >
               Change password
