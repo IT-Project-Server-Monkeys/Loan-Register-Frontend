@@ -1,6 +1,6 @@
 import React from 'react';
 import "../styles/Signup.scss";
-import { NoAccess, TextBkgBox, TextButton } from '../components';
+import { NoAccess, Submitting, TextBkgBox, TextButton } from '../components';
 import API from "../utils/api";
 import { useState, useEffect } from 'react';
 import bcrypt from 'bcryptjs-react';
@@ -14,6 +14,7 @@ const Signup = (props) => {
   const [pwd, setPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
@@ -39,6 +40,7 @@ const Signup = (props) => {
     e.preventDefault();
     let isValid = true;
     let newUser = {};
+    setSubmitting(true);
 
     // disallow leading/trailing spaces in names & categories
     if (/^\s/.test(username) || /\s$/.test(username)) {
@@ -128,9 +130,10 @@ const Signup = (props) => {
       // redirect to login page
       window.location.href='/login';
     }
-      
+    
+    setSubmitting(false);
   }
-
+  
   if (isMobile) {
     return (
       <>{noAccess ? <NoAccess /> :
@@ -236,6 +239,7 @@ const Signup = (props) => {
               </form>
             </TextBkgBox>
           </div>
+          {submitting ? <Submitting /> : null}
         </div>
       }</>
     );

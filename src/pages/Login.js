@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import "../styles/Login.scss";
-import { NoAccess, TextBkgBox, TextButton } from '../components';
+import { NoAccess, Submitting, TextBkgBox, TextButton } from '../components';
 import API from "../utils/api";
 import bcrypt from 'bcryptjs-react';
 import { useMediaQuery } from 'react-responsive';
@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const Login = (props) => {
   const emailRef = useRef();
   const errRef = useRef();
+  const [submitting, setSubmitting] = useState(false);
 
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
@@ -45,6 +46,8 @@ const Login = (props) => {
     let uid = null;
     let hash = null;
 
+    setSubmitting(true);
+
     // check if pwd given matches with hashed password
     await API(`users?email=${email}`)
     .then((res) => {
@@ -75,6 +78,8 @@ const Login = (props) => {
       setErrMsg('Incorrect Credentials');
       errRef.current.focus();
     }
+
+    setSubmitting(false);
 
   }
 
@@ -157,6 +162,7 @@ const Login = (props) => {
 
             </TextBkgBox>
           </div>
+          {submitting ? <Submitting /> : null}
         </div>
       }</>
     );
