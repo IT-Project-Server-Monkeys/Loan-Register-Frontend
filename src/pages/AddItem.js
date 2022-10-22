@@ -13,6 +13,7 @@ const AddItem = (props) => {
 
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState(noImg);
+  const [sizeWarn, setSizeWarn] = useState(false);
 
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
@@ -46,7 +47,12 @@ const AddItem = (props) => {
 
   // item img changing
   const handleChgImg = (e) => {
-    changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    const img = e.target.files[0];
+    if (img.size > 256000) setSizeWarn(true); // 250KB size limit
+    else {
+      setSizeWarn(false);
+      changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    }
   };
 
   // save item and post to server
@@ -96,6 +102,9 @@ const AddItem = (props) => {
               </label>
             </div>
             
+            {sizeWarn ?
+              <h4 className={"big-img-warn warning"}>Image must be under 250KB.</h4>
+            : <span></span>}
             <div className={"item-info"}>
               <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
                 <table><tbody>

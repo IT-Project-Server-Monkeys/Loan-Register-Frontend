@@ -22,7 +22,7 @@ const ItemDetails = (props) => {
   
   // item information
   const itemId = useParams().id;
-  const dbData = /*location.state ? location.state.item :*/ null;
+  const dbData = location.state ? location.state.item : null;
 
   const [item, setItem] = useState({
     item_name: <Loading />, image_url: "",
@@ -143,13 +143,14 @@ const ItemDetails = (props) => {
   // get and show item data
   useEffect(() => {
     if (props.loggedIn !== true) return;
-    if (dbData === null) fetchItem(itemId, setItem);
+    console.log("dbData", dbData);
+    if (dbData === null || dbData.item_name == null) fetchItem(itemId, setItem);
     else {
       console.log(dbData);
       setItem( {...dbData, loan_id: null, loan_status: <Loading />, loanee_name: <Loading />,
         loan_start_date: <Loading />, intended_return_date: <Loading /> });
     }
-  }, [props.loggedIn, itemId, dbData, navigate]);
+  }, [props.loggedIn, itemId, dbData]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
@@ -179,7 +180,7 @@ const ItemDetails = (props) => {
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
-  }, [item, props.uid, navigate])
+  }, [item, props.uid])
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />

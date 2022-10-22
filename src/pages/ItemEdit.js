@@ -23,6 +23,7 @@ const ItemEdit = (props) => {
     description: "Loading..."
   });
   const [displayImg, setDisplayImg] = useState(noImg);
+  const [sizeWarn, setSizeWarn] = useState(false);
 
   // new item image, name, category, description
   const [itemImg, setItemImg] = useState(null);
@@ -38,7 +39,12 @@ const ItemEdit = (props) => {
 
   // item img changing
   const handleChgImg = (e) => {
-    changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    const img = e.target.files[0];
+    if (img.size > 256000) setSizeWarn(true); // 250KB size limit
+    else {
+      setSizeWarn(false);
+      changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    }
   };
 
   // toggle category inputdropdown open/close
@@ -150,6 +156,10 @@ const ItemEdit = (props) => {
               </label>
             </div>
             
+
+            {sizeWarn ?
+              <h4 className={"big-img-warn warning"}>Image must be under 250KB.</h4>
+            : null}
             <div className={"item-info"}>
               <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
                 <table><tbody>
