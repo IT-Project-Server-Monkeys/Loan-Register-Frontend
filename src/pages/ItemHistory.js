@@ -6,16 +6,27 @@ import '../styles/ItemHistory.scss';
 import API from '../utils/api';
 import dateFormat from 'dateformat';
 import { statusColor } from '../utils/constants';
+import { Header, NoAccess } from '../components';
+import { noAccessRedirect } from '../utils/helpers';
 
 
-const ItemHistory = () => {
+const ItemHistory = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [noAccess, setNoAccess] = useState(false);
 
   const [loans, setLoans] = useState([]);
 
   const itemId = location.state ? location.state.itemId : '';
   const itemName = location.state ? location.state.itemName : '';
+
+  // redirect user away from page if user is not logged in
+  useEffect(() => {
+    if (props.loggedIn === false) {
+      noAccessRedirect("/login", navigate, setNoAccess);
+    }
+    // redirect if user is not item owner?
+  }, [props.loggedIn, navigate])
 
   useEffect(() => {
     API.get('/loans?item_id=' + itemId)
@@ -36,30 +47,34 @@ const ItemHistory = () => {
   console.log(loans)
 
   return (
-    <div className="page-margin history">
-      <span className="back-arrow">
-        <AiOutlineArrowLeft size={40} color="var(--blue-color)" onClick={() => navigate(-1)} />
-      </span>
-      <div className='hist-container'>
-        <h1>
-          <span style={{color: 'var(--blue-color)'}}>{itemName} </span>
-          Loan History
-        </h1>
-        {
-          loans.map((loan, i) => (
-            <HistoryCard
-              key={i}
-              image={loan.item_image}
-              loanee={loan.loanee_name}
-              startDate={dateFormat(loan.loan_start_date, 'dd/mm/yyyy')}
-              endDate={dateFormat(loan.intended_return_date, 'dd/mm/yyyy')}
-              returnDate={loan.actual_return_date && dateFormat(loan.actual_return_date, 'dd/mm/yyyy')}
-              status={loan.status}
-            />
-          ))
-        }
-      </div>
-    </div>
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> :
+        <div className="page-margin history">
+          <span className="back-arrow">
+            <AiOutlineArrowLeft size={40} color="var(--blue-color)" onClick={() => navigate(-1)} />
+          </span>
+          <div className='hist-container'>
+            <h1>
+              <span style={{color: 'var(--blue-color)'}}>{itemName} </span>
+              Loan History
+            </h1>
+            {
+              loans.map((loan, i) => (
+                <HistoryCard
+                  key={i}
+                  image={loan.item_image}
+                  loanee={loan.loanee_name}
+                  startDate={dateFormat(loan.loan_start_date, 'dd/mm/yyyy')}
+                  endDate={dateFormat(loan.intended_return_date, 'dd/mm/yyyy')}
+                  returnDate={loan.actual_return_date && dateFormat(loan.actual_return_date, 'dd/mm/yyyy')}
+                  status={loan.status}
+                />
+              ))
+            }
+          </div>
+        </div>
+      }
+    </>
   );
 };
 

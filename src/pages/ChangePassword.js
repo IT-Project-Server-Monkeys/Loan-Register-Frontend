@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
-import { TextBkgBox, TextButton, Submitting, NoAccess } from "../components";
+import { TextBkgBox, TextButton, Submitting, NoAccess, Header } from "../components";
 import API from '../utils/api';
 import bcrypt from 'bcryptjs-react';
 import { noAccessRedirect } from "../utils/helpers";
@@ -71,73 +71,75 @@ const ChangePassword = (props) => {
   }, [props.loggedIn, navigate])
 
   return (
-    <>{noAccess ? <NoAccess /> :
-      <div className={`change-password ${isMobile ? "mobile" : ""}`}>
-        <TextBkgBox className={isMobile ? "mobile" : ""}>
-          <h1>Change password</h1>
-          <form onSubmit={changePwd} onChange={confirmPwd}>
-            {safetyNote ? <h4 className={"warning"}>
-              Password must contain at least: a symbol, a number, a lowercase letter and an uppercase letter.
-            </h4> : null}
-            <table><tbody>
-              { isMobile
-                ?
-                  <>
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> :
+        <div className={`change-password ${isMobile ? "mobile" : ""}`}>
+          <TextBkgBox className={isMobile ? "mobile" : ""}>
+            <h1>Change password</h1>
+            <form onSubmit={changePwd} onChange={confirmPwd}>
+              {safetyNote ? <h4 className={"warning"}>
+                Password must contain at least: a symbol, a number, a lowercase letter and an uppercase letter.
+              </h4> : null}
+              <table><tbody>
+                { isMobile
+                  ?
+                    <>
+                      <tr>
+                        <td><h3 className="mobile">New password:</h3></td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input required type="password" id="newPwd" minLength={8}
+                            placeholder="Min. 8 characters" className={"input-box mobile"}
+                          />
+                        </td>
+                      </tr>
+                    </>
+                  :
                     <tr>
-                      <td><h3 className="mobile">New password:</h3></td>
-                    </tr>
-                    <tr>
+                      <td><h3>New password:</h3></td>
                       <td>
                         <input required type="password" id="newPwd" minLength={8}
-                          placeholder="Min. 8 characters" className={"input-box mobile"}
+                          placeholder="Min. 8 characters" className={"input-box"}
                         />
                       </td>
                     </tr>
-                  </>
-                :
-                  <tr>
-                    <td><h3>New password:</h3></td>
-                    <td>
-                      <input required type="password" id="newPwd" minLength={8}
-                        placeholder="Min. 8 characters" className={"input-box"}
-                      />
-                    </td>
-                  </tr>
-              }
+                }
 
-              { isMobile
-                ?
-                  <>
+                { isMobile
+                  ?
+                    <>
+                      <tr>
+                        <td><h3 className="mobile">Confirm password:</h3></td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <input required type="password" id="confirmPwd"
+                            placeholder="Re-type password" className={"input-box mobile"}
+                          />
+                        </td>
+                      </tr>
+                    </>
+                  :
                     <tr>
-                      <td><h3 className="mobile">Confirm password:</h3></td>
-                    </tr>
-                    <tr>
+                      <td><h3>Confirm password:</h3></td>
                       <td>
                         <input required type="password" id="confirmPwd"
-                          placeholder="Re-type password" className={"input-box mobile"}
+                          placeholder="Re-type password" className={"input-box"}
                         />
                       </td>
                     </tr>
-                  </>
-                :
-                  <tr>
-                    <td><h3>Confirm password:</h3></td>
-                    <td>
-                      <input required type="password" id="confirmPwd"
-                        placeholder="Re-type password" className={"input-box"}
-                      />
-                    </td>
-                  </tr>
-              }
-              <tr><td colspan="2" style={{textAlign: "center"}}>
-                <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>
-              </td></tr>
-            </tbody></table>
-          </form>
-        </TextBkgBox>
-        {submitting ? <Submitting /> : null}
-      </div>
-    }</>
+                }
+                <tr><td colspan="2" style={{textAlign: "center"}}>
+                  <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>
+                </td></tr>
+              </tbody></table>
+            </form>
+          </TextBkgBox>
+          {submitting ? <Submitting /> : null}
+        </div>
+      }
+    </>
   );
 };
 

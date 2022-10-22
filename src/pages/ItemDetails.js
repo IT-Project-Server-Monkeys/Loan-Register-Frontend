@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { LoanForm, TextButton, Loading, Submitting, NoAccess } from '../components';
+import { LoanForm, TextButton, Loading, Submitting, NoAccess, Header } from '../components';
 import { MdEdit } from 'react-icons/md';
 import { fetchItem, makeVisible } from "../utils/itemHelpers";
 import { createLoan, editLoan, fetchAllUsernames, fetchCurLoan, returnLoan } from "../utils/loanHelpers";
@@ -181,89 +181,91 @@ const ItemDetails = (props) => {
   }, [item, props.uid, navigate])
 
   return (
-    <>{noAccess ? <NoAccess /> :
-      <div className={"item-page"}>
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> :
+        <div className={"item-page"}>
 
-        {loaneeView ? <></> :
-          <Link to={`/item-details/${itemId}/edit`}>
-            <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
-              <MdEdit size={40} />
-            </button>
-            <ReactTooltip id='edit-item'>Edit item</ReactTooltip>
-          </Link>
-        }
-        <div className={"item-details"}>
+          {loaneeView ? <></> :
+            <Link to={`/item-details/${itemId}/edit`}>
+              <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
+                <MdEdit size={40} />
+              </button>
+              <ReactTooltip id='edit-item'>Edit item</ReactTooltip>
+            </Link>
+          }
+          <div className={"item-details"}>
 
-          <div className={"item-image"} style={{
-            backgroundImage: item.image_url !== "" && item.image_url != null
-              ? `url(${item.image_url})` : `url(${noImg})`
-          }} />
-          
-          <p className={"item-status"}>
-            <span>Status:</span> { item.loan_status != null ? item.loan_status : <Loading /> }
-          </p>
-          <div className={"item-info"}>
-            <table><tbody>
-              <tr>
-                <td>Name:</td><td>{item.item_name}</td>
-              </tr>
-              <tr>
-                <td>Category:</td><td>{item.category}</td>
-              </tr>
-              <tr>
-                <td>&nbsp;</td>
-              </tr>
-              { item.being_loaned ? <>
+            <div className={"item-image"} style={{
+              backgroundImage: item.image_url !== "" && item.image_url != null
+                ? `url(${item.image_url})` : `url(${noImg})`
+            }} />
+            
+            <p className={"item-status"}>
+              <span>Status:</span> { item.loan_status != null ? item.loan_status : <Loading /> }
+            </p>
+            <div className={"item-info"}>
+              <table><tbody>
                 <tr>
-                  <td>Loanee:</td><td>{item.loanee_name}</td>
+                  <td>Name:</td><td>{item.item_name}</td>
                 </tr>
                 <tr>
-                  <td>Date loaned:</td><td>{item.loan_start_date}</td>
-                </tr>
-                <tr>
-                  <td>Expected return:</td><td>{item.intended_return_date}</td>
+                  <td>Category:</td><td>{item.category}</td>
                 </tr>
                 <tr>
                   <td>&nbsp;</td>
                 </tr>
-              </> : null}
-              </tbody></table>
-            <p>
-              <span>Description:</span><br />
-              { typeof(item.description) != "string"
-                ? item.description
-                : item.description === ""
-                  ? "(No description.)"
-                  : item.description.split("\n").map((line, i) => {
-                    return <span className="item-desc" key={i}>{line}<br /></span>
-                  }) // react-string-replace didn't work :/
-              }
-            </p>
+                { item.being_loaned ? <>
+                  <tr>
+                    <td>Loanee:</td><td>{item.loanee_name}</td>
+                  </tr>
+                  <tr>
+                    <td>Date loaned:</td><td>{item.loan_start_date}</td>
+                  </tr>
+                  <tr>
+                    <td>Expected return:</td><td>{item.intended_return_date}</td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+                </> : null}
+                </tbody></table>
+              <p>
+                <span>Description:</span><br />
+                { typeof(item.description) != "string"
+                  ? item.description
+                  : item.description === ""
+                    ? "(No description.)"
+                    : item.description.split("\n").map((line, i) => {
+                      return <span className="item-desc" key={i}>{line}<br /></span>
+                    }) // react-string-replace didn't work :/
+                }
+              </p>
+            </div>
           </div>
-        </div>
 
-        {loaneeView ? <></> :
-          <div className={"btn-list"}>
-            <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
-            {item.being_loaned ? <>
-              <TextButton onClick={toggle}>Edit Loan</TextButton>
-              <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
-            </> :
-              <TextButton onClick={toggle}>Loan Item</TextButton>
-            }
-          </div>
-        }
-        <LoanForm modal={lnFormOpen} toggle={toggle} item={item} ownName={ownName}
-          newLoan={!item.being_loaned} loaneeValue={loaneeName}
-          onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
-          allLoanees={allLoanees} suggestedLoanees={suggestedLoanees}
-          changeLoanee={changeLoanee} selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
-          lnDateValue={loanDate} rtnDateValue={returnDate}
-          chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
-        />
-        {submitting ? <Submitting /> : null}
-      </div>
-    }</>
+          {loaneeView ? <></> :
+            <div className={"btn-list"}>
+              <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
+              {item.being_loaned ? <>
+                <TextButton onClick={toggle}>Edit Loan</TextButton>
+                <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
+              </> :
+                <TextButton onClick={toggle}>Loan Item</TextButton>
+              }
+            </div>
+          }
+          <LoanForm modal={lnFormOpen} toggle={toggle} item={item} ownName={ownName}
+            newLoan={!item.being_loaned} loaneeValue={loaneeName}
+            onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
+            allLoanees={allLoanees} suggestedLoanees={suggestedLoanees}
+            changeLoanee={changeLoanee} selectLoanee={selectLoanee} deleteLoanee={deleteLoanee}
+            lnDateValue={loanDate} rtnDateValue={returnDate}
+            chgLnDate={(d) => setLoanDate(d)} chgRtnDate={(d) => setReturnDate(d)}
+          />
+          {submitting ? <Submitting /> : null}
+        </div>
+      }
+    </>
   );
 };
 

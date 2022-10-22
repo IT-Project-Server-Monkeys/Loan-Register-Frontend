@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, InputDropdown, Submitting, Deletable, NoAccess } from '../components';
+import { TextButton, InputDropdown, Submitting, Deletable, NoAccess, Header } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import { noAccessRedirect } from "../utils/helpers";
@@ -136,76 +136,78 @@ const ItemEdit = (props) => {
   }, [item, props.uid, navigate, props.loggedIn])
 
   return (
-    <>{noAccess ? <NoAccess /> : 
-      <div className={"item-page"}>
-        <div className={"item-details"}>
-          <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
-            <label className={"add-img"}>
-              <RiImageAddFill size={40} />
-              <input
-                type="file" accept="image/*" 
-                name="newImg" style={{display: "none"}}
-                onChange={handleChgImg} 
-              />
-            </label>
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> : 
+        <div className={"item-page"}>
+          <div className={"item-details"}>
+            <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
+              <label className={"add-img"}>
+                <RiImageAddFill size={40} />
+                <input
+                  type="file" accept="image/*" 
+                  name="newImg" style={{display: "none"}}
+                  onChange={handleChgImg} 
+                />
+              </label>
+            </div>
+            
+            <div className={"item-info"}>
+              <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
+                <table><tbody>
+                  <tr>
+                    <td>Name:</td>
+                    <td>
+                      <input name="newName" className={"input-box"} type="text"
+                        value={newName} onChange={e => setNewName(e.target.value.slice(0, 36))}
+                        placeholder="Enter name..." required
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Category:</td>
+                    <td>
+                      <InputDropdown dropdownOpen={categOpen} toggle={categShow}
+                        name="newCateg" placeholder="Enter category..."
+                        value={newCateg} changeOption={handleChgCg} required
+                      >
+                        {categList.map((c) => {
+                          return <Deletable askRm
+                            field="category" key={`opt-${c}`}
+                            selectOption={(e) => {categShow(); handleSelCg(e)}}
+                            deleteOption={handleDelCg} canDel={delableCg.includes(c)}
+                            hideOption={(categ) => setCategList(
+                                (prev) => prev.filter((c) => c !== categ)
+                              )} >
+                            {c}
+                          </Deletable>
+                        })}
+                      </InputDropdown>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+                  </tbody></table>
+                <p><span>Description:</span><br />
+                  <textarea name="newDesc" style={{width: "-webkit-fill-available"}}
+                    value={newDesc} onChange={e => setNewDesc(e.target.value)}
+                    placeholder="(Optional) Enter description..." />
+                </p>
+              </form>
+            </div>
+          </div>
+          <h4 className="warning">{warning}</h4>
+          <div className={"btn-list"}>
+            <Link to={`/item-details/${itemId}`}>
+              <TextButton altStyle>Cancel</TextButton>
+            </Link>
+            <TextButton form="editItem" type="submit">Save</TextButton>
           </div>
           
-          <div className={"item-info"}>
-            <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
-              <table><tbody>
-                <tr>
-                  <td>Name:</td>
-                  <td>
-                    <input name="newName" className={"input-box"} type="text"
-                      value={newName} onChange={e => setNewName(e.target.value.slice(0, 36))}
-                      placeholder="Enter name..." required
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>Category:</td>
-                  <td>
-                    <InputDropdown dropdownOpen={categOpen} toggle={categShow}
-                      name="newCateg" placeholder="Enter category..."
-                      value={newCateg} changeOption={handleChgCg} required
-                    >
-                      {categList.map((c) => {
-                        return <Deletable askRm
-                          field="category" key={`opt-${c}`}
-                          selectOption={(e) => {categShow(); handleSelCg(e)}}
-                          deleteOption={handleDelCg} canDel={delableCg.includes(c)}
-                          hideOption={(categ) => setCategList(
-                              (prev) => prev.filter((c) => c !== categ)
-                            )} >
-                          {c}
-                        </Deletable>
-                      })}
-                    </InputDropdown>
-                  </td>
-                </tr>
-                <tr>
-                  <td>&nbsp;</td>
-                </tr>
-                </tbody></table>
-              <p><span>Description:</span><br />
-                <textarea name="newDesc" style={{width: "-webkit-fill-available"}}
-                  value={newDesc} onChange={e => setNewDesc(e.target.value)}
-                  placeholder="(Optional) Enter description..." />
-              </p>
-            </form>
-          </div>
+          {submitting ? <Submitting /> : null}
         </div>
-        <h4 className="warning">{warning}</h4>
-        <div className={"btn-list"}>
-          <Link to={`/item-details/${itemId}`}>
-            <TextButton altStyle>Cancel</TextButton>
-          </Link>
-          <TextButton form="editItem" type="submit">Save</TextButton>
-        </div>
-        
-        {submitting ? <Submitting /> : null}
-      </div>
-    }</>
+      }
+    </>
   );
 };
 

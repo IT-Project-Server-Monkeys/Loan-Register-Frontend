@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Stats.scss'
 import { useNavigate } from 'react-router-dom';
-import { ChartBox, NoAccess } from '../components';
+import { ChartBox, Header, NoAccess } from '../components';
 import { noAccessRedirect, noCaseCmp } from '../utils/helpers';
 import Plot from 'react-plotly.js';
 import { fetchUserItems } from '../utils/itemHelpers';
@@ -156,36 +156,38 @@ const Stats = (props) => {
   }, [allLoans])
 
   return (
-    <>{noAccess ? <NoAccess /> :
-      <div className={"stats-page"}>
-        <h1>Statistics</h1>
-        <ChartBox style={{gridArea: "ch1"}}>
-          <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-            data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
-          />
-        </ChartBox>
-        <ChartBox style={{gridArea: "ch2"}}>
-          <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-            data={[{...pieData, labels: ["Returned loans", "Unreturned loans"], values: loanVals}]}
-          />
-        </ChartBox>
-        <ChartBox style={{gridArea: "ch3"}}>
-          <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-            data={[{...pieData, labels: ["Timely loans", "Late loans"], values: rtnLnVals}]}
-          />
-        </ChartBox>
-        <div className="bar-box">
-          <Plot className="bar-plot"
-            data={[{...barData, ...freqItems}]}
-            layout={barLayout} useResizeHandler={true}
-          />
-          <Plot className="bar-plot"
-            data={[{...barData, ...freqLoanees}]}
-            layout={barLayout} useResizeHandler={true}
-          />
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> :
+        <div className={"stats-page"}>
+          <h1>Statistics</h1>
+          <ChartBox style={{gridArea: "ch1"}}>
+            <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
+              data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
+            />
+          </ChartBox>
+          <ChartBox style={{gridArea: "ch2"}}>
+            <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
+              data={[{...pieData, labels: ["Returned loans", "Unreturned loans"], values: loanVals}]}
+            />
+          </ChartBox>
+          <ChartBox style={{gridArea: "ch3"}}>
+            <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
+              data={[{...pieData, labels: ["Timely loans", "Late loans"], values: rtnLnVals}]}
+            />
+          </ChartBox>
+          <div className="bar-box">
+            <Plot className="bar-plot"
+              data={[{...barData, ...freqItems}]}
+              layout={barLayout} useResizeHandler={true}
+            />
+            <Plot className="bar-plot"
+              data={[{...barData, ...freqLoanees}]}
+              layout={barLayout} useResizeHandler={true}
+            />
+          </div>
         </div>
-      </div>
-    }</>
+      }
+    </>
   );
 };
 

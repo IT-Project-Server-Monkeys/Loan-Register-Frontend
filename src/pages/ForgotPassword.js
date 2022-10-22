@@ -1,6 +1,6 @@
 import React from 'react';
 import "../styles/ForgotPassword.scss";
-import { NoAccess, TextBkgBox, TextButton } from '../components';
+import { Header, NoAccess, TextBkgBox, TextButton } from '../components';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { noAccessRedirect } from '../utils/helpers';
@@ -30,25 +30,27 @@ const ForgotPassword = (props) => {
   };
 
   return (
-    <>{noAccess ? <NoAccess /> :
-      <div className={"forgot-pwd"}>
-        <div className={"background"}>
-          <TextBkgBox>
-            <div className="h1">
-              Forgot Password
-            </div>
-            <h4 className={errMsg ? "warning" : "offscreen"} aria-live="assertive">{errMsg}</h4>
-            <div className={"inline-flex"}>
-              <div className="h3">
-                Email:
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> :
+        <div className={"forgot-pwd"}>
+          <div className={"background"}>
+            <TextBkgBox>
+              <div className="h1">
+                Forgot Password
               </div>
-              <input type="text" placeholder="Enter email" className={"input-box"} id="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
-            </div>
-            <TextButton onClick={resetPassword} className={"button"}>Reset Password</TextButton>
-          </TextBkgBox>
+              <h4 className={errMsg ? "warning" : "offscreen"} aria-live="assertive">{errMsg}</h4>
+              <div className={"inline-flex"}>
+                <div className="h3">
+                  Email:
+                </div>
+                <input type="text" placeholder="Enter email" className={"input-box"} id="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
+              </div>
+              <TextButton onClick={resetPassword} className={"button"}>Reset Password</TextButton>
+            </TextBkgBox>
+          </div>
         </div>
-      </div>
-    }</>
+      }
+    </>
   );
 };
 

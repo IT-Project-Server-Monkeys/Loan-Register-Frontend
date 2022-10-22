@@ -3,34 +3,35 @@ import { useMediaQuery } from "react-responsive";
 import "../styles/Header.scss";
 import { GiHamburgerMenu } from "react-icons/gi";
 import logo from "../images/logo.svg";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = (props) => {
   // check for mobile view
   const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
   const logOut = () => {
-    window.history.replaceState(null, document.title);
+    if (props.onLogout == null) return;
     props.onLogout();
   }
 
   // individual nav link component, consisting of button with href
   const NavLink = (navProps) => {
+    const location = useLocation();
 
     // set component inline style to linkStyle (default value null)
     // upon first render, if link page is current page, set linkStyle to active style 
     const [linkStyle, setLinkStyle] = useState(null);
     useEffect(() => {
-      let curPath = window.location.pathname.split("/")[1];
-      if (curPath && navProps.href.includes(curPath)) {
+      if (location.pathname && navProps.href === location.pathname) {
         setLinkStyle({backgroundColor: "var(--blue-color)", color: "white"});
       }
-    }, [navProps]);
+    }, [navProps, location.pathname]);
 
     return (
-      <a href={navProps.href}>
+      <Link to={navProps.href}>
         <button style={linkStyle} className="navlink" onClick={navProps.onClick} >
           {navProps.children}
         </button>
-      </a>
+      </Link>
     );
   }
 
