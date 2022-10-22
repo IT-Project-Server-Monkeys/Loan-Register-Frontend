@@ -62,8 +62,9 @@ const createLoan = (input, onSuccess, onFailure) => {
   let formData = { ...input };
 
   const today = new Date();
-  const dateDiff = today - new Date(Date.parse(formData.intended_return_date));
-  if (dateDiff > 0) formData.status = "Overdue";
+  const rtnDate = new Date(Date.parse(formData.intended_return_date + "T00:00:00Z"));
+  const dateDiff = today - rtnDate;
+  if (dateDiff > 86400000) formData.status = "Overdue";
   else formData.status = "On Loan";
 
   saveLoan(formData, true, onSuccess, onFailure);
@@ -75,8 +76,9 @@ const editLoan = (input, onSuccess, onFailure) => {
   let formData = { ...input };
   
   const today = new Date();
-  const dateDiff = today - new Date(Date.parse(formData.intended_return_date));
-  if (dateDiff > 0) formData.status = "Overdue";
+  const rtnDate = new Date(Date.parse(formData.intended_return_date + "T00:00:00Z"));
+  const dateDiff = today - rtnDate;
+  if (dateDiff > 86400000) formData.status = "Overdue";
   else formData.status = "On Loan";
 
   saveLoan(formData, false, onSuccess, onFailure)
@@ -84,13 +86,14 @@ const editLoan = (input, onSuccess, onFailure) => {
 
 // given an existing loan return, complete form data
 const returnLoan = async (item, onSuccess, onFailure) => {
-  const actual_return_date = new Date();
-  const dateDiff = actual_return_date - new Date(toISO(item.intended_return_date));
+  const today = new Date();
+  const rtnDate = new Date(toISO(item.intended_return_date) + "T00:00:00Z");
+  const dateDiff = today - rtnDate;
 
-  let formData = { _id: item.loan_id, actual_return_date: actual_return_date };
+  let formData = { _id: item.loan_id, actual_return_date: today };
 
-  if (Math.abs(dateDiff) < 86400000) formData.status = "On Time Return";
-  else if (dateDiff < 0) formData.status = "Early Return";
+  if (dateDiff < 0) formData.status = "Early Return";
+  else if (dateDiff < 86400000) formData.status = "On Time Return";
   else formData.status = "Late Return";
 
   saveLoan(formData, false, onSuccess, onFailure);
