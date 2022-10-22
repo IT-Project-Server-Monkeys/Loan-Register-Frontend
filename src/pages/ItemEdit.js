@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { TextButton, InputDropdown, Submitting, Deletable, NoAccess, Header } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
@@ -11,12 +11,12 @@ const ItemEdit = (props) => {
   // page navigation
   const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
-  // const location = useLocation();
+  const location = useLocation();
   const [submitting, setSubmitting] = useState(false);
   
   // original item information
   const itemId = useParams().id;
-  const dbData = /*location.state ? location.state.item :*/ null;
+  const dbData = location.state ? location.state.item : null;
   const [item, setItem] = useState({
     item_name: "Loading...",
     category: "Loading...",
@@ -108,7 +108,6 @@ const ItemEdit = (props) => {
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       setItem(dbData);
-      navigate(`/item-details/${itemId}/edit`, {state: null});
     }
   }, [props.loggedIn, itemId, dbData, navigate]);
 
@@ -198,7 +197,9 @@ const ItemEdit = (props) => {
           </div>
           <h4 className="warning">{warning}</h4>
           <div className={"btn-list"}>
-            <Link to={`/item-details/${itemId}`}>
+            <Link to={`/item-details/${itemId}`}
+              state={{item: dbData}}
+            >
               <TextButton altStyle>Cancel</TextButton>
             </Link>
             <TextButton form="editItem" type="submit">Save</TextButton>

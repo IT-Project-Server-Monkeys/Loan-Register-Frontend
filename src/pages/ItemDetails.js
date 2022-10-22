@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate/*, useLocation*/, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import '../styles/ItemPage.scss'
 import { LoanForm, TextButton, Loading, Submitting, NoAccess, Header } from '../components';
 import { MdEdit } from 'react-icons/md';
@@ -16,15 +16,17 @@ const ItemDetails = (props) => {
   const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
   const [loaneeView, setLoaneeView] = useState(true);
-  // const location = useLocation()
+
+  // eslint-disable-next-line
+  const location = useLocation();
   
   // item information
   const itemId = useParams().id;
-  const dbData = null;
-  // const dbData = location.state ? location.state.item : null;
+  const dbData = /*location.state ? location.state.item :*/ null;
+
   const [item, setItem] = useState({
     item_name: <Loading />, image_url: "",
-    category: <Loading />, description: <Loading />,
+    category: <Loading />, description: <Loading />, loan_status: <Loading />,
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
   });
@@ -144,9 +146,8 @@ const ItemDetails = (props) => {
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       console.log(dbData);
-      setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
+      setItem( {...dbData, loan_id: null, loan_status: <Loading />, loanee_name: <Loading />,
         loan_start_date: <Loading />, intended_return_date: <Loading /> });
-        navigate(`/item-details/${itemId}`, {state: null});
     }
   }, [props.loggedIn, itemId, dbData, navigate]);
 
@@ -186,7 +187,7 @@ const ItemDetails = (props) => {
         <div className={"item-page"}>
 
           {loaneeView ? <></> :
-            <Link to={`/item-details/${itemId}/edit`}>
+            <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
               <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
                 <MdEdit size={40} />
               </button>
