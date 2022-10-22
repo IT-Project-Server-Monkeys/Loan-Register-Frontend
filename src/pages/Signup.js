@@ -176,6 +176,7 @@ const Signup = (props) => {
                 </form>
               </TextBkgBox>
             </div>
+            {submitting ? <Submitting /> : null}
           </div>
         }
       </>

@@ -116,6 +116,7 @@ const Login = (props) => {
     
               </TextBkgBox>
             </div>
+            {submitting ? <Submitting /> : null}
           </div>
         }
       </>

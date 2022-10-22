@@ -1,0 +1,42 @@
+.not-found{
+    min-height: var(--main-height);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    .content {
+        text-align: center;
+
+        .text-btn-default {
+            height: fit-content;
+            width: fit-content;
+            line-height: 1.25;
+            padding: 1rem 1.25rem;
+        }
+
+        h1 {
+            font-size: 256px;
+            color: var(--blue-color);
+        }
+    
+        p {
+            font-size: 64px;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 144px;
+            }
+
+            p {
+                font-size: 36px;
+            }
+
+            .text-btn-default {
+                width: 70%;
+            }
+        }
+    }
+}

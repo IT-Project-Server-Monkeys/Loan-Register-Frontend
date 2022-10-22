@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import { Footer } from './components';
-import { Home, Login, Signup, Dashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword, ForgotPassword } from './pages';
+import { Home, Login, Signup, Dashboard, AddItem, ItemDetails, ItemEdit, ItemHistory, Stats, Account, ChangePassword, ForgotPassword, NotFound } from './pages';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/Global.scss'
@@ -56,6 +56,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword loggedIn={loggedIn} onLogout={logoutHandler} />} />
             <Route path="/account" element={<Account uid={uid} loggedIn={loggedIn} onLogout={logoutHandler} />} />
             <Route path="/change-password" element={<ChangePassword uid={uid} loggedIn={loggedIn} onLogout={logoutHandler} />} />
+            <Route path="*" element={<NotFound loggedIn={loggedIn} onLogout={logoutHandler} />} />
           </Routes>
         </Router>
       </main>
