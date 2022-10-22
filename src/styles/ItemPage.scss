@@ -102,6 +102,10 @@ main .item-page {
   
       .input-box, .input-dropdown {
         width: 285px;
+
+        input {
+          width: 250px;
+        }
         
         @media (max-width: 500px) {
           width: 175px;
