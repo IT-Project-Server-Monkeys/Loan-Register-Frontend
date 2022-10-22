@@ -9,11 +9,13 @@ import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
 import ReactTooltip from "react-tooltip";
+import API from "../utils/api";
 
 const ItemDetails = (props) => {
   // page navigation
   const navigate = useNavigate();
   const [noAccess, setNoAccess] = useState(false);
+  const [loaneeView, setLoaneeView] = useState(true);
   // const location = useLocation()
   
   // item information
@@ -26,6 +28,7 @@ const ItemDetails = (props) => {
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
   });
+  const [ownName, setOwnName] = useState("");
 
   // loan form
   const [lnFormOpen, setLnFormOpen] = useState(false);
@@ -106,10 +109,34 @@ const ItemDetails = (props) => {
   // get all loanees & set loanee suggest list for loan form
   useEffect(() => {
     if (props.loggedIn !== true) return;
+
+    const fetchUser = async () => {
+      let fetchedData = null;
+      if (props.uid == null) return;
+
+      await API.get(`/users?id=${props.uid}`)
+      .then((res) => fetchedData = res.data)
+      .catch((err) => console.log(err));
+
+      if (fetchedData == null) fetchedData = [{
+        _id: props.uid,
+        display_name: ""
+      }];
+      setOwnName(fetchedData.display_name);
+    };
+    fetchUser();
+
     setSubmitting(false);
     fetchAllUsernames(setAllLoanees);
-  }, [props.loggedIn]);
-  useEffect(() => setSuggestedLoanees(Object.keys(allLoanees).sort(noCaseCmp)), [allLoanees]);
+  }, [props]);
+
+  useEffect(() => {
+    if (ownName === "" || allLoanees === {}) return;
+
+    var loanees = allLoanees;
+    delete loanees[ownName];
+    setSuggestedLoanees(Object.keys(loanees).sort(noCaseCmp));
+  }, [ownName, allLoanees]);
 
   // get and show item data
   useEffect(() => {
@@ -130,13 +157,12 @@ const ItemDetails = (props) => {
     }
   }, [props.loggedIn, navigate])
 
-  // if user does not own item, redirect them away from the page
+  // if user does not own item, disable edits & history
   // else, fetch any loan data and pre-enter in loan form
   useEffect (() => {
     if (item.item_owner == null) return;
-    if (props.uid !== item.item_owner) {
-      noAccessRedirect("/dashboard", navigate, setNoAccess);
-      return;
+    if (props.uid === item.item_owner) {
+      setLoaneeView(false);
     }
 
     if (item.being_loaned) {
@@ -158,13 +184,14 @@ const ItemDetails = (props) => {
     <>{noAccess ? <NoAccess /> :
       <div className={"item-page"}>
 
-        <Link to={`/item-details/${itemId}/edit`}>
-          <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
-            <MdEdit size={40} />
-          </button>
-          <ReactTooltip id='edit-item'>Edit item</ReactTooltip>
-        </Link>
-        
+        {loaneeView ? <></> :
+          <Link to={`/item-details/${itemId}/edit`}>
+            <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
+              <MdEdit size={40} />
+            </button>
+            <ReactTooltip id='edit-item'>Edit item</ReactTooltip>
+          </Link>
+        }
         <div className={"item-details"}>
 
           <div className={"item-image"} style={{
@@ -215,17 +242,18 @@ const ItemDetails = (props) => {
           </div>
         </div>
 
-        <div className={"btn-list"}>
-          <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
-          {item.being_loaned ? <>
-            <TextButton onClick={toggle}>Edit Loan</TextButton>
-            <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
-          </> :
-            <TextButton onClick={toggle}>Loan Item</TextButton>
-          }
-        </div>
-
-        <LoanForm modal={lnFormOpen} toggle={toggle} item={item}
+        {loaneeView ? <></> :
+          <div className={"btn-list"}>
+            <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
+            {item.being_loaned ? <>
+              <TextButton onClick={toggle}>Edit Loan</TextButton>
+              <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
+            </> :
+              <TextButton onClick={toggle}>Loan Item</TextButton>
+            }
+          </div>
+        }
+        <LoanForm modal={lnFormOpen} toggle={toggle} item={item} ownName={ownName}
           newLoan={!item.being_loaned} loaneeValue={loaneeName}
           onSubmit={item.being_loaned ? handleEdtLn : handleCrtLn}
           allLoanees={allLoanees} suggestedLoanees={suggestedLoanees}

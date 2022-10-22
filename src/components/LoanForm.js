@@ -7,7 +7,7 @@ import { useMediaQuery } from "react-responsive";
 
 const LoanForm = (props) => {
   const [letSubmit, setLetSubmit] = useState(false);
-  const [nameWarn, setNameWarn] = useState(false);
+  const [nameWarn, setNameWarn] = useState("");
   const [dateWarn, setDateWarn] = useState(false);
   const [loaneeOpen, setLoaneeOpen] = useState(false);
 
@@ -30,7 +30,13 @@ const LoanForm = (props) => {
       lneName !== "" && (lneName in props.allLoanees) &&
       lnDate !== "" && rtnDate !== "" && toISO(lnDate) <= toISO(rtnDate)
     );
-    setNameWarn(lneName !== "" && !(lneName in props.allLoanees));
+
+    if (lneName !== "" && !(lneName in props.allLoanees)) {
+      if (lneName === props.ownName) setNameWarn("You cannot loan to yourself!");
+      else setNameWarn(`User "${lneName}" does not exist.`);
+    }
+    else setNameWarn("");
+
     setDateWarn(lnDate !== "" && rtnDate !== "" && !(toISO(lnDate) <= toISO(rtnDate)))
   }
 
@@ -52,7 +58,7 @@ const LoanForm = (props) => {
   return (
     <>
       <Modal wrapClassName={"loan-form"} centered isOpen={props.modal}
-        toggle={() => {props.toggle(); setNameWarn(false); setDateWarn(false);}}
+        toggle={() => {props.toggle(); setNameWarn(""); setDateWarn(false);}}
       >
         <TextBkgBox className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
           <h1>{props.newLoan ? "Loan Item" : "Edit Loan" }</h1>
@@ -81,7 +87,7 @@ const LoanForm = (props) => {
                       </td>
                     </tr>
 
-                    {nameWarn ? <tr><td><h4 className="warning">User "{props.loaneeValue}" does not exist.</h4></td></tr>: null}
+                    {nameWarn !== "" ? <tr><td><h4 className="warning">{nameWarn}</h4></td></tr>: null}
 
                     <tr><td><h3>Loan date:</h3></td></tr>
                     <tr>
@@ -141,7 +147,7 @@ const LoanForm = (props) => {
                         </InputDropdown>
                       </td>
                     </tr>
-                    {nameWarn ? <tr><td colSpan={2}><h4 className="warning">User "{props.loaneeValue}" does not exist.</h4></td></tr>: null}
+                    {nameWarn !== "" ? <tr><td colSpan={2}><h4 className="warning">{nameWarn}</h4></td></tr>: null}
 
                     <tr>
                       <td><h3>Loan date:</h3></td>
