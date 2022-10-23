@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
-import { Row, Col, Card, CardBody, CardTitle, CardSubtitle } from 'reactstrap';
+import { Row, Col, Card, CardBody, CardTitle} from 'reactstrap';
 import '../styles/ItemHistory.scss';
 import API from '../utils/api';
 import dateFormat from 'dateformat';
@@ -17,8 +17,6 @@ const ItemHistory = (props) => {
   const [noAccess, setNoAccess] = useState(false);
 
   const [loans, setLoans] = useState([]);
-
-  const isMobileView = useMediaQuery({ query: '(max-width: 576px)' })
 
   const itemId = location.state ? location.state.itemId : '';
   const itemName = location.state ? location.state.itemName : '';
