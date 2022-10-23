@@ -4,13 +4,14 @@ import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
 import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'react-icons/ai';
 import { TbLayoutGrid } from 'react-icons/tb';
-import { MdQueryStats } from 'react-icons/md';
+import { MdQueryStats, MdOutlineKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { Header, ItemCard, NoAccess } from '../components';
 import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { userViewSwitch, compArr, noAccessRedirect } from '../utils/helpers';
 import { LOANER } from '../utils/constants';
 import ReactTooltip from 'react-tooltip';
+import { useMediaQuery } from 'react-responsive'
 
 /* constants */
 const STATUS = "status";
@@ -91,6 +92,14 @@ const LoanerDashboard = (props) => {
     loanerItems: [],
     loaneeItems: []
   });  
+
+  const [filterExpanded, setFilterExpanded] = useState(false);
+
+
+  const isSmallScreen = useMediaQuery({ query: '(max-width: 996px)' })
+  const isMobileView = useMediaQuery({ query: '(max-width: 576px)' })
+  const breakNav = useMediaQuery({ query: '(max-width: 920px)' })
+
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
@@ -193,9 +202,9 @@ const LoanerDashboard = (props) => {
 
     return items.map((item, i) => (
       <Col 
-        lg={gridView ? {size: 4, offset: 0} : 12} 
-        md={gridView ? {size: 6, offset: 0} : 12} 
-        xs={gridView ? {size: 8, offset: 2} : 12} 
+        xl={gridView ? {size: 4, offset: 0} : 12} 
+        lg={gridView ? {size: 6, offset: 0} : 12} 
+        md={gridView ? {size: 9, offset: 1} : 12} 
         key={i}
       >
         <Link 
@@ -518,124 +527,246 @@ const LoanerDashboard = (props) => {
   // console.log('filters', filters)
   // console.log('loaner results', loanerFilters.results)
 
+  const FilterSection = () => {
+    return (
+      <>
+        <h4 style={{ marginBottom: '2rem' }}>
+          View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
+        </h4>
+        {
+          userView === LOANER &&
+          <>
+            <h4>Item Display</h4>
+            <MultiSelect 
+              // placeholder='Show all items'
+              singleSelect={true} 
+              options={displayOptions} 
+              onChange={val => handleDisplay(val)}
+              defaultValue={VISIBLE}
+            />
+          </>
+          
+        }
+        
+        <h4 style={{ marginTop: '1rem' }}>Sort by</h4>
+        <MultiSelect 
+          placeholder="Loan Date" 
+          singleSelect={true} 
+          options={dateOptions} 
+          onChange={handleSortByDate}
+        />
+        <h4 style={{ marginTop: '1rem' }}>Filter by</h4>
+        <MultiSelect 
+          placeholder="Status" 
+          options={statusOptions} 
+          onChange={val => handleFilters(val, STATUS)} 
+        />
+        <MultiSelect 
+          placeholder="Category" 
+          options={
+            userView === LOANER ? 
+            renderOptions(loanerFilters.categoryOptions) 
+            : renderOptions(loaneeFilters.categoryOptions)
+          } 
+          onChange={val => handleFilters(val, CATEGORY)}
+        />
+        <MultiSelect 
+          placeholder={userView === LOANER ? "Loanee" : "loaner" }
+          options={
+            userView === LOANER ? 
+            renderOptions(loanerFilters.loaneeOptions) 
+            : renderOptions(loaneeFilters.loanerOptions)
+          } 
+          onChange={val => handleFilters(val, USER)}
+        />
+        <Button onClick={applyFilters}>Apply Filters</Button>
+      </>
+    )
+  }
+
+  const DashboardNav = () => {
+    return (
+      <div className="dashboard-nav">
+        <div style={{ width: '40%', maxWidth: '25rem' }}>
+          <span 
+            className="icon-blue" 
+            data-for={gridView ? 'item-view' : 'item-view'} 
+            data-tip 
+            onClick={() => setGridView(!gridView)}
+          >
+            {
+              gridView ? 
+                <AiOutlineUnorderedList size={30} /> 
+              : 
+                <TbLayoutGrid size={30} />
+            }
+          </span>
+          <ReactTooltip id='item-view'>
+            <span>{gridView ? 'List view' : 'Grid view'}</span>
+          </ReactTooltip>
+          <div style={{marginLeft: '1rem', marginRight: '1rem'}}>
+            <input type="search" onChange={handleSearch} placeholder="Search for items" />
+          </div>
+          <Link to="/add-item">
+            <span className="icon-plus" data-for='add-item' data-tip='Add item'>
+              <AiFillPlusCircle size={45} color="#0073e6" />
+            </span>
+          </Link>
+          <ReactTooltip id='add-item' />
+          
+        </div>
+        <div style={{ width: '12%', maxWidth: '8rem' }}>
+          <Link to="/stats" style={{display: 'flex'}}>
+            <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
+              <MdQueryStats size={30} />
+            </span>
+          </Link>
+          <ReactTooltip id='view-stats' />
+          <span style={{marginLeft: '1rem'}} className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
+            <AiOutlineUserSwitch size={30} />
+          </span>
+          <ReactTooltip id='user-view'>
+            <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
+          </ReactTooltip>
+        </div>
+      </div>
+    )
+  }
+
+  const wrapNav = () => {
+    return breakNav === true && isMobileView === false;
+  }
+
+  const MobileDashboardNav = () => {
+    return (
+      <div className="dashboard-nav" style={{width: '100%'}}>
+        <Row style={{width: '100%'}}>
+          <Col style={{
+            display: 'flex', 
+            justifyContent: isMobileView || wrapNav() ? 'center' : 'start',
+            paddingBottom: isMobileView || wrapNav() ? '0.5rem' : '0',
+            paddingLeft: isMobileView || wrapNav() ? 'auto' : '2rem'
+          }}>
+            <input type="search" onChange={handleSearch} placeholder="Search for items" />
+          </Col>
+          <Col style={{maxWidth: '250px', margin: 'auto'}}>
+            {/* <div>
+              <span 
+                className="icon-blue" 
+                data-for={gridView ? 'item-view' : 'item-view'} 
+                data-tip 
+                onClick={() => setGridView(!gridView)}
+              >
+                {
+                  gridView ? 
+                    <AiOutlineUnorderedList size={30} /> 
+                  : 
+                    <TbLayoutGrid size={30} />
+                }
+              </span>
+              <ReactTooltip id='item-view'>
+                <span>{gridView ? 'List view' : 'Grid view'}</span>
+              </ReactTooltip>
+            </div> */}
+            <div>
+              <Link to="/add-item">
+                <span className="icon-plus" data-for='add-item' data-tip='Add item'>
+                  <AiFillPlusCircle size={45} color="#0073e6" />
+                </span>
+              </Link>
+              <ReactTooltip id='add-item' />
+            </div>
+            <div>
+              <Link to="/stats" style={{display: 'flex'}}>
+                <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
+                  <MdQueryStats size={30} />
+                </span>
+              </Link>
+              <ReactTooltip id='view-stats' />
+            </div>
+            <div>
+              <span className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
+                <AiOutlineUserSwitch size={30} />
+              </span>
+              <ReactTooltip id='user-view'>
+                <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
+              </ReactTooltip>
+            </div>
+          </Col>
+        </Row>
+      </div>
+    )
+  }
+
+  const CardsRenderer = () => {
+    return (
+      loading ?
+        <div className="m-5" style={{display: 'flex'}}>
+          <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
+          <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
+        </div> 
+      : 
+        renderItems(userView)
+    )
+  }
+
  
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess ? <NoAccess /> :       
         <div className="page-margin dashboard">
-          <Row>
-            <Col className="bg-light-blue filter-container">
-              <h4 style={{ marginBottom: '2rem' }}>
-                View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
-              </h4>
-              {
-                userView === LOANER &&
-                <>
-                  <h4>Item Display</h4>
-                  <MultiSelect 
-                    // placeholder='Show all items'
-                    singleSelect={true} 
-                    options={displayOptions} 
-                    onChange={val => handleDisplay(val)}
-                    defaultValue={VISIBLE}
-                  />
-                </>
-                
-              }
-              
-              <h4 style={{ marginTop: '1rem' }}>Sort by</h4>
-              <MultiSelect 
-                placeholder="Loan Date" 
-                singleSelect={true} 
-                options={dateOptions} 
-                onChange={handleSortByDate}
-              />
-              <h4 style={{ marginTop: '1rem' }}>Filter by</h4>
-              <MultiSelect 
-                placeholder="Status" 
-                options={statusOptions} 
-                onChange={val => handleFilters(val, STATUS)} 
-              />
-              <MultiSelect 
-                placeholder="Category" 
-                options={
-                  userView === LOANER ? 
-                  renderOptions(loanerFilters.categoryOptions) 
-                  : renderOptions(loaneeFilters.categoryOptions)
-                } 
-                onChange={val => handleFilters(val, CATEGORY)}
-              />
-              <MultiSelect 
-                placeholder={userView === LOANER ? "Loanee" : "loaner" }
-                options={
-                  userView === LOANER ? 
-                  renderOptions(loanerFilters.loaneeOptions) 
-                  : renderOptions(loaneeFilters.loanerOptions)
-                } 
-                onChange={val => handleFilters(val, USER)}
-              />
-              <Button onClick={applyFilters}>Apply Filters</Button>
-            </Col>
-            <Col md='8'>
-              <Row className="bg-light-blue" style={{ height: '5rem' }}>
-                <div className="dashboard-nav">
-                  <div style={{ width: '40%', maxWidth: '25rem' }}>
-                    <span 
-                      className="icon-blue" 
-                      data-for={gridView ? 'item-view' : 'item-view'} 
-                      data-tip 
-                      onClick={() => setGridView(!gridView)}
-                    >
-                      {
-                        gridView ? 
-                          <AiOutlineUnorderedList size={30} /> 
-                        : 
-                          <TbLayoutGrid size={30} />
-                      }
-                    </span>
-                    <ReactTooltip id='item-view'>
-                      <span>{gridView ? 'List view' : 'Grid view'}</span>
-                    </ReactTooltip>
-                    <div style={{marginLeft: '1rem', marginRight: '1rem'}}>
-                      <input type="search" onChange={handleSearch} placeholder="Search for items" />
-                    </div>
-                    <Link to="/add-item">
-                      <span className="icon-plus" data-for='add-item' data-tip='Add item'>
-                        <AiFillPlusCircle size={45} color="#0073e6" />
-                      </span>
-                    </Link>
-                    <ReactTooltip id='add-item' />
-                    
-                  </div>
-                  <div style={{ width: '12%', maxWidth: '8rem' }}>
-                    <Link to="/stats" style={{display: 'flex'}}>
-                      <span className="icon-blue" data-for='view-stats' data-tip='View statistics'>
-                        <MdQueryStats size={30} />
-                      </span>
-                    </Link>
-                    <ReactTooltip id='view-stats' />
-                    <span style={{marginLeft: '1rem'}} className="icon-blue" onClick={handleUserSwitch} data-for='user-view' data-tip >
-                      <AiOutlineUserSwitch size={30} />
-                    </span>
-                    <ReactTooltip id='user-view'>
-                      <span>{userView === LOANER ? 'View as loanee' : 'View as loaner'}</span>
-                    </ReactTooltip>
-                  </div>
+          {
+            isMobileView ?
+            <>
+              <div className="bg-light-blue" style={{marginBottom: '1rem'}}>
+                <MobileDashboardNav />
+              </div>
+              <div 
+                className="bg-light-blue filter-bar" 
+                onClick={()=>setFilterExpanded(!filterExpanded)}
+              >
+                {/* <h4>
+                  View as: <span style={{ color: 'var(--blue-color)' }}>{userView}</span>
+                </h4> */}
+                <div>
+                  <h4>Filter</h4>
+                  {
+                    filterExpanded ?
+                      <MdKeyboardArrowUp size={25} />
+                    : <MdOutlineKeyboardArrowDown size={25} />
+                  }
                 </div>
-                
-              </Row>
-              <Row>
-                {loading ?
-                  <div className="m-5" style={{display: 'flex'}}>
-                    <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
-                    <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching items...</h5>
-                  </div> 
-                : 
-                  renderItems(userView)
-                }
-              </Row>
-            </Col>
-          </Row>
+              </div>
+              {
+                filterExpanded &&
+                <div className="bg-light-blue filter-container">
+                  <FilterSection />
+                </div>
+              }
+              <div style={{width: '90%', margin: 'auto', marginTop: '1rem'}}>
+                <CardsRenderer />
+              </div>
+            </>
+            :          
+            <Row>
+              <Col lg='3' md='4' sm='5' className="bg-light-blue filter-container">
+                <FilterSection />
+              </Col> 
+              <Col lg={{size: 8, offset: 0}} md={{size: 7, offset: 1}} sm={{size: 6, offset: 1}}>
+                <Row className="bg-light-blue">
+                  {
+                    isSmallScreen ?
+                      <MobileDashboardNav />
+                    :
+                      <DashboardNav />
+                  }
+                </Row>
+                <Row>
+                  <CardsRenderer />
+                </Row>
+              </Col>
+            </Row>
+          }
         </div>
       }
     </>

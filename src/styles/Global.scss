@@ -33,6 +33,10 @@ main {
   width: 90%;
   margin: 0 auto;
   padding: 5rem 0;
+
+  @media screen and (max-width: 530px) {
+    padding: 2rem 0;
+  }
 }
 
 .icon-blue {
