@@ -15,6 +15,8 @@
     justify-content: space-between;
     width: 90%;
     margin: auto;
+    padding-top: 1rem; 
+    padding-bottom: 1rem; 
 
     div {
       display: flex;
@@ -22,6 +24,12 @@
       justify-content: space-between;
     }
 
+    @media screen and (max-width: 576px) {
+      justify-content: center;
+    }
+    @media screen and (max-width: 920px) and (min-width: 576px) {
+      justify-content: center;
+    }
   }
 
   .icon-plus {
@@ -44,6 +52,14 @@
     height: fit-content;
     margin-right: 4rem;
     max-width: 25rem;
+
+    @media screen and (max-width: 992px) {
+      margin-right: 0rem;
+    }
+
+    @media screen and (max-width: 576px) {
+      width: 100%;
+    }
   }
   
   .filter-box {
@@ -66,7 +82,16 @@
     }
   }
 
-
+  .filter-bar {
+    
+    padding: 0.5rem 2rem;
+    cursor: pointer;
+    div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
 
 }
 

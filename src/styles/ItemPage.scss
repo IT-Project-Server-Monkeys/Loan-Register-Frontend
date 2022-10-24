@@ -27,7 +27,7 @@ main .item-page {
       "img inf inf"
       "sta inf inf";
 
-    @media (max-width: 1080px) {
+    @media (max-width: 1180px) {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -42,6 +42,7 @@ main .item-page {
     }
 
     .item-image {
+      margin: auto;
       grid-area: img;
       position: relative;
       width: 300px;
@@ -52,6 +53,10 @@ main .item-page {
       background-position: center;
       background-repeat: no-repeat;
       background-size: cover;
+
+      @media (max-width: 1180px) {
+        width: min(300px, 100%);
+      }
 
       .add-img {
         position: absolute;
@@ -73,45 +78,58 @@ main .item-page {
       }
     }
 
-    .item-status /*, .big-img-warn*/ {
-      grid-area: sta;
-      // font-weight: bold;
-      width: 300px;
-      margin: 0;
-    }
-
     td:first-child, span:first-child {
       font-weight: bold;
     }
 
     td:nth-child(2), .item-desc {
+      width: -webkit-fill-available;
       overflow-wrap: anywhere;
+    }
+
+    .item-status , .big-img-warn {
+      grid-area: sta;
+      width: 300px;
+      margin: 0.5rem auto;
+    }
+
+    .big-img-warn {
+      font-size: 1.275rem;
     }
 
     .item-info {
       grid-area: inf;
 
+      tr {
+        width: 100%;
+      }
 
-      table {
-        td {
-          padding-right: 1.5rem;
-        }
+      td {
+        padding-right: 1.5rem;
       }
   
-      .input-box {
+      .input-box, .input-dropdown {
         width: 285px;
+
+        input {
+          width: 250px;
+        }
+        
+        @media (max-width: 500px) {
+          width: 175px;
+
+          input {
+            width: 140px;
+          }
+        }
       }
 
       textarea {
         resize: none;
-        width: -webkit-fill-available;
+        width: min(1000px, 100%);
         height: 240px;
         border-radius: 5px;
-        margin-top: 0.5rem;
-      }
-
-      .input-dropdown {
-        width: 285px;
+        margin: 0.5rem auto 0 auto;
       }
     }
   }

@@ -6,7 +6,7 @@ import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap
 const InputDropdown = (props) => {
 
   return (
-    <Dropdown className={"input-dropdown"} toggle={props.toggle}
+    <Dropdown className={`input-dropdown ${props.className != null ? props.className : ""}`} toggle={props.toggle}
       isOpen={props.dropdownOpen && props.children.length !== 0} direction="down">
       <DropdownToggle caret>
         <input onKeyDown={(e) => {if (e.key === "Enter") e.preventDefault()}}

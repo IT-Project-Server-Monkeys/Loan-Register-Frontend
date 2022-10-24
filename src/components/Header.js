@@ -1,36 +1,37 @@
-import React /*, { useEffect, useState }*/ from "react";
+import React, { useEffect, useState } /*, { useEffect, useState }*/ from "react";
 import { useMediaQuery } from "react-responsive";
 import "../styles/Header.scss";
 import { GiHamburgerMenu } from "react-icons/gi";
 import logo from "../images/logo.svg";
+import { Link, useLocation } from "react-router-dom";
 
 const Header = (props) => {
   // check for mobile view
   const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
   const logOut = () => {
-    window.history.replaceState(null, document.title);
+    if (props.onLogout == null) return;
     props.onLogout();
   }
 
   // individual nav link component, consisting of button with href
   const NavLink = (navProps) => {
+    const location = useLocation();
 
-    // // set component inline style to linkStyle (default value null)
-    // // upon first render, if link page is current page, set linkStyle to active style 
-    // const [linkStyle, setLinkStyle] = useState(null);
-    // useEffect(() => {
-    //   let curPath = window.location.pathname.split("/")[1];
-    //   if (curPath && navProps.href.includes(curPath)) {
-    //     setLinkStyle({backgroundColor: "var(--blue-color)", color: "white"});
-    //   }
-    // }, [navProps])
+    // set component inline style to linkStyle (default value null)
+    // upon first render, if link page is current page, set linkStyle to active style 
+    const [linkStyle, setLinkStyle] = useState(null);
+    useEffect(() => {
+      if (location.pathname && navProps.href === location.pathname) {
+        setLinkStyle({backgroundColor: "var(--blue-color)", color: "white"});
+      }
+    }, [navProps, location.pathname]);
 
     return (
-      <a href={navProps.href}>
-        <button /*style={linkStyle}*/ className="navlink" onClick={navProps.onClick} >
+      <Link to={navProps.href}>
+        <button style={linkStyle} className="navlink" onClick={navProps.onClick} >
           {navProps.children}
         </button>
-      </a>
+      </Link>
     );
   }
 
@@ -78,7 +79,7 @@ const Header = (props) => {
   // return Header component, consisting of clickable logo + nav
   return (
     <header className={"top-header"}>
-      <a href="/" style={{margin: "0.75rem 0 0.75rem 0"}}>
+      <a href={props.loggedIn ? "/dashboard" : "/"} style={{margin: "0.75rem 0 0.75rem 0"}}>
         <img
           className="logo"
           src={logo}

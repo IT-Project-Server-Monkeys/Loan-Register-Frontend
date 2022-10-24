@@ -3,7 +3,6 @@
   border-radius: 5px;
   
   .dropdown-toggle {
-    width: 285px;
     height: 42px;
     font-size: 25px;
     padding: 0;
@@ -20,7 +19,7 @@
       background-color: transparent;
       border: 0;
       padding-left: 5.5px;
-      width: 250px;
+      width: -webkit-fill-available;
     }
 
     span {

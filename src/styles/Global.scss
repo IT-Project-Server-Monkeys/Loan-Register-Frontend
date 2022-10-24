@@ -24,9 +24,22 @@
   background-color: var(--light-blue-color);
 }
 
+main {
+  margin-top: var(--nav-offset);
+  min-height: var(--main-height);
+}
+
 .page-margin {
   width: 90%;
-  margin: 5rem auto;
+  margin: 0 auto;
+  padding: 5rem 0;
+
+  @media screen and (max-width: 992px) {
+    padding: 2rem 0;
+  }
+  // @media screen and (max-width: 530px) {
+  //   padding: 2rem 0;
+  // }
 }
 
 .icon-blue {

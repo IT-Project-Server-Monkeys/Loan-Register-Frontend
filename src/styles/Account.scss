@@ -10,6 +10,10 @@
     height: fit-content;
     padding: 3rem;
 
+    .warning {
+      overflow-wrap: anywhere;
+    }
+
     h1 {
       margin-bottom: 2rem;
     }
@@ -87,7 +91,7 @@
       p {
         flex-grow: 2;
         margin: 20px;
-        max-width: 231px;
+        max-width: 250px;
         overflow: scroll;
         vertical-align: middle;
         overflow-x: auto;

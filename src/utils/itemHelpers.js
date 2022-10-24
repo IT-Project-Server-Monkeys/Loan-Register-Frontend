@@ -84,24 +84,24 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
   e.preventDefault();
   const newName = e.target.newName.value;
   const newCateg = e.target.newCateg.value;
-  const newDesc = e.target.newDesc.value;
+  const newDesc = e.target.newDesc.value != null ? e.target.newDesc.value : "";
 
   let formData = newItem ? {
     item_owner: uid,
     being_loaned: false, loan_frequency: 0
   } : { _id: itemId } ;
   if (imgString !== "") formData.image_enc = imgString;
-  if (newName !== "") formData.item_name = newName;
-  if (newCateg !== "") formData.category = newCateg;
-  formData.description = newDesc;
+  if (newName !== "") formData.item_name = newName.replace(/["'\\/{}<>`]/g,"");
+  if (newCateg !== "") formData.category = newCateg.replace(/["'\\/{}<>`]/g,"");
+  formData.description = newDesc.replace(/["'\\/{}<>`]/g,"");
 
   // If new category not currently in user's available categories, put a request to user to add it
-  if (newCateg !== "" && !(categList.includes(newCateg))) {
-    setCategList((prevCgList) => { return [...prevCgList, newCateg] });
+  if (formData.category !== "" && !(categList.includes(formData.category))) {
+    setCategList((prevCgList) => { return [...prevCgList, formData.category] });
 
     await API(`/users`, {
       method: "put",
-      data: { _id: uid, new_category: newCateg },
+      data: { _id: uid, new_category: formData.category },
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => console.log(res))

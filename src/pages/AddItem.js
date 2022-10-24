@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import '../styles/ItemPage.scss'
-import { TextButton, InputDropdown, Submitting, Deletable, NoAccess } from '../components';
+import { TextButton, InputDropdown, Submitting, Deletable, NoAccess, Header } from '../components';
 import { RiImageAddFill } from 'react-icons/ri'
 import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import noImg from "../images/noImage_300x375.png";
@@ -13,6 +13,7 @@ const AddItem = (props) => {
 
   const [itemImg, setItemImg] = useState(null);
   const [displayImg, setDisplayImg] = useState(noImg);
+  const [sizeWarn, setSizeWarn] = useState(false);
 
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
@@ -46,7 +47,12 @@ const AddItem = (props) => {
 
   // item img changing
   const handleChgImg = (e) => {
-    changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    const img = e.target.files[0];
+    if (img.size > 256000) setSizeWarn(true); // 250KB size limit
+    else {
+      setSizeWarn(false);
+      changeImage(e.target.files[0], setItemImg, displayImg, setDisplayImg);
+    }
   };
 
   // save item and post to server
@@ -81,73 +87,78 @@ const AddItem = (props) => {
   }
 
   return (
-    <>{noAccess ? <NoAccess /> :
-      <div className={"item-page"}>
-        <div className={"item-details"}>
-          <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
-            <label className={"add-img"}>
-              <RiImageAddFill size={40} />
-              <input
-                type="file" accept="image/*" 
-                name="newImg" style={{display: "none"}}
-                onChange={handleChgImg} 
-              />
-            </label>
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> :
+        <div className={"item-page"}>
+          <div className={"item-details"}>
+            <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
+              <label className={"add-img"}>
+                <RiImageAddFill size={40} />
+                <input
+                  type="file" accept="image/*" 
+                  name="newImg" style={{display: "none"}}
+                  onChange={handleChgImg} 
+                />
+              </label>
+            </div>
+            
+            {sizeWarn ?
+              <h4 className={"big-img-warn warning"}>Image must be under 250KB.</h4>
+            : <span></span>}
+            <div className={"item-info"}>
+              <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
+                <table><tbody>
+                  <tr>
+                    <td>Name:</td>
+                    <td>
+                      <input required name="newName" autoComplete="off"
+                        className={"input-box"} type="text"
+                        placeholder="Enter name..." maxLength={36}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Category:</td>
+                    <td>
+                      <InputDropdown dropdownOpen={categOpen} toggle={categShow}
+                        name="newCateg" placeholder="Enter category..."
+                        value={newCateg} changeOption={handleChgCg} required
+                      >
+                        {categList.map((c) => {
+                          return <Deletable askRm
+                            field="category" key={`opt-${c}`}
+                            selectOption={(e) => {categShow(); handleSelCg(e)}}
+                            deleteOption={handleDelCg} canDel={delableCg.includes(c)}
+                            hideOption={(categ) => setCategList(
+                                (prev) => prev.filter((c) => c !== categ)
+                              )} >
+                            {c}
+                          </Deletable>
+                        })}
+                      </InputDropdown>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>&nbsp;</td>
+                  </tr>
+                  </tbody></table>
+                <p><span>Description:</span><br />
+                  <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder="(Optional) Enter description..." />
+                </p>
+              </form>
+            </div>
           </div>
-          
-          <div className={"item-info"}>
-            <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
-              <table><tbody>
-                <tr>
-                  <td>Name:</td>
-                  <td>
-                    <input required name="newName" autoComplete="off"
-                      className={"input-box"} type="text"
-                      placeholder="Enter name..." maxLength={36}
-                    />
-                  </td>
-                </tr>
-                <tr>
-                  <td>Category:</td>
-                  <td>
-                    <InputDropdown dropdownOpen={categOpen} toggle={categShow}
-                      name="newCateg" placeholder="Enter category..."
-                      value={newCateg} changeOption={handleChgCg} required
-                    >
-                      {categList.map((c) => {
-                        return <Deletable askRm
-                          field="category" key={`opt-${c}`}
-                          selectOption={(e) => {categShow(); handleSelCg(e)}}
-                          deleteOption={handleDelCg} canDel={delableCg.includes(c)}
-                          hideOption={(categ) => setCategList(
-                              (prev) => prev.filter((c) => c !== categ)
-                            )} >
-                          {c}
-                        </Deletable>
-                      })}
-                    </InputDropdown>
-                  </td>
-                </tr>
-                <tr>
-                  <td>&nbsp;</td>
-                </tr>
-                </tbody></table>
-              <p><span>Description:</span><br />
-                <textarea name="newDesc" style={{width: "-webkit-fill-available"}} placeholder="(Optional) Enter description..." />
-              </p>
-            </form>
+          <h4 className="warning">{warning}</h4>
+          <div className={"btn-list"}>
+            <TextButton altStyle
+              onClick={() => navigate(`/dashboard`)}
+            >Cancel</TextButton>
+            <TextButton form="editItem" type="submit">Save</TextButton>
           </div>
+          {submitting ? <Submitting /> : null}
         </div>
-        <h4 className="warning">{warning}</h4>
-        <div className={"btn-list"}>
-          <TextButton altStyle
-            onClick={() => navigate(`/dashboard`)}
-          >Cancel</TextButton>
-          <TextButton form="editItem" type="submit">Save</TextButton>
-        </div>
-        {submitting ? <Submitting /> : null}
-      </div>
-    }</>
+      }
+    </>
   );
 };
 

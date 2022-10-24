@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
-import { TextBkgBox, ToggleInput, TextButton, Loading, NoAccess } from '../components';
+import { TextBkgBox, ToggleInput, TextButton, Loading, NoAccess, Header } from '../components';
 import API from '../utils/api';
 import { useNavigate } from "react-router-dom";
 import { noAccessRedirect } from "../utils/helpers";
@@ -60,7 +60,7 @@ const Account = (props) => {
         })
         .catch((err) => { console.log(err); onFail(); });
     } else {
-      setWarning(`The username ${name} is taken.`);
+      setWarning(`The username "${name}" is taken.`);
       setNewName(userInfo.display_name);
     }
 
@@ -133,18 +133,30 @@ const Account = (props) => {
   }, [props.loggedIn, props.uid, navigate]);
 
   return (
-    <>{noAccess ? <NoAccess /> :
-      <div className={`account-page ${isTablet ? isMobile ? "mobile" : "tablet" : ""}`}>
-        <TextBkgBox className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
-          <h1>Account</h1>
-          <table><tbody>
-            {isTablet
-              ? 
-                <>
+    <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
+      {noAccess ? <NoAccess /> :
+        <div className={`account-page ${isTablet ? isMobile ? "mobile" : "tablet" : ""}`}>
+          <TextBkgBox className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+            <h1>Account</h1>
+            <table><tbody>
+              {isTablet
+                ? 
+                  <>
+                    <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                      <td><h3>Username:</h3></td>
+                    </tr>
+                    <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                      <td className="toggle-input">
+                        <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
+                          onToggle={() => setWarning("")} maxLength={20} isMobile={isMobile}
+                          field="display_name" value={newName} setVal={setNewName}
+                        />
+                      </td>
+                    </tr>
+                  </>
+                :
                   <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
                     <td><h3>Username:</h3></td>
-                  </tr>
-                  <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
                     <td className="toggle-input">
                       <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
                         onToggle={() => setWarning("")} maxLength={20} isMobile={isMobile}
@@ -152,27 +164,27 @@ const Account = (props) => {
                       />
                     </td>
                   </tr>
-                </>
-              :
-                <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
-                  <td><h3>Username:</h3></td>
-                  <td className="toggle-input">
-                    <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
-                      onToggle={() => setWarning("")} maxLength={20} isMobile={isMobile}
-                      field="display_name" value={newName} setVal={setNewName}
-                    />
-                  </td>
-                </tr>
-            }
+              }
 
-            {
-              isTablet
-              ?
-                <>
-                  <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+              {
+                isTablet
+                ?
+                  <>
+                    <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                      <td><h3>Email:</h3></td>
+                    </tr>
+                    <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
+                      <td className="toggle-input">
+                        <ToggleInput disabled={emailSub} saveInput={saveEmail}
+                          setVal={setNewEmail} isMobile={isMobile} type="email"
+                          field="login_email" value={newEmail} onToggle={() => setWarning("")}
+                        />
+                      </td>
+                    </tr>
+                  </>
+                :
+                  <tr>
                     <td><h3>Email:</h3></td>
-                  </tr>
-                  <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
                     <td className="toggle-input">
                       <ToggleInput disabled={emailSub} saveInput={saveEmail}
                         setVal={setNewEmail} isMobile={isMobile} type="email"
@@ -180,32 +192,22 @@ const Account = (props) => {
                       />
                     </td>
                   </tr>
-                </>
-              :
-                <tr>
-                  <td><h3>Email:</h3></td>
-                  <td className="toggle-input">
-                    <ToggleInput disabled={emailSub} saveInput={saveEmail}
-                      setVal={setNewEmail} isMobile={isMobile} type="email"
-                      field="login_email" value={newEmail} onToggle={() => setWarning("")}
-                    />
-                  </td>
-                </tr>
-            }
+              }
 
-          </tbody></table>
+            </tbody></table>
 
-          <h4 className="warning">{warning}</h4>
-          <a href="/change-password">
-            <TextButton disabled={ nameSub || emailSub }
-              style={isMobile ? {fontSize: "30px"} : {}}
-            >
-              Change password
-            </TextButton>
-          </a>
-        </TextBkgBox>
-      </div>
-    }</>
+            <h4 className="warning">{warning}</h4>
+            <a href="/change-password">
+              <TextButton disabled={ nameSub || emailSub } type="button"
+                style={isMobile ? {fontSize: "30px"} : {}}
+              >
+                Change password
+              </TextButton>
+            </a>
+          </TextBkgBox>
+        </div>
+      }
+    </>
   );
 };
 

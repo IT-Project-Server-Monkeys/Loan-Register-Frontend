@@ -18,6 +18,10 @@
   .hist-container {
     max-width: 85%;
     margin: 1rem auto;
+
+    @media screen and (max-width: 850px) {
+      max-width: 100%;
+    }
   }
 
   .history-card {
@@ -35,6 +39,10 @@
         flex-direction: column;
         justify-content: center;
       }
+    }
+
+    @media screen and (max-width: 576px) {
+      height: auto;
     }
   }
 
