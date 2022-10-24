@@ -84,7 +84,7 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
   e.preventDefault();
   const newName = e.target.newName.value;
   const newCateg = e.target.newCateg.value;
-  const newDesc = e.target.newDesc.value;
+  const newDesc = e.target.newDesc.value != null ? e.target.newDesc.value : "";
 
   let formData = newItem ? {
     item_owner: uid,
