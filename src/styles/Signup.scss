@@ -1,0 +1,24 @@
+// for signup page
+.sign-up{
+    .background{
+
+        justify-content: center;
+        display: flex;
+        background-image: url("../images/backgroundImage.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+        min-height: var(--main-height);
+        align-items: center;
+    }
+    
+    .wrap{
+        font-size: 30px;
+        font-weight: bold;
+        width: 150px;
+        text-align: initial;
+    }
+
+    .warning{
+        text-align: center;
+    }
+}

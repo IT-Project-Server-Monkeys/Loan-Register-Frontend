@@ -1,0 +1,51 @@
+.history {
+  margin-top: 3rem;
+
+  
+
+  div {
+    height: 100%;
+  }
+  p {
+    font-size: large;
+  }
+  .back-arrow {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .hist-container {
+    max-width: 85%;
+    margin: 1rem auto;
+
+    @media screen and (max-width: 850px) {
+      max-width: 100%;
+    }
+  }
+
+  .history-card {
+    height: 10rem;
+
+    &:hover {
+      cursor: auto;
+      transform: none;
+      transition: none;
+    }
+
+    .card-details-row {
+      div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+
+    @media screen and (max-width: 576px) {
+      height: auto;
+    }
+  }
+
+  
+
+}
