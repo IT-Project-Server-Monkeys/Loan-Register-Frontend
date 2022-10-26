@@ -8,7 +8,7 @@ import { MdQueryStats, MdOutlineKeyboardArrowDown, MdKeyboardArrowUp } from 'rea
 import { Header, ItemCard, NoAccess } from '../components';
 import API from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
-import { userViewSwitch, compArr, noAccessRedirect } from '../utils/helpers';
+import { userViewSwitch, compArr, noAccessRedirect, noCaseCmp } from '../utils/helpers';
 import { LOANER } from '../utils/constants';
 import ReactTooltip from 'react-tooltip';
 import { useMediaQuery } from 'react-responsive'
@@ -155,8 +155,8 @@ const LoanerDashboard = (props) => {
         if (loanerItemsLst.length > 0) {
           setLoanerFilters({
             ...loanerFilters,
-            categoryOptions: loanerItemsLst[0].item_categories,
-            loaneeOptions: loaneeOptions,
+            categoryOptions: [...new Set(loanerItemsLst[0].item_categories)].sort(noCaseCmp),
+            loaneeOptions: [...new Set(loaneeOptions)].sort(noCaseCmp),
           })
         }
 
@@ -170,8 +170,8 @@ const LoanerDashboard = (props) => {
         if (loaneeItemsLst.length > 0) {
           setLoaneeFilters({
             ...loaneeFilters,
-            categoryOptions: loaneeCate,
-            loanerOptions: loanerOptions,
+            categoryOptions: [...new Set(loaneeCate)].sort(noCaseCmp),
+            loanerOptions: [...new Set(loanerOptions)].sort(noCaseCmp),
           })
         }
         
@@ -318,7 +318,15 @@ const LoanerDashboard = (props) => {
   const handleUserSwitch = (e) => {
     const newView = userViewSwitch(userView);
     setUserView(newView);
+
+    // reset sort/filter in order to be consistent
+    setCurVis(VISIBLE);
+    setCurSort("");
     setFilters(ftr => {return {...ftr, status: [], category: [], user: []}});
+    setDisplayItems({
+      loanerItems: loanerItems.filter(item => item.visible === true),
+      loaneeItems: loaneeItems
+    });
   };
 
 
