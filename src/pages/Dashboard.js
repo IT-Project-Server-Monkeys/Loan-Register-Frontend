@@ -37,7 +37,9 @@ const statusOptions = [
   { label: 'Early Return', value: 'Early Return' },
   { label: 'Late Return', value: 'Late Return' },
   { label: 'Overdue', value: 'Overdue' },
-  { label: 'Available', value: null },
+  // Bruce's original code below
+  // { label: 'Available', value: null },
+  { label: 'Available', value: 'Available' },
 ];
 
 const displayOptions = [
