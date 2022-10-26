@@ -183,15 +183,15 @@ const LoanerDashboard = (props) => {
   }, [props]);
 
 
-  const getItemById = (id) => {
-    var item = loanerItems.find(item => item.item_id === id);
-    if (!item) {
-      item = loaneeItems.find(item => item.item_id === id);
-    }
+  // const getItemById = (id) => {
+  //   var item = loanerItems.find(item => item.item_id === id);
+  //   if (!item) {
+  //     item = loaneeItems.find(item => item.item_id === id);
+  //   }
 
-    if (item) return item[0];
-    else return null;
-  }
+  //   if (item) return item[0];
+  //   else return null;
+  // }
 
 
   const renderItems = (view) => {
