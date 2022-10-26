@@ -112,12 +112,10 @@ const LoanerDashboard = (props) => {
     }
   }, [props.loggedIn, navigate])
 
-  const userId = sessionStorage.getItem('uid');
-
   // get all items 
   useEffect(() => {
-    // if (props.loggedIn !== true || userId == null) return;
-    API.get('/dashboard?user_id=' + userId)
+    if (props.loggedIn !== true || props.uid == null) return;
+    API.get('/dashboard?user_id=' + props.uid)
       .then((res) => {
         console.log('dashboard api', res);
         const items = res.data;
@@ -182,7 +180,7 @@ const LoanerDashboard = (props) => {
       });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props]);
 
 
   const getItemById = (id) => {
@@ -213,7 +211,7 @@ const LoanerDashboard = (props) => {
       >
         <Link 
           to={`/item-details/${item.item_id}`}
-          state={{item: {...getItemById(item.item_id), item_owner: userId}}}
+          state={{item: item}}
         >
           <ItemCard
             item={item}           
@@ -265,7 +263,8 @@ const LoanerDashboard = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    API.get('/dashboard?user_id=' + userId)
+    if (props.loggedIn !== true || props.uid == null) return;
+    API.get('/dashboard?user_id=' + props.uid)
     .then(res => {
       console.log('dashboard api', res);
         const items = res.data;
@@ -308,7 +307,7 @@ const LoanerDashboard = (props) => {
     })
     
   // eslint-disable-next-line
-  }, [visibilityController])
+  }, [props, visibilityController])
 
   console.log('control', visibilityController)
   console.log('display', displayItems)

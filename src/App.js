@@ -44,7 +44,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home onLogout={logoutHandler} />} />
             <Route path="/login" element={<Login loggedIn={loggedIn} onLogin={loginHandler} />} />
-            <Route path="/dashboard" element={<Dashboard loggedIn={loggedIn} onLogout={logoutHandler} />} />
+            <Route path="/dashboard" element={<Dashboard loggedIn={loggedIn} uid={uid} onLogout={logoutHandler} />} />
             <Route path="/add-item" element={<AddItem loggedIn={loggedIn} uid={uid} onLogout={logoutHandler} />} />
             <Route path="/item-details/:id" >
               <Route path="" element={<ItemDetails loggedIn={loggedIn} uid={uid} onLogout={logoutHandler} />} />
