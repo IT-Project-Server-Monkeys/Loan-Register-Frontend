@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
@@ -50,6 +50,8 @@ const displayOptions = [
 
 
 const LoanerDashboard = (props) => {
+  const searchRef = useRef();
+
   const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
 
@@ -110,12 +112,10 @@ const LoanerDashboard = (props) => {
     }
   }, [props.loggedIn, navigate])
 
-  const userId = sessionStorage.getItem('uid');
-
   // get all items 
   useEffect(() => {
-    // if (props.loggedIn !== true || userId == null) return;
-    API.get('/dashboard?user_id=' + userId)
+    if (props.loggedIn !== true || props.uid == null) return;
+    API.get('/dashboard?user_id=' + props.uid)
       .then((res) => {
         console.log('dashboard api', res);
         const items = res.data;
@@ -180,18 +180,18 @@ const LoanerDashboard = (props) => {
       });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [props]);
 
 
-  const getItemById = (id) => {
-    var item = loanerItems.find(item => item.item_id === id);
-    if (!item) {
-      item = loaneeItems.find(item => item.item_id === id);
-    }
+  // const getItemById = (id) => {
+  //   var item = loanerItems.find(item => item.item_id === id);
+  //   if (!item) {
+  //     item = loaneeItems.find(item => item.item_id === id);
+  //   }
 
-    if (item) return item[0];
-    else return null;
-  }
+  //   if (item) return item[0];
+  //   else return null;
+  // }
 
 
   const renderItems = (view) => {
@@ -211,7 +211,7 @@ const LoanerDashboard = (props) => {
       >
         <Link 
           to={`/item-details/${item.item_id}`}
-          state={{item: {...getItemById(item.item_id), item_owner: userId}}}
+          state={{item: item}}
         >
           <ItemCard
             item={item}           
@@ -263,7 +263,8 @@ const LoanerDashboard = (props) => {
 
   useEffect(() => {
     setLoading(true);
-    API.get('/dashboard?user_id=' + userId)
+    if (props.loggedIn !== true || props.uid == null) return;
+    API.get('/dashboard?user_id=' + props.uid)
     .then(res => {
       console.log('dashboard api', res);
         const items = res.data;
@@ -306,7 +307,7 @@ const LoanerDashboard = (props) => {
     })
     
   // eslint-disable-next-line
-  }, [visibilityController])
+  }, [props, visibilityController])
 
   console.log('control', visibilityController)
   console.log('display', displayItems)
@@ -438,9 +439,11 @@ const LoanerDashboard = (props) => {
 
   }
 
+  useEffect(() => searchRef.current.focus(), [searchText])
+
   const handleSearch = (e) => {
     const currText = e.target.value;
-    setSearchText(currText)
+    setSearchText(currText);
     var items;
     if (userView === LOANER) {
       switch (visibilityController.display) {
@@ -607,7 +610,7 @@ const LoanerDashboard = (props) => {
             <span>{gridView ? 'List view' : 'Grid view'}</span>
           </ReactTooltip>
           <div style={{marginLeft: '1rem', marginRight: '1rem'}}>
-            <input type="search" onChange={handleSearch} placeholder="Search for items" />
+            <input type="search" onChange={handleSearch} placeholder="Search for items" value={searchText} ref={searchRef} />
           </div>
           <Link to="/add-item">
             <span className="icon-plus" data-for='add-item' data-tip='Add item'>
