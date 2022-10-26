@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react';
+import React, { useRef, useEffect, useState} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Row, Col, Spinner, Button } from 'reactstrap';
 import '../styles/Dashboard.scss';
@@ -50,6 +50,8 @@ const displayOptions = [
 
 
 const LoanerDashboard = (props) => {
+  const searchRef = useRef();
+
   const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
 
@@ -438,9 +440,11 @@ const LoanerDashboard = (props) => {
 
   }
 
+  useEffect(() => searchRef.current.focus(), [searchText])
+
   const handleSearch = (e) => {
     const currText = e.target.value;
-    setSearchText(currText)
+    setSearchText(currText);
     var items;
     if (userView === LOANER) {
       switch (visibilityController.display) {
@@ -607,7 +611,7 @@ const LoanerDashboard = (props) => {
             <span>{gridView ? 'List view' : 'Grid view'}</span>
           </ReactTooltip>
           <div style={{marginLeft: '1rem', marginRight: '1rem'}}>
-            <input type="search" onChange={handleSearch} placeholder="Search for items" />
+            <input type="search" onChange={handleSearch} placeholder="Search for items" value={searchText} ref={searchRef} />
           </div>
           <Link to="/add-item">
             <span className="icon-plus" data-for='add-item' data-tip='Add item'>
