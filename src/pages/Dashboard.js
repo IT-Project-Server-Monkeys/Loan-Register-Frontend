@@ -81,6 +81,7 @@ const LoanerDashboard = (props) => {
     category: [],
     user: []
   });
+  const [curSort, setCurSort] = useState("");
 
   const [searchText, setSearchText] = useState('');
 
@@ -90,6 +91,7 @@ const LoanerDashboard = (props) => {
     hiddenItems: [],
     display: VISIBLE
   })
+  const [curVis, setCurVis] = useState(VISIBLE);
 
   // items displayed to the user
   const [displayItems, setDisplayItems] = useState({
@@ -316,6 +318,7 @@ const LoanerDashboard = (props) => {
   const handleUserSwitch = (e) => {
     const newView = userViewSwitch(userView);
     setUserView(newView);
+    setFilters(ftr => {return {...ftr, status: [], category: [], user: []}});
   };
 
 
@@ -347,6 +350,7 @@ const LoanerDashboard = (props) => {
         res = []
         break;
     }
+    setCurSort(val);
 
     setFilters({
       ...filters,
@@ -501,7 +505,7 @@ const LoanerDashboard = (props) => {
           ...displayItems,
           loanerItems: loanerItems
         })
-        return;
+        break;
       case VISIBLE:
         setVisibilityController({
           ...visibilityController,
@@ -511,7 +515,7 @@ const LoanerDashboard = (props) => {
           ...displayItems,
           loanerItems: loanerItems.filter(item => item.visible === undefined || item.visible === true)
         })
-        return;
+        break;
       case HIDDEN:
         setVisibilityController({
           ...visibilityController,
@@ -521,10 +525,11 @@ const LoanerDashboard = (props) => {
           ...displayItems,
           loanerItems: loanerItems.filter(item => item.visible !== undefined && item.visible === false)
         })
-        return;
+        break;
       default:
         return;
     }
+    setCurVis(val);
   }
 
 
@@ -547,7 +552,8 @@ const LoanerDashboard = (props) => {
               singleSelect={true} 
               options={displayOptions} 
               onChange={val => handleDisplay(val)}
-              defaultValue={VISIBLE}
+              defaultValue={curVis}
+              clearable={false}
             />
           </>
           
@@ -559,12 +565,14 @@ const LoanerDashboard = (props) => {
           singleSelect={true} 
           options={dateOptions} 
           onChange={handleSortByDate}
+          defaultValue={curSort}
         />
         <h4 style={{ marginTop: '1rem' }}>Filter by</h4>
         <MultiSelect 
           placeholder="Status" 
           options={statusOptions} 
           onChange={val => handleFilters(val, STATUS)} 
+          defaultValue={filters.status}
         />
         <MultiSelect 
           placeholder="Category" 
@@ -574,6 +582,7 @@ const LoanerDashboard = (props) => {
             : renderOptions(loaneeFilters.categoryOptions)
           } 
           onChange={val => handleFilters(val, CATEGORY)}
+          defaultValue={filters.category}
         />
         <MultiSelect 
           placeholder={userView === LOANER ? "Loanee" : "loaner" }
@@ -583,6 +592,7 @@ const LoanerDashboard = (props) => {
             : renderOptions(loaneeFilters.loanerOptions)
           } 
           onChange={val => handleFilters(val, USER)}
+          defaultValue={filters.user}
         />
         <Button onClick={applyFilters}>Apply Filters</Button>
       </>
