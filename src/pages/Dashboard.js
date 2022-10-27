@@ -568,6 +568,7 @@ const LoanerDashboard = (props) => {
             <h4>Item Display</h4>
             <MultiSelect 
               // placeholder='Show all items'
+              disabled={!initLoad}
               singleSelect={true} 
               options={displayOptions} 
               onChange={val => handleDisplay(val)}
@@ -580,6 +581,7 @@ const LoanerDashboard = (props) => {
         
         <h4 style={{ marginTop: '1rem' }}>Sort by</h4>
         <MultiSelect 
+          disabled={!initLoad}
           placeholder="Loan Date" 
           singleSelect={true} 
           options={dateOptions} 
@@ -588,12 +590,14 @@ const LoanerDashboard = (props) => {
         />
         <h4 style={{ marginTop: '1rem' }}>Filter by</h4>
         <MultiSelect 
+          disabled={!initLoad}
           placeholder="Status" 
           options={statusOptions} 
           onChange={val => handleFilters(val, STATUS)} 
           defaultValue={filters.status}
         />
         <MultiSelect 
+          disabled={!initLoad}
           placeholder="Category" 
           options={
             userView === LOANER ? 
@@ -604,6 +608,7 @@ const LoanerDashboard = (props) => {
           defaultValue={filters.category}
         />
         <MultiSelect 
+          disabled={!initLoad}
           placeholder={userView === LOANER ? "Loanee" : "loaner" }
           options={
             userView === LOANER ? 
@@ -613,7 +618,7 @@ const LoanerDashboard = (props) => {
           onChange={val => handleFilters(val, USER)}
           defaultValue={filters.user}
         />
-        <Button onClick={applyFilters}>Apply Filters</Button>
+        <Button onClick={applyFilters} disabled={!initLoad}>Apply Filters</Button>
       </>
     )
   }
