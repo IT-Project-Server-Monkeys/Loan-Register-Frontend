@@ -40,7 +40,7 @@ const statusOptions = [
   // Bruce's original code below
   // { label: 'Available', value: null },
   { label: 'Available', value: 'Available' },
-];
+].sort((optA, optB) => {return noCaseCmp(optA.label, optB.label);});
 
 const displayOptions = [
   { label: 'Show all items', value: ALL },
@@ -423,11 +423,29 @@ const LoanerDashboard = (props) => {
         // // console.log('!!!')
         results = intersection(filters.sortedItems, results)
       }
-    
-      setDisplayItems({
-        ...displayItems,
-        loanerItems: results
-      })
+
+      switch(visibilityController.display) {
+        case ALL:
+          setDisplayItems({
+            ...displayItems,
+            loanerItems: results
+          })
+          break;
+        case VISIBLE:
+          setDisplayItems({
+            ...displayItems,
+            loanerItems: results.filter(item => item.visible === undefined || item.visible === true)
+          })
+          break;
+        case HIDDEN:
+          setDisplayItems({
+            ...displayItems,
+            loanerItems: results.filter(item => item.visible !== undefined && item.visible === false)
+          })
+          break;
+        default:
+          break
+      }
 
     } else {
       if (filters.status.length > 0) {
