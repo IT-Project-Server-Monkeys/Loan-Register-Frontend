@@ -321,10 +321,7 @@ const LoanerDashboard = (props) => {
   // console.log('control', visibilityController)
   // console.log('display', displayItems)
 
-  useEffect(() => {
-    console.log(displayItems)
-    setLoading(!initLoad)
-  }, [displayItems])
+  useEffect(() => setLoading(!initLoad), [initLoad, displayItems])
 
 
   const handleUserSwitch = (e) => {
