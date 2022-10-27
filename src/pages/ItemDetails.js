@@ -67,6 +67,7 @@ const ItemDetails = (props) => {
       { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
       () => {
         if (!item.visible) makeVisible(itemId);
+        navigate(`/item-details/${itemId}`, {state: null});
         window.location.reload()
       },
       () => {
@@ -83,6 +84,7 @@ const ItemDetails = (props) => {
       { ...input, _id: item.loan_id, item_image: item.image_url },
       () => {
         if (!item.visible) makeVisible(itemId);
+        navigate(`/item-details/${itemId}`, {state: null});
         window.location.reload()
       },
       () => {
@@ -99,6 +101,7 @@ const ItemDetails = (props) => {
       item,
       () => {
         if (!item.visible) makeVisible(itemId);
+        navigate(`/item-details/${itemId}`, {state: null});
         window.location.reload()
       },
       () => {
