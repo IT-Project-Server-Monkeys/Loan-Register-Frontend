@@ -67,6 +67,7 @@ const ItemDetails = (props) => {
       { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
       () => {
         if (!item.visible) makeVisible(itemId);
+        navigate(`/item-details/${itemId}`, {state: null});
         window.location.reload()
       },
       () => {
@@ -83,6 +84,7 @@ const ItemDetails = (props) => {
       { ...input, _id: item.loan_id, item_image: item.image_url },
       () => {
         if (!item.visible) makeVisible(itemId);
+        navigate(`/item-details/${itemId}`, {state: null});
         window.location.reload()
       },
       () => {
@@ -99,6 +101,7 @@ const ItemDetails = (props) => {
       item,
       () => {
         if (!item.visible) makeVisible(itemId);
+        navigate(`/item-details/${itemId}`, {state: null});
         window.location.reload()
       },
       () => {
@@ -147,8 +150,10 @@ const ItemDetails = (props) => {
     if (dbData === null || dbData.item_name == null) fetchItem(itemId, setItem);
     else {
       console.log(dbData);
-      setItem( {...dbData, loan_id: null, loan_status: <Loading />, loanee_name: <Loading />,
-        loan_start_date: <Loading />, intended_return_date: <Loading /> });
+      setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
+        loan_start_date: <Loading />, intended_return_date: <Loading />,
+        loan_status: dbData.being_loaned ? <Loading /> : "Available",
+      });
     }
   }, [props.loggedIn, itemId, dbData]);
 
@@ -167,15 +172,8 @@ const ItemDetails = (props) => {
       setLoaneeView(false);
     }
 
-    if (item.being_loaned) {
-      if (item.loan_id === undefined || item.loan_id == null) {
-        fetchCurLoan(item.item_id, setItem);
-      } else {
-        setLoaneeName(item.loanee_name);
-        setLoanDate(item.loan_start_date);
-        setReturnDate(item.intended_return_date);
-      }
-    } else {
+    if (item.being_loaned) fetchCurLoan(item.item_id, setItem);
+    else {
       setLoaneeName("");
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
