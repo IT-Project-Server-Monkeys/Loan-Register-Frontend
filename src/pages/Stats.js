@@ -11,8 +11,10 @@ import { useMediaQuery } from 'react-responsive';
 const Stats = (props) => {
   const [noAccess, setNoAccess] = useState(false);
   const navigate = useNavigate();
-  const isTablet = useMediaQuery({ maxDeviceWidth: 840 });
+  const isTablet = useMediaQuery({ maxDeviceWidth: 1320 });
   const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
+
+  const NoDataWrap = (props) => <div className="no-data-wrap"><p>{props.children}</p></div>;
 
   const pieData = {
     type: 'pie', marker: {colors: ["#0073e6", "#eb8f33"]},
@@ -21,7 +23,8 @@ const Stats = (props) => {
 
   const pieLayout = {
     legend: {orientation: "h", xanchor: "center", x: 0.5},
-    showlegend: true, font: {size: isMobile ? 16 : 24}, margin: {t: 0, r: 0, b: 0, l: 0}
+    showlegend: true, font: {size: isMobile ? 16 : 24}, margin: {t: 0, r: 0, b: 0, l: 0},
+    ...isMobile ? {height: 300} : {}
   }
 
   const barLayout = {
@@ -66,7 +69,7 @@ const Stats = (props) => {
     let lines = line.split(/\s/);
 
     for (i=0; i<lines.length; i++) {
-      if (curLen + lines[i].length > 18) {
+      if (curLen + lines[i].length > 11) {
         brLine += "<br>";
         curLen = 0;
       }
@@ -161,29 +164,44 @@ const Stats = (props) => {
         <div className={"stats-page"}>
           <h1>Statistics</h1>
           <ChartBox style={{gridArea: "ch1"}}>
-            <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-              data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
-            />
+            { itemVals[0] === 0 && itemVals[1] === 0
+              ? <NoDataWrap>No data</NoDataWrap>
+              : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
+                data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
+              />
+            }
           </ChartBox>
           <ChartBox style={{gridArea: "ch2"}}>
-            <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-              data={[{...pieData, labels: ["Returned loans", "Unreturned loans"], values: loanVals}]}
-            />
+            { loanVals[0] === 0 && loanVals[1] === 0
+              ? <NoDataWrap>No data</NoDataWrap>
+              : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
+                data={[{...pieData, labels: ["Returned loans", "Unreturned loans"], values: loanVals}]}
+              />
+            }
           </ChartBox>
           <ChartBox style={{gridArea: "ch3"}}>
-            <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-              data={[{...pieData, labels: ["Timely loans", "Late loans"], values: rtnLnVals}]}
-            />
+            { rtnLnVals[0] === 0 && rtnLnVals[1] === 0
+              ? <NoDataWrap>No data</NoDataWrap>
+              : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
+                data={[{...pieData, labels: ["Timely loans", "Late loans"], values: rtnLnVals}]}
+              />
+            }
           </ChartBox>
           <div className="bar-box">
-            <Plot className="bar-plot"
-              data={[{...barData, ...freqItems}]}
-              layout={barLayout} useResizeHandler={true}
-            />
-            <Plot className="bar-plot"
-              data={[{...barData, ...freqLoanees}]}
-              layout={barLayout} useResizeHandler={true}
-            />
+            { freqItems.x.length === 0 || Math.max(freqItems.x) === 0
+              ? <NoDataWrap>No data</NoDataWrap>
+              : <Plot className="bar-plot"
+                data={[{...barData, ...freqItems}]}
+                layout={barLayout} useResizeHandler={true}
+              />
+            }
+            { freqLoanees.x.length === 0 || Math.max(freqItems.x) === 0
+              ? <NoDataWrap>No data</NoDataWrap>
+              : <Plot className="bar-plot"
+                data={[{...barData, ...freqLoanees}]}
+                layout={barLayout} useResizeHandler={true}
+              />
+            }
           </div>
         </div>
       }
