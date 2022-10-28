@@ -38,14 +38,18 @@ const Header = (props) => {
   // nav component, showing different navlinks depending on login session
   const Nav = () => {
 
+    const [isHovering, setIsHovering] = useState(false);
+
     // mobile view, show dropdown menu of navlinks or login navlink
     if (isMobile) {
       if (props.loggedIn === true) return (
         <nav>
-          <button className="navlink">
+          <button className={`navlink ${isHovering ? "hover" : ""}`}
+            onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+          >
               <GiHamburgerMenu size={20} />
           </button>
-          <div className="dropdown">
+          <div className={`dropdown ${isHovering ? "hover-dp" : ""}`}>
             <NavLink href="/dashboard">Dashboard</NavLink>
             <NavLink href="/account">Account</NavLink>
             <NavLink href="/" onClick={logOut}>Log Out</NavLink>

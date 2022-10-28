@@ -31,7 +31,7 @@
       }
 
       // hovered/active navlink
-      &:hover {
+      &.hover {
         background-color: var(--blue-color);
         color: white;
         svg {
@@ -46,13 +46,14 @@
       right: 5%;
       top: var(--nav-offset);
       position: fixed;
-    }
-    &:hover > .dropdown {
-      display: flex;
-      flex-direction: column;
 
-      .navlink {
-        width: 100%;
+      &.hover-dp {
+        display: flex;
+        flex-direction: column;
+  
+        .navlink {
+          width: 100%;
+        }
       }
     }
   }

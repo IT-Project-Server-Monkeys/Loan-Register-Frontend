@@ -69,7 +69,7 @@ const Stats = (props) => {
     let lines = line.split(/\s/);
 
     for (i=0; i<lines.length; i++) {
-      if (curLen + lines[i].length > 11) {
+      if (curLen + lines[i].length > 10) {
         brLine += "<br>";
         curLen = 0;
       }
