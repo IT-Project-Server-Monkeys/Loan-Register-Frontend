@@ -247,8 +247,10 @@ const ItemDetails = (props) => {
             <div className={"btn-list"}>
               <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
               {item.being_loaned ? <>
-                <TextButton onClick={toggle}>Edit Loan</TextButton>
-                <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
+                {typeof(item.loan_id) != "string" ? <></> : <>
+                  <TextButton onClick={toggle}>Edit Loan</TextButton>
+                  <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
+                </>}
               </> :
                 <TextButton onClick={toggle}>Loan Item</TextButton>
               }
