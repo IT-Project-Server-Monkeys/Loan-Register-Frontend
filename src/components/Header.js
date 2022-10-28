@@ -1,4 +1,4 @@
-import React, { useEffect, useState } /*, { useEffect, useState }*/ from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import "../styles/Header.scss";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -20,7 +20,7 @@ const Header = (props) => {
     // set component inline style to linkStyle (default value null)
     // upon first render, if link page is current page, set linkStyle to active style 
     const [linkStyle, setLinkStyle] = useState(null);
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (location.pathname && navProps.href === location.pathname) {
         setLinkStyle({backgroundColor: "var(--blue-color)", color: "white"});
       }

@@ -627,7 +627,7 @@ const LoanerDashboard = (props) => {
         />
         <MultiSelect 
           disabled={!initLoad}
-          placeholder={userView === LOANER ? "Loanee" : "loaner" }
+          placeholder={userView === LOANER ? "Loanee" : "Loaner" }
           options={
             userView === LOANER ? 
             renderOptions(loanerFilters.loaneeOptions) 
@@ -704,7 +704,7 @@ const LoanerDashboard = (props) => {
             paddingBottom: isMobileView || wrapNav() ? '0.5rem' : '0',
             paddingLeft: isMobileView || wrapNav() ? 'auto' : '2rem'
           }}>
-            <input type="search" onChange={handleSearch} placeholder="Search for items" />
+            <input type="search" onChange={handleSearch} placeholder="Search for items" value={searchText} ref={searchRef} />
           </Col>
           <Col style={{maxWidth: '250px', margin: 'auto'}}>
             {/* <div>
