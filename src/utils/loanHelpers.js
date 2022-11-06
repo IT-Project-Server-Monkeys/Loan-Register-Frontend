@@ -1,4 +1,4 @@
-import API from "./api";
+import { checkAPI, API } from "./api";
 import dateFormat from 'dateformat';
 import { toISO } from "./helpers";
 

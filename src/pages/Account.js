@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput, TextButton, Loading, NoAccess, Header } from '../components';
-import API from '../utils/api';
+import { checkAPI, API } from '../utils/api';
 import { useNavigate } from "react-router-dom";
 import { noAccessRedirect } from "../utils/helpers";
 import { useMediaQuery } from "react-responsive";
@@ -26,6 +26,11 @@ const Account = (props) => {
   // if the entered display name is not unique, show warning
   // else, submit data to the server
   const saveName = async (name) => {
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     let fetchedData = [];
     const failAlert = "There was an error saving your username. Please try again later.";
     const onFail = () => { setNewName(userInfo.display_name); alert(failAlert); }
@@ -70,6 +75,11 @@ const Account = (props) => {
   // if the entered login email is not unique, show warning
   // else, submit data to the server
   const saveEmail = async (email) => {
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     let fetchedData = [];
     const failAlert = "There was an error saving your login email. Please try again later.";
     const onFail = () => { setNewEmail(userInfo.login_email); alert(failAlert); }
@@ -111,10 +121,9 @@ const Account = (props) => {
 
   // get user data from server, querying using userId recorded in the app's session
   useEffect(() => {
-    if (props.loggedIn !== true) return;
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
     const fetchUser = async () => {
       let fetchedData = null;
-      if (props.uid == null) return;
 
       await API.get(`/users?id=${props.uid}`)
       .then((res) => fetchedData = res.data)
@@ -129,8 +138,12 @@ const Account = (props) => {
       setNewName(fetchedData.display_name);
       setNewEmail(fetchedData.login_email);
     };
-    fetchUser();
-  }, [props.loggedIn, props.uid, navigate]);
+
+    checkAPI(() => fetchUser(), () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+  }, [props, navigate]);
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />

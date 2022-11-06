@@ -9,7 +9,7 @@ import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
 import ReactTooltip from "react-tooltip";
-import API from "../utils/api";
+import { checkAPI, API } from "../utils/api";
 
 const ItemDetails = (props) => {
   // page navigation
@@ -63,6 +63,12 @@ const ItemDetails = (props) => {
   // creates loan
   const handleCrtLn = async (input) => {
     setSubmitting(true);
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     createLoan(
       { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
       () => {
@@ -80,6 +86,12 @@ const ItemDetails = (props) => {
   // edits existing loan
   const handleEdtLn = async (input) => {
     setSubmitting(true);
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     await editLoan(
       { ...input, _id: item.loan_id, item_image: item.image_url },
       () => {
@@ -97,6 +109,12 @@ const ItemDetails = (props) => {
   // returns existing loan
   const handleRtnLn = async () => {
     setSubmitting(true);
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     await returnLoan(
       item,
       () => {
@@ -113,7 +131,12 @@ const ItemDetails = (props) => {
 
   // get all loanees & set loanee suggest list for loan form
   useEffect(() => {
-    if (props.loggedIn !== true) return;
+    if (props.loggedIn !== true || navigate == null) return;
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    })
 
     const fetchUser = async () => {
       let fetchedData = null;
@@ -133,7 +156,7 @@ const ItemDetails = (props) => {
 
     setSubmitting(false);
     fetchAllUsernames(setAllLoanees);
-  }, [props]);
+  }, [props, navigate]);
 
   useEffect(() => {
     if (ownName === "" || allLoanees === {}) return;
@@ -146,6 +169,12 @@ const ItemDetails = (props) => {
   // get and show item data
   useEffect(() => {
     if (props.loggedIn !== true) return;
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     console.log("dbData", dbData);
     if (dbData === null || dbData.item_name == null) fetchItem(itemId, setItem);
     else {
@@ -172,6 +201,11 @@ const ItemDetails = (props) => {
       setLoaneeView(false);
     }
 
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     if (item.being_loaned) fetchCurLoan(item.item_id, setItem);
     else {
       setLoaneeName("");
@@ -186,7 +220,7 @@ const ItemDetails = (props) => {
         <div className={"item-page"}>
 
           {loaneeView ? <></> :
-            <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
+            <Link to={`/item-details/${itemId}/edit`} state={{item: item}} reloadDocument={false}>
               <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
                 <MdEdit size={40} />
               </button>

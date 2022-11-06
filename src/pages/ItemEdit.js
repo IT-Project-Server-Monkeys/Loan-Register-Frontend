@@ -6,6 +6,7 @@ import { RiImageAddFill } from 'react-icons/ri'
 import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
+import { checkAPI } from "../utils/api";
 
 const ItemEdit = (props) => {
   // page navigation
@@ -56,13 +57,19 @@ const ItemEdit = (props) => {
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
-    deleteCategory(categ, setCategList, props.uid);
+    checkAPI(() => deleteCategory(categ, setCategList, props.uid), () => {});
   }
 
   // save item and post to server
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     let imgString = "";
     
     // disallow leading/trailing spaces
@@ -104,18 +111,30 @@ const ItemEdit = (props) => {
 
   // get list of potential categories for render & modification
   useEffect(() => {
-    if (props.loggedIn !== true) return;
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     fetchCategs(props.uid, setCategList, setDelableCg);
-  }, [props.uid, props.loggedIn]);
+  }, [props]);
   
   // get and show item data
   useEffect(() => {
-    if (props.loggedIn !== true) return;
+    if (props.loggedIn !== true | props.onLogout == null) return;
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     if (dbData === null) fetchItem(itemId, setItem);
     else {
       setItem(dbData);
     }
-  }, [props.loggedIn, itemId, dbData, navigate]);
+  }, [props, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {

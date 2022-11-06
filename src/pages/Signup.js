@@ -1,7 +1,7 @@
 import React from 'react';
 import "../styles/Signup.scss";
 import { Header, NoAccess, Submitting, TextBkgBox, TextButton } from '../components';
-import API from "../utils/api";
+import { API } from "../utils/api";
 import { useState, useEffect } from 'react';
 import bcrypt from 'bcryptjs-react';
 import { useMediaQuery } from 'react-responsive';

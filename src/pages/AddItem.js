@@ -6,6 +6,7 @@ import { RiImageAddFill } from 'react-icons/ri'
 import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import noImg from "../images/noImage_300x375.png";
 import { noAccessRedirect } from "../utils/helpers";
+import { checkAPI } from "../utils/api";
 
 const AddItem = (props) => {
   const [noAccess, setNoAccess] = useState(false);
@@ -35,6 +36,13 @@ const AddItem = (props) => {
 
   // get list of potential categs
   useEffect(() => {
+    if (props.uid == null || props.onLogout == null) return;
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     fetchCategs(props.uid, setCategList, setDelableCg);
   }, [props.uid]);
 
@@ -42,7 +50,7 @@ const AddItem = (props) => {
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
-    deleteCategory(categ, setCategList, props.uid);
+    checkAPI(() => deleteCategory(categ, setCategList, props.uid), () => {});
   }
 
   // item img changing
@@ -59,6 +67,12 @@ const AddItem = (props) => {
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     let imgString = "";
 
     // disallow leading/trailing spaces in names & categories

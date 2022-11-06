@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
 import { TextBkgBox, TextButton, Submitting, NoAccess, Header } from "../components";
-import API from '../utils/api';
+import { checkAPI, API } from '../utils/api';
 import bcrypt from 'bcryptjs-react';
 import { noAccessRedirect } from "../utils/helpers";
 import { useMediaQuery } from "react-responsive";
@@ -49,15 +49,20 @@ const ChangePassword = (props) => {
       };
       console.log(formData);
 
-      await API(`/users`, {
-        method: "put", data: formData,
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((res) => { console.log(res); navigate("/account"); })
-        .catch((err) => {
-          console.log(err);
-          alert("There was an error saving your password. Please try again later.");
-        });
+      checkAPI(async () => {
+        await API(`/users`, {
+          method: "put", data: formData,
+          headers: { "Content-Type": "application/json" },
+        })
+          .then((res) => { console.log(res); navigate("/account"); })
+          .catch((err) => {
+            console.log(err);
+            alert("There was an error saving your password. Please try again later.");
+          });
+      }, () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      });
 
       setSubmitting(false);
     }
@@ -130,7 +135,7 @@ const ChangePassword = (props) => {
                       </td>
                     </tr>
                 }
-                <tr><td colspan="2" style={{textAlign: "center"}}>
+                <tr><td colSpan="2" style={{textAlign: "center"}}>
                   <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>
                 </td></tr>
               </tbody></table>

@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import "../styles/Login.scss";
 import { Header, NoAccess, Submitting, TextBkgBox, TextButton } from '../components';
-import API from "../utils/api";
+import { API } from "../utils/api";
 import bcrypt from 'bcryptjs-react';
 import { useMediaQuery } from 'react-responsive';
 import { noAccessRedirect } from '../utils/helpers';

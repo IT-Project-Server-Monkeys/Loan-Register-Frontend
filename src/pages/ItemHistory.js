@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { Row, Col, Card, CardBody, CardTitle} from 'reactstrap';
 import '../styles/ItemHistory.scss';
-import API from '../utils/api';
+import { checkAPI, API } from '../utils/api';
 import dateFormat from 'dateformat';
 import { statusColor } from '../utils/constants';
 import { Header, NoAccess } from '../components';
@@ -30,6 +30,13 @@ const ItemHistory = (props) => {
   }, [props.loggedIn, navigate])
 
   useEffect(() => {
+    if (itemId == null || props.onLogout == null) return;
+
+    checkAPI(() => {}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     API.get('/loans?item_id=' + itemId)
       .then((res) => {
         // console.log(res)
@@ -43,7 +50,7 @@ const ItemHistory = (props) => {
       .catch((e) => {
         console.log(e);
       });
-  }, [itemId]);
+  }, [props, itemId, navigate]);
 
   console.log(loans)
 

@@ -13,7 +13,7 @@ import  'react-multiple-select-dropdown-lite/dist/index.css'
 function App() {
   
   // Get/Set login session
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [loggedIn, setLoggedIn] = useState();
   const [uid, setUid] = useState(null);
 
 

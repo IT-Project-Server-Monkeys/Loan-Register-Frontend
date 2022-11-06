@@ -6,7 +6,7 @@ import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'r
 import { TbLayoutGrid } from 'react-icons/tb';
 import { MdQueryStats, MdOutlineKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { Header, ItemCard, NoAccess } from '../components';
-import API from '../utils/api';
+import { checkAPI, API } from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { userViewSwitch, compArr, noAccessRedirect, noCaseCmp } from '../utils/helpers';
 import { LOANER } from '../utils/constants';
@@ -118,72 +118,76 @@ const LoanerDashboard = (props) => {
   // get all items 
   useEffect(() => {
     setLoading(true);
-    console.log('ehy', props.uid, props.loggedIn)
+    // console.log('ehy', props.uid, props.loggedIn)
     if (props.loggedIn !== true || props.uid == null) return;
-    console.log(props.uid)
+    // console.log(props.uid)
+
+    checkAPI(() => {/* onSuccess */}, () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    })
+
     API.get('/dashboard?user_id=' + props.uid)
-      .then((res) => {
-        // console.log('dashboard api', res);
-        const items = res.data;
-        var loanerItemsLst = [];
-        var loaneeItemsLst = [];
-        // separate loaner and loanee items
-        for (var item of items) {
-          if (item.user_role === LOANER) {
-            loanerItemsLst.push(item);
-          }
-          else loaneeItemsLst.push(item);
+    .then((res) => {
+      // console.log('dashboard api', res);
+      const items = res.data;
+      var loanerItemsLst = [];
+      var loaneeItemsLst = [];
+      // separate loaner and loanee items
+      for (var item of items) {
+        if (item.user_role === LOANER) {
+          loanerItemsLst.push(item);
         }
-        setLoanerItems(loanerItemsLst);
-        setLoaneeItems(loaneeItemsLst);
-        // setLoading(false);
+        else loaneeItemsLst.push(item);
+      }
+      setLoanerItems(loanerItemsLst);
+      setLoaneeItems(loaneeItemsLst);
+      // setLoading(false);
 
-        // setDisplayItems({
-        //   loanerItems: loanerItemsLst,
-        //   loaneeItems: loaneeItemsLst
-        // })
+      // setDisplayItems({
+      //   loanerItems: loanerItemsLst,
+      //   loaneeItems: loaneeItemsLst
+      // })
 
-        // update visible items
-        setVisibilityController({
-          display: VISIBLE,
-          visibleItems: loanerItemsLst.filter(item => item.visible === true),
-          hiddenItems: loanerItemsLst.filter(item => item.visible === false),
-        })
-        // console.log('ttt', loanerItemsLst)
-        
-        // get filter data
-        var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
-        var loanerOptions = loaneeItemsLst.map(item => item.loaner_name).filter(n => n)
-        
-        // update loaner cate and loanee opt
-        if (loanerItemsLst.length > 0) {
-          setLoanerFilters({
-            ...loanerFilters,
-            categoryOptions: [...new Set(loanerItemsLst[0].item_categories)].sort(noCaseCmp),
-            loaneeOptions: [...new Set(loaneeOptions)].sort(noCaseCmp),
-          })
-        }
-
-        // update loanee cate and loaner opt
-        var loaneeCate = []  // get loanee cate
-        for (item of loaneeItemsLst) {
-          if (!loaneeCate.includes(item.category)) {
-            loaneeCate.push(item.category)
-          }
-        }
-        if (loaneeItemsLst.length > 0) {
-          setLoaneeFilters({
-            ...loaneeFilters,
-            categoryOptions: [...new Set(loaneeCate)].sort(noCaseCmp),
-            loanerOptions: [...new Set(loanerOptions)].sort(noCaseCmp),
-          })
-        }
-        
-        setInitLoad(true);
+      // update visible items
+      setVisibilityController({
+        display: VISIBLE,
+        visibleItems: loanerItemsLst.filter(item => item.visible === true),
+        hiddenItems: loanerItemsLst.filter(item => item.visible === false),
       })
-      .catch((e) => {
-        // console.log(e);
-      });
+      // console.log('ttt', loanerItemsLst)
+      
+      // get filter data
+      var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
+      var loanerOptions = loaneeItemsLst.map(item => item.loaner_name).filter(n => n)
+      
+      // update loaner cate and loanee opt
+      if (loanerItemsLst.length > 0) {
+        setLoanerFilters({
+          ...loanerFilters,
+          categoryOptions: [...new Set(loanerItemsLst[0].item_categories)].sort(noCaseCmp),
+          loaneeOptions: [...new Set(loaneeOptions)].sort(noCaseCmp),
+        })
+      }
+
+      // update loanee cate and loaner opt
+      var loaneeCate = []  // get loanee cate
+      for (item of loaneeItemsLst) {
+        if (!loaneeCate.includes(item.category)) {
+          loaneeCate.push(item.category)
+        }
+      }
+      if (loaneeItemsLst.length > 0) {
+        setLoaneeFilters({
+          ...loaneeFilters,
+          categoryOptions: [...new Set(loaneeCate)].sort(noCaseCmp),
+          loanerOptions: [...new Set(loanerOptions)].sort(noCaseCmp),
+        })
+      }
+      
+      setInitLoad(true);
+    })
+    .catch((e) => console.log(e));
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
@@ -236,6 +240,12 @@ const LoanerDashboard = (props) => {
   // update item's visibility
   const updateVisibility = (id, visible) => {
     setLoading(true);
+
+    checkAPI(() => { /* onSuccess */}, () => { // onFailure
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    });
+
     API({
       method: 'PUT',
       url: '/items',
@@ -267,7 +277,7 @@ const LoanerDashboard = (props) => {
       }
     }).catch(e => {
       // console.log(e)
-    })
+    });
 
   }
 
