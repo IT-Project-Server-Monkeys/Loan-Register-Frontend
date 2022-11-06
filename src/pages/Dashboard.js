@@ -242,14 +242,14 @@ const LoanerDashboard = (props) => {
   };
 
   // update item's visibility
-  const updateVisibility = (id, visible) => {
+  const updateVisibility = async (id, visible) => {
     setLoading(true);
 
-    checkAPI(
-      () => {
+    await checkAPI(
+      async () => {
         console.log("token valid -> hide/unhide item");
 
-        API({
+        await API({
           method: 'PUT',
           url: '/items',
           data: {

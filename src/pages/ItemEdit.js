@@ -14,6 +14,7 @@ const ItemEdit = (props) => {
   const [noAccess, setNoAccess] = useState(false);
   const location = useLocation();
   const [submitting, setSubmitting] = useState(false);
+  const [initLoad, setInitLoad] = useState(false);
   
   // original item information
   const itemId = useParams().id;
@@ -37,6 +38,7 @@ const ItemEdit = (props) => {
   const [categOpen, setCategOpen] = useState(false);
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
+  const [ctgDeleting, setCtgDeleting] = useState(false);
 
   // item img changing
   const handleChgImg = (e) => {
@@ -56,11 +58,13 @@ const ItemEdit = (props) => {
   // typeable/selectable category changing via inputdropdown
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
-  const handleDelCg = (categ) => {
-    checkAPI(
-      () => {
+  const handleDelCg = async (categ) => {
+    setCtgDeleting(true);
+    await checkAPI(
+      async () => {
         console.log("token valid -> delete category");
-        deleteCategory(categ, setCategList, props.uid);
+        await deleteCategory(categ, setCategList, props.uid);
+        setCtgDeleting(false);
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
@@ -98,7 +102,7 @@ const ItemEdit = (props) => {
       });
     }
 
-    checkAPI(
+    await checkAPI(
       async () => {
         console.log("token valid -> save item");
 
@@ -118,33 +122,19 @@ const ItemEdit = (props) => {
     );
 
   }
-
+  
+  // get and show item data
   // get list of potential categories for render & modification
   useEffect(() => {
     if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
 
-    checkAPI(
-      () => {
-        console.log("token valid -> fetch category list");
-        fetchCategs(props.uid, setCategList, setDelableCg);
-      },
-      () => {
-        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
-      }
-    );
-
-  }, [props, navigate]);
-  
-  // get and show item data
-  useEffect(() => {
-    if (props.loggedIn !== true | props.onLogout == null) return;
-
     if (dbData === null) {
       checkAPI(
-        () => {
-          console.log("token valid -> fetch item from server");
-          fetchItem(itemId, setItem);
+        async () => {
+          console.log("token valid -> fetch item from server, fetch category list");
+          await fetchItem(itemId, setItem);
+          fetchCategs(props.uid, setCategList, setDelableCg);
+          setInitLoad(true);
         },
         () => {
           noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
@@ -152,7 +142,8 @@ const ItemEdit = (props) => {
         }
       );
     }
-    else { console.log("dbData", dbData); setItem(dbData); }
+    else { console.log("dbData", dbData); setItem(dbData); setInitLoad(true); }
+
   }, [props, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
@@ -199,7 +190,9 @@ const ItemEdit = (props) => {
               <h4 className={"big-img-warn warning"}>Image must be under 250KB.</h4>
             : null}
             <div className={"item-info"}>
-              <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
+              <form id="editItem" disabled={!initLoad || ctgDeleting}
+                onSubmit={handleSaveItem} onChange={() => setWarning("")}
+              >
                 <table><tbody>
                   <tr>
                     <td>Name:</td>
@@ -250,7 +243,7 @@ const ItemEdit = (props) => {
             >
               <TextButton altStyle>Cancel</TextButton>
             </Link>
-            <TextButton form="editItem" type="submit">Save</TextButton>
+            <TextButton form="editItem" type="submit" disabled={!initLoad || ctgDeleting}>Save</TextButton>
           </div>
           
           {submitting ? <Submitting /> : null}

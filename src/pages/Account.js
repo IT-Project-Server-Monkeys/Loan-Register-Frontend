@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import '../styles/Account.scss'
 import { TextBkgBox, ToggleInput, TextButton, Loading, NoAccess, Header } from '../components';
 import { checkAPI, API } from '../utils/api';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { noAccessRedirect } from "../utils/helpers";
 import { useMediaQuery } from "react-responsive";
 
@@ -42,7 +42,7 @@ const Account = (props) => {
       return;
     }
 
-    checkAPI(
+    await checkAPI(
       async () => {
         console.log("token valid -> check for duplicate username & save username");
         
@@ -68,6 +68,7 @@ const Account = (props) => {
           setNewName(userInfo.display_name);
         }
 
+        setNameSub(false);
       },
 
       () => { // invalid tokens
@@ -75,8 +76,6 @@ const Account = (props) => {
         console.log("Session expired");
       }
     );
-
-    setNameSub(false);
   }
 
   // if the entered login email is not unique, show warning
@@ -90,7 +89,7 @@ const Account = (props) => {
     const failAlert = "There was an error saving your login email. Please try again later.";
     const onFail = () => { setNewEmail(userInfo.login_email); alert(failAlert); }
 
-    checkAPI(
+    await checkAPI(
       async () => {
         console.log("token valid -> check for duplicate email & save email");
     
@@ -115,6 +114,7 @@ const Account = (props) => {
           setWarning(`The login email ${email} is taken.`);
           setNewEmail(userInfo.login_email);
         }
+        setEmailSub(false);
       },
       () => { // invalid tokens
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
@@ -122,7 +122,6 @@ const Account = (props) => {
       }
     );
 
-    setEmailSub(false);
   }
 
   // redirect user away from page if user is not logged in
@@ -179,7 +178,7 @@ const Account = (props) => {
                     </tr>
                     <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
                       <td className="toggle-input">
-                        <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
+                        <ToggleInput disabled={ nameSub || emailSub } saveInput={saveName} type="text"
                           onToggle={() => setWarning("")} maxLength={20} isMobile={isMobile}
                           field="display_name" value={newName} setVal={setNewName}
                         />
@@ -190,7 +189,7 @@ const Account = (props) => {
                   <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
                     <td><h3>Username:</h3></td>
                     <td className="toggle-input">
-                      <ToggleInput disabled={nameSub} saveInput={saveName} type="text"
+                      <ToggleInput disabled={ nameSub || emailSub } saveInput={saveName} type="text"
                         onToggle={() => setWarning("")} maxLength={20} isMobile={isMobile}
                         field="display_name" value={newName} setVal={setNewName}
                       />
@@ -207,7 +206,7 @@ const Account = (props) => {
                     </tr>
                     <tr className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
                       <td className="toggle-input">
-                        <ToggleInput disabled={emailSub} saveInput={saveEmail}
+                        <ToggleInput disabled={ nameSub || emailSub } saveInput={saveEmail}
                           setVal={setNewEmail} isMobile={isMobile} type="email"
                           field="login_email" value={newEmail} onToggle={() => setWarning("")}
                         />
@@ -218,7 +217,7 @@ const Account = (props) => {
                   <tr>
                     <td><h3>Email:</h3></td>
                     <td className="toggle-input">
-                      <ToggleInput disabled={emailSub} saveInput={saveEmail}
+                      <ToggleInput disabled={ nameSub || emailSub } saveInput={saveEmail}
                         setVal={setNewEmail} isMobile={isMobile} type="email"
                         field="login_email" value={newEmail} onToggle={() => setWarning("")}
                       />
@@ -229,13 +228,13 @@ const Account = (props) => {
             </tbody></table>
 
             <h4 className="warning">{warning}</h4>
-            <a href="/change-password">
+            <Link to="/change-password">
               <TextButton disabled={ nameSub || emailSub } type="button"
                 style={isMobile ? {fontSize: "30px"} : {}}
               >
                 Change password
               </TextButton>
-            </a>
+            </Link>
           </TextBkgBox>
         </div>
       }

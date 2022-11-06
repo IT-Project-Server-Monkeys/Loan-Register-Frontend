@@ -33,10 +33,10 @@ const ItemHistory = (props) => {
     if (itemId == null || props.onLogout == null) return;
 
     checkAPI(
-      () => {
+      async () => {
         console.log("token valid -> fetch item history");
         
-        API.get('/loans?item_id=' + itemId)
+        await API.get('/loans?item_id=' + itemId)
         .then((res) => {
           // console.log(res)
           var loans = res.data;

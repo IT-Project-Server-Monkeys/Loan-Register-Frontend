@@ -19,6 +19,7 @@ const AddItem = (props) => {
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
   const [newCateg, setNewCateg] = useState("");
+  const [ctgDeleting, setCtgDeleting] = useState(false);
   
   const [submitting, setSubmitting] = useState(false);
   const [warning, setWarning] = useState("");
@@ -54,11 +55,13 @@ const AddItem = (props) => {
   // category changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
-  const handleDelCg = (categ) => {
-    checkAPI(
+  const handleDelCg = async (categ) => {
+    setCtgDeleting(true);
+    await checkAPI(
       () => {
         console.log("token valid -> delete category");
         deleteCategory(categ, setCategList, props.uid);
+        setCtgDeleting(false);
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
@@ -105,7 +108,7 @@ const AddItem = (props) => {
       });
     }
 
-    checkAPI(
+    await checkAPI(
       async () => {
         console.log("token valid -> save item");
 
@@ -145,7 +148,9 @@ const AddItem = (props) => {
               <h4 className={"big-img-warn warning"}>Image must be under 250KB.</h4>
             : <span></span>}
             <div className={"item-info"}>
-              <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
+              <form id="editItem" disabled={ctgDeleting}
+                onSubmit={handleSaveItem} onChange={() => setWarning("")}
+              >
                 <table><tbody>
                   <tr>
                     <td>Name:</td>
@@ -192,7 +197,7 @@ const AddItem = (props) => {
             <TextButton altStyle
               onClick={() => navigate(`/dashboard`)}
             >Cancel</TextButton>
-            <TextButton form="editItem" type="submit">Save</TextButton>
+            <TextButton form="editItem" type="submit" disabled={ctgDeleting}>Save</TextButton>
           </div>
           {submitting ? <Submitting /> : null}
         </div>

@@ -64,7 +64,7 @@ const ItemDetails = (props) => {
   const handleCrtLn = async (input) => {
     setSubmitting(true);
 
-    checkAPI(() => {
+    await checkAPI(() => {
       console.log("token valid -> create loan");
 
       createLoan(
@@ -91,7 +91,7 @@ const ItemDetails = (props) => {
   const handleEdtLn = async (input) => {
     setSubmitting(true);
 
-    checkAPI(
+    await checkAPI(
       () => {
         console.log("token valid -> edit loan");
 
@@ -120,7 +120,7 @@ const ItemDetails = (props) => {
   const handleRtnLn = async () => {
     setSubmitting(true);
 
-    checkAPI(
+    await checkAPI(
       async () => {
         console.log("token valid -> return loan");
         await returnLoan(
@@ -144,9 +144,19 @@ const ItemDetails = (props) => {
 
   }
 
+
+  useEffect(() => {
+    if (ownName === "" || allLoanees === {}) return;
+
+    var loanees = allLoanees;
+    delete loanees[ownName];
+    setSuggestedLoanees(Object.keys(loanees).sort(noCaseCmp));
+  }, [ownName, allLoanees]);
+
+  // get and show item data
   // get all loanees & set loanee suggest list for loan form
   useEffect(() => {
-    if (props.loggedIn !== true || navigate == null) return;
+    if (props.loggedIn !== true || props.onLogout == null) return;
 
     const fetchUser = async () => {
       let fetchedData = null;
@@ -163,38 +173,14 @@ const ItemDetails = (props) => {
       setOwnName(fetchedData.display_name);
     };
 
-    checkAPI(
-      () => {
-        console.log("token valid -> get all loanee list & own name");
-        fetchUser();
-        fetchAllUsernames(setAllLoanees);
-      },
-      () => {
-        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
-      })
-
-    setSubmitting(false);
-  }, [props, navigate]);
-
-  useEffect(() => {
-    if (ownName === "" || allLoanees === {}) return;
-
-    var loanees = allLoanees;
-    delete loanees[ownName];
-    setSuggestedLoanees(Object.keys(loanees).sort(noCaseCmp));
-  }, [ownName, allLoanees]);
-
-  // get and show item data
-  useEffect(() => {
-    if (props.loggedIn !== true || props.onLogout == null) return;
-
     console.log("dbData", dbData);
     if (dbData === null || dbData.item_name == null) {
       checkAPI(
-        () => {
-          console.log("token valid -> fetch item from server")
-          fetchItem(itemId, setItem);
+        async () => {
+          console.log("token valid -> fetch item from server, get all loanee list & own name")
+          await fetchItem(itemId, setItem);
+          fetchAllUsernames(setAllLoanees);
+          fetchUser();
         },
         () => {
           noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
@@ -208,7 +194,19 @@ const ItemDetails = (props) => {
         loan_start_date: <Loading />, intended_return_date: <Loading />,
         loan_status: dbData.being_loaned ? <Loading /> : "Available",
       });
+
+      checkAPI(
+        async () => {
+          console.log("token valid -> get all loanee list & own name");
+          fetchAllUsernames(setAllLoanees);
+          fetchUser();
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+          console.log("Session expired");
+        })
     }
+
   }, [props.loggedIn, props.onLogout, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
@@ -226,25 +224,14 @@ const ItemDetails = (props) => {
       setLoaneeView(false);
     }
 
-    if (item.being_loaned) {
-      checkAPI(
-        () => {
-          console.log("token valid -> fetch loan data");
-          fetchCurLoan(item.item_id, setItem);
-        },
-        () => {
-          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-          console.log("Session expired");
-        }
-      );
-    }
+    if (item.being_loaned) fetchCurLoan(item.item_id, setItem);
     else {
       setLoaneeName("");
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
     // eslint-disable-next-line
-  }, [item.being_loaned, props.uid])
+  }, [item.item_owner, props.uid])
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
@@ -313,10 +300,8 @@ const ItemDetails = (props) => {
             <div className={"btn-list"}>
               <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
               {item.being_loaned ? <>
-                {typeof(item.loan_id) != "string" ? <></> : <>
-                  <TextButton onClick={toggle}>Edit Loan</TextButton>
-                  <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
-                </>}
+                <TextButton onClick={toggle} disabled={typeof(item.loan_id) != "string"}>Edit Loan</TextButton>
+                <TextButton onClick={handleRtnLn} disabled={typeof(item.loan_id) != "string"}>Mark Return</TextButton>
               </> :
                 <TextButton onClick={toggle}>Loan Item</TextButton>
               }

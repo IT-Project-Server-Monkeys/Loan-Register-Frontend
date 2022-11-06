@@ -49,7 +49,7 @@ const ChangePassword = (props) => {
       };
       console.log(formData);
 
-      checkAPI(async () => {
+      await checkAPI(async () => {
         console.log("token valid -> change password");
         await API(`/users`, {
           method: "put", data: formData,
@@ -58,14 +58,13 @@ const ChangePassword = (props) => {
           .then((res) => { console.log(res); navigate("/account"); })
           .catch((err) => {
             console.log(err);
+            setSubmitting(false);
             alert("There was an error saving your password. Please try again later.");
           });
       }, () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
         console.log("Session expired");
       });
-
-      setSubmitting(false);
     }
   };
 
