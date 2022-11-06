@@ -2,7 +2,7 @@ import { API } from "./api";
 import { noCaseCmp } from "./helpers";
 
 // gets item from server
-const fetchItem = async (itemId, setItem) => {
+const fetchItem = async (itemId, setItem, onFailure) => {
   let fetchedData = null;
   if (itemId == null) return;
 
@@ -14,7 +14,8 @@ const fetchItem = async (itemId, setItem) => {
     ...i, ...fetchedData, item_id: itemId,
     loan_status: fetchedData.being_loaned ? null : "Available",
     image_url: fetchedData.image_url ? fetchedData.image_url : ""
-  }});
+  }})
+  else onFailure();
 }
 
 // gets all items of a user from server

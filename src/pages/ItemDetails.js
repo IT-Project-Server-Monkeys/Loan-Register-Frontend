@@ -178,7 +178,10 @@ const ItemDetails = (props) => {
       checkAPI(
         async () => {
           console.log("token valid -> fetch item from server, get all loanee list & own name")
-          await fetchItem(itemId, setItem);
+          await fetchItem(itemId, setItem, () => {
+            noAccessRedirect("/dashboard", navigate, setNoAccess);
+            return;
+          });
           fetchAllUsernames(setAllLoanees);
           fetchUser();
         },

@@ -132,7 +132,10 @@ const ItemEdit = (props) => {
       checkAPI(
         async () => {
           console.log("token valid -> fetch item from server, fetch category list");
-          await fetchItem(itemId, setItem);
+          await fetchItem(itemId, setItem, () => {
+            noAccessRedirect("/dashboard", navigate, setNoAccess);
+            return;
+          });
           fetchCategs(props.uid, setCategList, setDelableCg);
           setInitLoad(true);
         },

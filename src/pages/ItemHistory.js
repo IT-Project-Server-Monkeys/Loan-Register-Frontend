@@ -1,36 +1,67 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { Row, Col, Card, CardBody, CardTitle} from 'reactstrap';
 import '../styles/ItemHistory.scss';
 import { checkAPI, API } from '../utils/api';
 import dateFormat from 'dateformat';
 import { statusColor } from '../utils/constants';
-import { Header, NoAccess } from '../components';
+import { Header, Loading, NoAccess } from '../components';
 import { noAccessRedirect } from '../utils/helpers';
 import { useMediaQuery } from 'react-responsive'
+import { fetchItem } from '../utils/itemHelpers';
 
 
 const ItemHistory = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
+
+  const itemId = useParams().id;
+  const [item, setItem] = useState({item_name: <Loading />, item_owner: null});
+  const dbData = location.state ? location.state.item : null;
 
   const [loans, setLoans] = useState([]);
 
-  const itemId = location.state ? location.state.itemId : '';
-  const itemName = location.state ? location.state.itemName : '';
+  // const itemName = location.state ? location.state.item.item_name : '';
+  // const itemOwner = location.state ? location.state.item.item_owner : null;
 
+  useEffect(() => {}, [props])
+
+  // get item
   // redirect user away from page if user is not logged in
   useEffect(() => {
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
     if (props.loggedIn === false) {
       noAccessRedirect("/login", navigate, setNoAccess);
     }
-    // redirect if user is not item owner?
-  }, [props.loggedIn, navigate])
+    if (dbData === null) {
+      checkAPI(
+        async () => {
+          console.log("token valid -> fetch item from server");
+          await fetchItem(itemId, setItem, () => {
+            noAccessRedirect("/dashboard", navigate, setNoAccess);
+            return;
+          });
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+          console.log("Session expired");
+        }
+      );
+    }
+    else { console.log("dbData", dbData); setItem(dbData); }
+
+  }, [props, itemId, dbData, navigate])
 
   useEffect(() => {
-    if (itemId == null || props.onLogout == null) return;
+    console.log(item);
+    
+    if (item.item_owner == null || props.onLogout == null || props.uid == null) return;
+    if (props.uid !== item.item_owner) {
+      noAccessRedirect("/dashboard", navigate, setNoAccess);
+      return;
+    }
 
     checkAPI(
       async () => {
@@ -56,20 +87,18 @@ const ItemHistory = (props) => {
       }
     );
 
-  }, [props, itemId, navigate]);
-
-  console.log(loans)
+  }, [props, itemId, item, navigate]);
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className="page-margin history">
           <span className="back-arrow">
             <AiOutlineArrowLeft size={40} color="var(--blue-color)" onClick={() => navigate(-1)} />
           </span>
           <div className='hist-container'>
             <h1>
-              <span style={{color: 'var(--blue-color)'}}>{itemName} </span>
+              <span style={{color: 'var(--blue-color)'}}>{item.item_name} </span>
               Loan History
             </h1>
             {
