@@ -45,10 +45,10 @@ const checkAPI = async (onSuccess, onFailure) => {
       // console.log(res.data);
       onSuccess();
     })
-    .catch(err => {
+    .catch(async err => {
       // console.log(err);
       if (err.response.status === 400 || err.response.status === 403)
-        refreshAPI();
+        await refreshAPI();
       else {
         window.sessionStorage.removeItem("accessToken");
         window.sessionStorage.removeItem("refreshToken");
