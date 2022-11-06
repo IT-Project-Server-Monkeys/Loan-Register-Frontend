@@ -11,7 +11,7 @@ import { checkAPI } from "../utils/api";
 const ItemEdit = (props) => {
   // page navigation
   const navigate = useNavigate();
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const location = useLocation();
   const [submitting, setSubmitting] = useState(false);
   const [initLoad, setInitLoad] = useState(false);
@@ -156,7 +156,7 @@ const ItemEdit = (props) => {
   // if user is not item owner, redirect them away from page
   // else, loan original information to display on page
   useEffect(() => {
-    if (props.loggedIn !== true) return;
+    if (props.loggedIn !== true || props.uid == null) return;
     if (item.item_owner == null) return;
     if (props.uid !== item.item_owner) {
       noAccessRedirect("/dashboard", navigate, setNoAccess);
@@ -171,7 +171,7 @@ const ItemEdit = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> : 
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"item-page"}>
           <div className={"item-details"}>
             <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>

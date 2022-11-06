@@ -14,9 +14,9 @@ export const compArr = (arr1, arr2) => {
   return arr1.toString() === arr2.toString()
 }
 
-export const noAccessRedirect = (page, navigate, setPopupOpen, effect = () => {}) => {
-  setPopupOpen(true);
-  setTimeout(() => { effect(); navigate(page); }, 3000);
+export const noAccessRedirect = (page, navigate, setNoAccess, logout = null) => {
+  setNoAccess([true, logout != null]);
+  setTimeout(() => { if (logout != null) logout(); navigate(page); }, 3000);
 }
 
 // assume locale DD/MM/YYYY format

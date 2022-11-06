@@ -8,7 +8,7 @@ import { useMediaQuery } from "react-responsive";
 
 const Account = (props) => {
   // page navigation
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
   const isTablet = useMediaQuery({ maxDeviceWidth: 1080 });
   const isMobile = useMediaQuery({ maxDeviceWidth: 670 });
@@ -165,7 +165,7 @@ const Account = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={`account-page ${isTablet ? isMobile ? "mobile" : "tablet" : ""}`}>
           <TextBkgBox className={isTablet ? isMobile ? "mobile" : "tablet" : ""}>
             <h1>Account</h1>

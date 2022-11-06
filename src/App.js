@@ -58,7 +58,7 @@ function App() {
             <Route path="/item-details/:id" >
               <Route path="" element={<ItemDetails loggedIn={loggedIn} uid={uid} onLogout={logoutHandler} />} />
               <Route path="edit" element={<ItemEdit loggedIn={loggedIn} uid={uid} onLogout={logoutHandler} />} />
-              <Route path="history" element={<ItemHistory loggedIn={loggedIn} onLogout={logoutHandler} />} />
+              <Route path="history" element={<ItemHistory loggedIn={loggedIn} uid={uid} onLogout={logoutHandler} />} />
             </Route>
             <Route path="/stats" element={<Stats uid={uid} loggedIn={loggedIn} onLogout={logoutHandler} />} />
             <Route path="/signup" element={<Signup loggedIn={loggedIn} onLogout={logoutHandler} />} />

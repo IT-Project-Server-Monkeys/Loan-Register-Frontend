@@ -7,7 +7,9 @@ const NoAccess = (props) => {
   return (
     <div className="overlay" style={props.style}>
       <div className={"no-access"}>
-        <h4>You do not have permission to access this page!</h4>
+        <h4>{props.sessionExpired === true
+        ? "Your session has expired due to inactivity. Please log in again."
+        : "You do not have permission to view this page!"}</h4>
         <p>Redirecting...</p>
       </div>
     </div>

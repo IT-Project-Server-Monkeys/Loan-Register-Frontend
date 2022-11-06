@@ -9,7 +9,7 @@ import { noAccessRedirect } from "../utils/helpers";
 import { checkAPI } from "../utils/api";
 
 const AddItem = (props) => {
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   const [itemImg, setItemImg] = useState(null);
@@ -130,7 +130,7 @@ const AddItem = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"item-page"}>
           <div className={"item-details"}>
             <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>

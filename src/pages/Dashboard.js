@@ -52,7 +52,7 @@ const displayOptions = [
 const LoanerDashboard = (props) => {
   const searchRef = useRef();
 
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   const [gridView, setGridView] = useState(true);
@@ -790,7 +790,7 @@ const LoanerDashboard = (props) => {
  
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :       
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :    
         <div className="page-margin dashboard">
           {
             isMobileView ?

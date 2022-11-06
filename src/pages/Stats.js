@@ -7,6 +7,7 @@ import Plot from 'react-plotly.js';
 import { fetchUserItems } from '../utils/itemHelpers';
 import { fetchUserLoans } from '../utils/loanHelpers';
 import { useMediaQuery } from 'react-responsive';
+import { checkAPI } from '../utils/api';
 
 const Stats = (props) => {
   const [noAccess, setNoAccess] = useState(false);
@@ -89,10 +90,19 @@ const Stats = (props) => {
 
   // get overall stats
   useEffect(() => {
-    if (props.loggedIn !== true || props.uid == null) return;
-    fetchUserItems(props.uid, setAllItems);
-    fetchUserLoans(props.uid, setAllLoans);
-  }, [props]);
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
+    checkAPI(
+      () => {
+        console.log("token valid -> fetch stats");
+        fetchUserItems(props.uid, setAllItems);
+        fetchUserLoans(props.uid, setAllLoans);
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
+  }, [props, navigate]);
 
   useEffect(() => {
     clearItems();

@@ -16,7 +16,7 @@ const Login = (props) => {
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
 
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   const isMobile = useMediaQuery({
@@ -102,7 +102,7 @@ const Login = (props) => {
   
     return (
       <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-        {noAccess ? <NoAccess /> :
+        {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
           <div className={"login"}>
             <div className={"background"}>
               <TextBkgBox className={isMobile ? "mobile" : ""}>

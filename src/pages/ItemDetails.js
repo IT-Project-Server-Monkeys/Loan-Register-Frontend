@@ -14,7 +14,7 @@ import { checkAPI, API } from "../utils/api";
 const ItemDetails = (props) => {
   // page navigation
   const navigate = useNavigate();
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const [loaneeView, setLoaneeView] = useState(true);
 
   // eslint-disable-next-line
@@ -25,7 +25,7 @@ const ItemDetails = (props) => {
   const dbData = location.state ? location.state.item : null;
 
   const [item, setItem] = useState({
-    item_name: <Loading />, image_url: "",
+    item_name: <Loading />, image_url: "", item_owner: null,
     category: <Loading />, description: <Loading />, loan_status: <Loading />,
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
@@ -156,7 +156,7 @@ const ItemDetails = (props) => {
   // get and show item data
   // get all loanees & set loanee suggest list for loan form
   useEffect(() => {
-    if (props.loggedIn !== true || props.onLogout == null) return;
+    if (props.loggedIn !== true || props.onLogout == null || props.uid == null) return;
 
     const fetchUser = async () => {
       let fetchedData = null;
@@ -207,7 +207,7 @@ const ItemDetails = (props) => {
         })
     }
 
-  }, [props.loggedIn, props.onLogout, itemId, dbData, navigate]);
+  }, [props, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
@@ -235,7 +235,7 @@ const ItemDetails = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"item-page"}>
 
           {loaneeView ? <></> :
@@ -298,7 +298,9 @@ const ItemDetails = (props) => {
 
           {loaneeView ? <></> :
             <div className={"btn-list"}>
-              <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
+              <Link to="history" state={{item: item}} reloadDocument={false}>
+                <TextButton>History</TextButton>
+              </Link>
               {item.being_loaned ? <>
                 <TextButton onClick={toggle} disabled={typeof(item.loan_id) != "string"}>Edit Loan</TextButton>
                 <TextButton onClick={handleRtnLn} disabled={typeof(item.loan_id) != "string"}>Mark Return</TextButton>

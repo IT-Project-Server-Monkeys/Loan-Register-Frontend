@@ -9,7 +9,7 @@ import { useMediaQuery } from "react-responsive";
 
 const ChangePassword = (props) => {
   // page navigation
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
   
   // form submission
@@ -77,7 +77,7 @@ const ChangePassword = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={`change-password ${isMobile ? "mobile" : ""}`}>
           <TextBkgBox className={isMobile ? "mobile" : ""}>
             <h1>Change password</h1>
