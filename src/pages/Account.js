@@ -26,18 +26,13 @@ const Account = (props) => {
   // if the entered display name is not unique, show warning
   // else, submit data to the server
   const saveName = async (name) => {
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
+    // disallow further edit until server GET & PUT requests have been completed
+    setNameSub(true);
+    setNewName(<Loading />);
 
     let fetchedData = [];
     const failAlert = "There was an error saving your username. Please try again later.";
     const onFail = () => { setNewName(userInfo.display_name); alert(failAlert); }
-    
-    // disallow further edit until server GET & PUT requests have been completed
-    setNameSub(true);
-    setNewName(<Loading />);
 
     // disallow leading/trailing spaces
     if (/^\s/.test(name) || /\s$/.test(name)) {
@@ -46,28 +41,40 @@ const Account = (props) => {
       setNewName(userInfo.display_name);
       return;
     }
-    
-    await API.get(`/users?display_name=${name}`)
-      .then((res) => {fetchedData = res.data})
-      .catch((err) => { console.log(err); fetchedData = false; });
 
-    if (fetchedData === false) onFail();
-    else if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
-      let formData = { _id: props.uid, display_name: name};
-      await API(`/users`, {
-        method: "put", data: formData,
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((res) => {
-          console.log(res);
-          setNewName(name);
-          setUserInfo((info) => {return {...info, display_name: name}});
-        })
-        .catch((err) => { console.log(err); onFail(); });
-    } else {
-      setWarning(`The username "${name}" is taken.`);
-      setNewName(userInfo.display_name);
-    }
+    checkAPI(
+      async () => {
+        console.log("token valid -> check for duplicate username & save username");
+        
+        await API.get(`/users?display_name=${name}`)
+          .then((res) => {fetchedData = res.data})
+          .catch((err) => { console.log(err); fetchedData = false; });
+    
+        if (fetchedData === false) onFail();
+        else if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
+          let formData = { _id: props.uid, display_name: name};
+          await API(`/users`, {
+            method: "put", data: formData,
+            headers: { "Content-Type": "application/json" },
+          })
+            .then((res) => {
+              console.log(res);
+              setNewName(name);
+              setUserInfo((info) => {return {...info, display_name: name}});
+            })
+            .catch((err) => { console.log(err); onFail(); });
+        } else {
+          setWarning(`The username "${name}" is taken.`);
+          setNewName(userInfo.display_name);
+        }
+
+      },
+
+      () => { // invalid tokens
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
 
     setNameSub(false);
   }
@@ -75,40 +82,46 @@ const Account = (props) => {
   // if the entered login email is not unique, show warning
   // else, submit data to the server
   const saveEmail = async (email) => {
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
+    // disallow further edit until server GET & PUT requests have been completed
+    setEmailSub(true);
+    setNewEmail(<Loading />);
 
     let fetchedData = [];
     const failAlert = "There was an error saving your login email. Please try again later.";
     const onFail = () => { setNewEmail(userInfo.login_email); alert(failAlert); }
 
-    // disallow further edit until server GET & PUT requests have been completed
-    setEmailSub(true);
-    setNewEmail(<Loading />);
+    checkAPI(
+      async () => {
+        console.log("token valid -> check for duplicate email & save email");
+    
+        await API.get(`/users?email=${email}`)
+          .then((res) => {fetchedData = res.data})
+          .catch((err) => { console.log(err); fetchedData = false; });
+    
+        if (fetchedData === false) onFail();
+        else if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
+          let formData = { _id: props.uid, login_email: email};
+          await API(`/users`, {
+            method: "put", data: formData,
+            headers: { "Content-Type": "application/json" },
+          })
+            .then((res) => {
+              console.log(res);
+              setNewEmail(email);
+              setUserInfo((info) => {return {...info, login_email: email}});
+            })
+            .catch((err) => { console.log(err); onFail() });
+        } else {
+          setWarning(`The login email ${email} is taken.`);
+          setNewEmail(userInfo.login_email);
+        }
+      },
+      () => { // invalid tokens
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
 
-    await API.get(`/users?email=${email}`)
-      .then((res) => {fetchedData = res.data})
-      .catch((err) => { console.log(err); fetchedData = false; });
-
-    if (fetchedData === false) onFail();
-    else if (fetchedData.length === 0 || fetchedData[0]._id === props.uid) {
-      let formData = { _id: props.uid, login_email: email};
-      await API(`/users`, {
-        method: "put", data: formData,
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((res) => {
-          console.log(res);
-          setNewEmail(email);
-          setUserInfo((info) => {return {...info, login_email: email}});
-        })
-        .catch((err) => { console.log(err); onFail() });
-    } else {
-      setWarning(`The login email ${email} is taken.`);
-      setNewEmail(userInfo.login_email);
-    }
     setEmailSub(false);
   }
 
@@ -139,10 +152,16 @@ const Account = (props) => {
       setNewEmail(fetchedData.login_email);
     };
 
-    checkAPI(() => fetchUser(), () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
+    checkAPI(
+      () => {
+        console.log("token valid -> fetch user data") 
+        fetchUser();
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
   }, [props, navigate]);
 
   return (

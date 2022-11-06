@@ -64,79 +64,89 @@ const ItemDetails = (props) => {
   const handleCrtLn = async (input) => {
     setSubmitting(true);
 
-    checkAPI(() => {}, () => {
+    checkAPI(() => {
+      console.log("token valid -> create loan");
+
+      createLoan(
+        { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
+        () => {
+          if (!item.visible) makeVisible(itemId);
+          navigate(`/item-details/${itemId}`, {state: null});
+          window.location.reload()
+        },
+        () => {
+          setSubmitting(false);
+          alert("There was an error saving your loan. Please try again later.");
+        }
+      )
+
+    }, () => {
       noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
       console.log("Session expired");
     });
 
-    createLoan(
-      { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
-      () => {
-        if (!item.visible) makeVisible(itemId);
-        navigate(`/item-details/${itemId}`, {state: null});
-        window.location.reload()
-      },
-      () => {
-        setSubmitting(false);
-        alert("There was an error saving your loan. Please try again later.");
-      }
-    )
   };
 
   // edits existing loan
   const handleEdtLn = async (input) => {
     setSubmitting(true);
 
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
-
-    await editLoan(
-      { ...input, _id: item.loan_id, item_image: item.image_url },
+    checkAPI(
       () => {
-        if (!item.visible) makeVisible(itemId);
-        navigate(`/item-details/${itemId}`, {state: null});
-        window.location.reload()
+        console.log("token valid -> edit loan");
+
+        editLoan(
+          { ...input, _id: item.loan_id, item_image: item.image_url },
+          () => {
+            if (!item.visible) makeVisible(itemId);
+            navigate(`/item-details/${itemId}`, {state: null});
+            window.location.reload()
+          },
+          () => {
+            setSubmitting(false);
+            alert("There was an error saving your loan. Please try again later.");
+          }
+        )
       },
       () => {
-        setSubmitting(false);
-        alert("There was an error saving your loan. Please try again later.");
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
       }
-    )
+    );
+
   }
 
   // returns existing loan
   const handleRtnLn = async () => {
     setSubmitting(true);
 
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
-
-    await returnLoan(
-      item,
-      () => {
-        if (!item.visible) makeVisible(itemId);
-        navigate(`/item-details/${itemId}`, {state: null});
-        window.location.reload()
+    checkAPI(
+      async () => {
+        console.log("token valid -> return loan");
+        await returnLoan(
+          item,
+          () => {
+            if (!item.visible) makeVisible(itemId);
+            navigate(`/item-details/${itemId}`, {state: null});
+            window.location.reload()
+          },
+          () => {
+            setSubmitting(false);
+            alert("There was an error saving your loan. Please try again later.");
+          }
+        );
       },
       () => {
-        setSubmitting(false);
-        alert("There was an error saving your loan. Please try again later.");
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
       }
-    )
+    );
+
   }
 
   // get all loanees & set loanee suggest list for loan form
   useEffect(() => {
     if (props.loggedIn !== true || navigate == null) return;
-
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    })
 
     const fetchUser = async () => {
       let fetchedData = null;
@@ -152,10 +162,19 @@ const ItemDetails = (props) => {
       }];
       setOwnName(fetchedData.display_name);
     };
-    fetchUser();
+
+    checkAPI(
+      () => {
+        console.log("token valid -> get all loanee list & own name");
+        fetchUser();
+        fetchAllUsernames(setAllLoanees);
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      })
 
     setSubmitting(false);
-    fetchAllUsernames(setAllLoanees);
   }, [props, navigate]);
 
   useEffect(() => {
@@ -168,15 +187,21 @@ const ItemDetails = (props) => {
 
   // get and show item data
   useEffect(() => {
-    if (props.loggedIn !== true) return;
-
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
+    if (props.loggedIn !== true || props.onLogout == null) return;
 
     console.log("dbData", dbData);
-    if (dbData === null || dbData.item_name == null) fetchItem(itemId, setItem);
+    if (dbData === null || dbData.item_name == null) {
+      checkAPI(
+        () => {
+          console.log("token valid -> fetch item from server")
+          fetchItem(itemId, setItem);
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+          console.log("Session expired");
+        }
+      );
+    }
     else {
       console.log(dbData);
       setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
@@ -184,7 +209,7 @@ const ItemDetails = (props) => {
         loan_status: dbData.being_loaned ? <Loading /> : "Available",
       });
     }
-  }, [props.loggedIn, itemId, dbData]);
+  }, [props.loggedIn, props.onLogout, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
@@ -201,18 +226,25 @@ const ItemDetails = (props) => {
       setLoaneeView(false);
     }
 
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
-
-    if (item.being_loaned) fetchCurLoan(item.item_id, setItem);
+    if (item.being_loaned) {
+      checkAPI(
+        () => {
+          console.log("token valid -> fetch loan data");
+          fetchCurLoan(item.item_id, setItem);
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+          console.log("Session expired");
+        }
+      );
+    }
     else {
       setLoaneeName("");
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
-  }, [item, props.uid])
+    // eslint-disable-next-line
+  }, [item.being_loaned, props.uid])
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />

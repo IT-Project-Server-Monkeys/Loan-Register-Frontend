@@ -50,6 +50,7 @@ const ChangePassword = (props) => {
       console.log(formData);
 
       checkAPI(async () => {
+        console.log("token valid -> change password");
         await API(`/users`, {
           method: "put", data: formData,
           headers: { "Content-Type": "application/json" },

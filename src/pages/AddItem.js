@@ -38,19 +38,33 @@ const AddItem = (props) => {
   useEffect(() => {
     if (props.uid == null || props.onLogout == null) return;
 
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
+    checkAPI(
+      () => {
+        console.log("token valid -> fetch category list");
+        fetchCategs(props.uid, setCategList, setDelableCg);
+      },
+      () => { // invalid token
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
 
-    fetchCategs(props.uid, setCategList, setDelableCg);
-  }, [props.uid]);
+  }, [props.uid, props.onLogout, navigate]);
 
   // category changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
-    checkAPI(() => deleteCategory(categ, setCategList, props.uid), () => {});
+    checkAPI(
+      () => {
+        console.log("token valid -> delete category");
+        deleteCategory(categ, setCategList, props.uid);
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
   }
 
   // item img changing
@@ -67,11 +81,6 @@ const AddItem = (props) => {
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
 
     let imgString = "";
 
@@ -96,8 +105,24 @@ const AddItem = (props) => {
       });
     }
 
-    await saveItem(e, null, categList, setCategList, imgString, props.uid, true);
-    navigate(`/dashboard`);
+    checkAPI(
+      async () => {
+        console.log("token valid -> save item");
+
+        if (await saveItem(e, null, categList, setCategList, imgString, props.uid, true))
+          navigate(`/dashboard`);
+        else {
+          setSubmitting(false);
+    
+          // TODO nicer alert
+          alert("There was an error saving your item. Please try again later.");
+        }
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
   }
 
   return (

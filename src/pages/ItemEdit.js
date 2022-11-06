@@ -57,18 +57,22 @@ const ItemEdit = (props) => {
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = (categ) => {
-    checkAPI(() => deleteCategory(categ, setCategList, props.uid), () => {});
+    checkAPI(
+      () => {
+        console.log("token valid -> delete category");
+        deleteCategory(categ, setCategList, props.uid);
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
   }
 
   // save item and post to server
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
 
     let imgString = "";
     
@@ -94,46 +98,61 @@ const ItemEdit = (props) => {
       });
     }
 
-    if (await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false))
-      navigate(`/item-details/${itemId}`,
-      // {state: {item: {
-      //   ...item, image_url: displayImg,
-      //   item_name: newName, category: newCateg, description: newDesc,
-      // }}}
-      );
-    else {
-      setSubmitting(false);
+    checkAPI(
+      async () => {
+        console.log("token valid -> save item");
 
-      // TODO nicer alert
-      alert("There was an error saving your item. Please try again later.");
-    }
+        if (await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false))
+          navigate(`/item-details/${itemId}`);
+        else {
+          setSubmitting(false);
+    
+          // TODO nicer alert
+          alert("There was an error saving your item. Please try again later.");
+        }
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
+
   }
 
   // get list of potential categories for render & modification
   useEffect(() => {
     if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
 
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
+    checkAPI(
+      () => {
+        console.log("token valid -> fetch category list");
+        fetchCategs(props.uid, setCategList, setDelableCg);
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
 
-    fetchCategs(props.uid, setCategList, setDelableCg);
-  }, [props]);
+  }, [props, navigate]);
   
   // get and show item data
   useEffect(() => {
     if (props.loggedIn !== true | props.onLogout == null) return;
 
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
-
-    if (dbData === null) fetchItem(itemId, setItem);
-    else {
-      setItem(dbData);
+    if (dbData === null) {
+      checkAPI(
+        () => {
+          console.log("token valid -> fetch item from server");
+          fetchItem(itemId, setItem);
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+          console.log("Session expired");
+        }
+      );
     }
+    else { console.log("dbData", dbData); setItem(dbData); }
   }, [props, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in

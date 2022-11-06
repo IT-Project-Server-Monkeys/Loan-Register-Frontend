@@ -32,24 +32,30 @@ const ItemHistory = (props) => {
   useEffect(() => {
     if (itemId == null || props.onLogout == null) return;
 
-    checkAPI(() => {}, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
-
-    API.get('/loans?item_id=' + itemId)
-      .then((res) => {
-        // console.log(res)
-        var loans = res.data;
-        // sort by end date
-        loans.sort((a, b) => {
-          return new Date(b.intended_return_date) - new Date(a.intended_return_date)
+    checkAPI(
+      () => {
+        console.log("token valid -> fetch item history");
+        
+        API.get('/loans?item_id=' + itemId)
+        .then((res) => {
+          // console.log(res)
+          var loans = res.data;
+          // sort by end date
+          loans.sort((a, b) => {
+            return new Date(b.intended_return_date) - new Date(a.intended_return_date)
+          })
+          setLoans(loans);
         })
-        setLoans(loans);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+        .catch((e) => {
+          console.log(e);
+        });
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
+
   }, [props, itemId, navigate]);
 
   console.log(loans)

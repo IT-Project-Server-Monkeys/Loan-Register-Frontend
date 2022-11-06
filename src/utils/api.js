@@ -11,8 +11,8 @@ const checkAPI = async (onSuccess, onFailure) => {
   const accessToken = window.sessionStorage.getItem('accessToken');
   const refreshToken = window.sessionStorage.getItem('refreshToken');
 
-  console.log("accessToken", accessToken);
-  console.log("refreshToken", refreshToken);
+  // console.log("accessToken", accessToken);
+  // console.log("refreshToken", refreshToken);
 
   const refreshAPI = async () => {
     await axios(`/refreshToken`, {
@@ -21,13 +21,13 @@ const checkAPI = async (onSuccess, onFailure) => {
       data: { token: refreshToken }
     })
       .then(res => {
-        console.log(res.data);
+        console.log("token refresh");
         window.sessionStorage.setItem("accessToken", res.data.accessToken);
         window.sessionStorage.setItem("refreshToken", res.data.refreshToken);
         onSuccess();
       })
       .catch(err => {
-        console.log(err);
+        // console.log(err);
         window.sessionStorage.removeItem("accessToken");
         window.sessionStorage.removeItem("refreshToken");
         onFailure();
@@ -42,11 +42,11 @@ const checkAPI = async (onSuccess, onFailure) => {
     }
   })
     .then(res => {
-      console.log(res.data);
+      // console.log(res.data);
       onSuccess();
     })
     .catch(err => {
-      console.log(err);
+      // console.log(err);
       if (err.response.status === 400 || err.response.status === 403)
         refreshAPI();
       else {

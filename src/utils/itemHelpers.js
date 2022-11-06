@@ -1,4 +1,4 @@
-import { checkAPI, API } from "./api";
+import { API } from "./api";
 import { noCaseCmp } from "./helpers";
 
 // gets item from server
