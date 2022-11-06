@@ -43,38 +43,53 @@ const Login = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let uid = null;
     let hash = null;
+    let accessToken = null;
+    let refreshToken = null;
+
 
     setSubmitting(true);
 
-    // check if pwd given matches with hashed password
-    await API(`users?email=${email}`)
-    .then((res) => {
-
-      // if there is no data returned
-      if (res.data.length !== 0) {
-        hash = res.data[0].hashed_password;
-        uid = res.data[0]._id;
+    // get hased pwd and jwt tokens from backend
+    await API({
+      method: 'POST',
+      url: '/login',
+      data: {
+        login_email: email
       }
-
     })
-    .catch((err) => console.log(err));
+    .then((res) => {
+      console.log(res)
+      hash = res.data.hashed_password;
+      accessToken = res.data.accessToken
+      refreshToken = res.data.refreshToken
+    })
+    .catch((err) => {
+      console.log('error', err)
+    });
 
+    // check if pwd given matches with hashed password
     if (hash != null) {
       // if there is a password, compare both passwords
       bcrypt.compare(pwd, hash).then((res) => {
-        if (res === true) {
-          props.onLogin(uid);
-          window.location.href='/dashboard';
+        if (res === true) {          
           setEmail('');
           setPwd('');
+
+          // store jwt tokens
+          window.sessionStorage.setItem("accessToken", accessToken);
+          window.sessionStorage.setItem("refreshToken", refreshToken);
+          
+          window.location.href = "/dashboard"
+
         } else {
+          // wrong password
           setErrMsg('Incorrect Credentials');
           errRef.current.focus();
         }
       });
     } else {
+      // user not exsit
       setErrMsg('Incorrect Credentials');
       errRef.current.focus();
     }

@@ -118,7 +118,9 @@ const LoanerDashboard = (props) => {
   // get all items 
   useEffect(() => {
     setLoading(true);
+    console.log('ehy', props.uid, props.loggedIn)
     if (props.loggedIn !== true || props.uid == null) return;
+    console.log(props.uid)
     API.get('/dashboard?user_id=' + props.uid)
       .then((res) => {
         // console.log('dashboard api', res);

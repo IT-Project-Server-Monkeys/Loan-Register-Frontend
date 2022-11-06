@@ -1,13 +1,12 @@
 import axios from 'axios';
 
+const accessToken = window.sessionStorage.getItem('accessToken')
+
 const API = axios.create({
-
   baseURL: process.env.REACT_APP_API_BASE,
-
-  /* add header data here when needed */
-  // header: {
-
-  // }
+  headers: {
+    Authorization: `Bearer ${accessToken}` 
+  }
 
 });
 
