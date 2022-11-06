@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { AiOutlineArrowLeft } from 'react-icons/ai';
-import { Row, Col, Card, CardBody, CardTitle} from 'reactstrap';
+import { Row, Col, Card, CardBody, CardTitle, Spinner} from 'reactstrap';
 import '../styles/ItemHistory.scss';
 import { checkAPI, API } from '../utils/api';
 import dateFormat from 'dateformat';
@@ -22,6 +22,7 @@ const ItemHistory = (props) => {
   const dbData = location.state ? location.state.item : null;
 
   const [loans, setLoans] = useState([]);
+  const [initLoad, setInitLoad] = useState(false);
 
   // const itemName = location.state ? location.state.item.item_name : '';
   // const itemOwner = location.state ? location.state.item.item_owner : null;
@@ -76,6 +77,7 @@ const ItemHistory = (props) => {
             return new Date(b.intended_return_date) - new Date(a.intended_return_date)
           })
           setLoans(loans);
+          setInitLoad(true);
         })
         .catch((e) => {
           console.log(e);
@@ -101,7 +103,7 @@ const ItemHistory = (props) => {
               <span style={{color: 'var(--blue-color)'}}>{item.item_name} </span>
               Loan History
             </h1>
-            {
+            { initLoad ?
               loans.map((loan, i) => (
                 <HistoryCard
                   key={i}
@@ -113,6 +115,10 @@ const ItemHistory = (props) => {
                   status={loan.status}
                 />
               ))
+              : <div className="m-5" style={{display: 'flex'}}>
+                  <Spinner color="primary" style={{width: '2.5rem', height: '2.5rem'}} />
+                  <h5 style={{margin: '0.5rem', color: 'var(--blue-color)'}}>Fetching loans...</h5>
+                </div> 
             }
           </div>
         </div>

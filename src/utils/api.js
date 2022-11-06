@@ -28,8 +28,7 @@ const checkAPI = async (onSuccess, onFailure) => {
       })
       .catch(err => {
         // console.log(err);
-        window.sessionStorage.removeItem("accessToken");
-        window.sessionStorage.removeItem("refreshToken");
+        console.log("refresh token expired")
         onFailure();
       })
   }

@@ -186,7 +186,7 @@ const Signup = (props) => {
 
     return (
       <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-        {noAccess ? <NoAccess /> :
+        {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
           <div className={"sign-up"}>
             <div className={"background"}>
               <TextBkgBox style={{height: "700px"}}>
@@ -204,7 +204,7 @@ const Signup = (props) => {
                         </div>
                       </td>
                       <td>
-                        <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} maxlength="20" required/>
+                        <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} maxLength="20" required/>
                       </td>
                     </tr>
                     <tr>

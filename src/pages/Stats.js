@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Stats.scss'
 import { useNavigate } from 'react-router-dom';
-import { ChartBox, Header, NoAccess } from '../components';
+import { ChartBox, Header, Loading, NoAccess } from '../components';
 import { noAccessRedirect, noCaseCmp } from '../utils/helpers';
 import Plot from 'react-plotly.js';
 import { fetchUserItems } from '../utils/itemHelpers';
@@ -10,7 +10,8 @@ import { useMediaQuery } from 'react-responsive';
 import { checkAPI } from '../utils/api';
 
 const Stats = (props) => {
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
+  const [initLoad, setInitLoad] = useState(false);
   const navigate = useNavigate();
   const isTablet = useMediaQuery({ maxDeviceWidth: 1320 });
   const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
@@ -92,10 +93,11 @@ const Stats = (props) => {
   useEffect(() => {
     if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
     checkAPI(
-      () => {
+      async () => {
         console.log("token valid -> fetch stats");
-        fetchUserItems(props.uid, setAllItems);
-        fetchUserLoans(props.uid, setAllLoans);
+        await fetchUserItems(props.uid, setAllItems);
+        await fetchUserLoans(props.uid, setAllLoans);
+        setInitLoad(true);
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
@@ -170,12 +172,12 @@ const Stats = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"stats-page"}>
           <h1>Statistics</h1>
           <ChartBox style={{gridArea: "ch1"}}>
             { itemVals[0] === 0 && itemVals[1] === 0
-              ? <NoDataWrap>No data</NoDataWrap>
+              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
               : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
                 data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
               />
@@ -183,7 +185,7 @@ const Stats = (props) => {
           </ChartBox>
           <ChartBox style={{gridArea: "ch2"}}>
             { loanVals[0] === 0 && loanVals[1] === 0
-              ? <NoDataWrap>No data</NoDataWrap>
+              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
               : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
                 data={[{...pieData, labels: ["Returned loans", "Unreturned loans"], values: loanVals}]}
               />
@@ -191,7 +193,7 @@ const Stats = (props) => {
           </ChartBox>
           <ChartBox style={{gridArea: "ch3"}}>
             { rtnLnVals[0] === 0 && rtnLnVals[1] === 0
-              ? <NoDataWrap>No data</NoDataWrap>
+              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
               : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
                 data={[{...pieData, labels: ["Timely loans", "Late loans"], values: rtnLnVals}]}
               />
@@ -199,14 +201,14 @@ const Stats = (props) => {
           </ChartBox>
           <div className="bar-box">
             { freqItems.x.length === 0 || Math.max(freqItems.x) === 0
-              ? <NoDataWrap>No data</NoDataWrap>
+              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
               : <Plot className="bar-plot"
                 data={[{...barData, ...freqItems}]}
                 layout={barLayout} useResizeHandler={true}
               />
             }
             { freqLoanees.x.length === 0 || Math.max(freqItems.x) === 0
-              ? <NoDataWrap>No data</NoDataWrap>
+              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
               : <Plot className="bar-plot"
                 data={[{...barData, ...freqLoanees}]}
                 layout={barLayout} useResizeHandler={true}

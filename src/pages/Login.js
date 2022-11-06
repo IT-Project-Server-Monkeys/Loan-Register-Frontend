@@ -26,8 +26,8 @@ const Login = (props) => {
 
   // automatically focus on first input box
   useEffect(() => {
-    emailRef.current.focus();
-  }, [])
+    if (!noAccess[0]) emailRef.current.focus();
+  }, [noAccess])
 
   // redirect user away from page if user is logged in
   useEffect(() => {
@@ -141,7 +141,7 @@ const Login = (props) => {
 
     return (
       <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-        {noAccess ? <NoAccess /> :
+        {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
           <div className={"login"}>
             <div className={"background"}>
               <TextBkgBox>
