@@ -143,10 +143,10 @@ const LoanerDashboard = (props) => {
           setLoaneeItems(loaneeItemsLst);
           // setLoading(false);
     
-          // setDisplayItems({
-          //   loanerItems: loanerItemsLst,
-          //   loaneeItems: loaneeItemsLst
-          // })
+          setDisplayItems({
+            loanerItems: loanerItemsLst,
+            loaneeItems: loaneeItemsLst
+          })
     
           // update visible items
           setVisibilityController({
@@ -409,16 +409,15 @@ const LoanerDashboard = (props) => {
     })
   }
 
-  const applyFilters = (e) => {
+  const getFilterRes = () => {
     // null: no filter selected
     // empty array: filter selected but no matched result
     var res1 = null;     // status
     var res2 = null;     // category
     var res3 = null;     // user
     var results = null;  // final results
-      
-    if (userView === LOANER) {
 
+    if (userView === LOANER) {
       if (filters.status.length > 0) {
         res1 = loanerItems.filter(item => filters.status.includes(item.loan_status))
       }
@@ -443,7 +442,40 @@ const LoanerDashboard = (props) => {
         // // console.log('!!!')
         results = intersection(filters.sortedItems, results)
       }
+    } else {
+      if (filters.status.length > 0) {
+        res1 = loaneeItems.filter(item => filters.status.includes(item.loan_status))
+      }
+      if (filters.category.length > 0) {
+        res2 = loaneeItems.filter(item => filters.category.includes(item.category))
+      }
+      if (filters.user.length > 0) {
+        res3 = loaneeItems.filter(item => filters.user.includes(item.loaner_name))
+      }
 
+      if (res1 === null && res2 === null && res3 === null) {
+        // no filter selected
+        results = loaneeItems;
+      } else {
+        results = intersection(res1, res2);
+        results = intersection(results, res3)
+      }
+
+      if (filters.sortedItems.length > 0) {
+        results = intersection(filters.sortedItems, results)
+      }
+    }
+
+    return results;
+  }
+
+  const applyFilters = (e) => {
+    var results = null;  // final results
+    results = getFilterRes();
+
+    setSearchText("");
+      
+    if (userView === LOANER) {
       switch(visibilityController.display) {
         case ALL:
           setDisplayItems({
@@ -468,29 +500,6 @@ const LoanerDashboard = (props) => {
       }
 
     } else {
-      if (filters.status.length > 0) {
-        res1 = loaneeItems.filter(item => filters.status.includes(item.loan_status))
-      }
-      if (filters.category.length > 0) {
-        res2 = loaneeItems.filter(item => filters.category.includes(item.category))
-      }
-      if (filters.user.length > 0) {
-        res3 = loaneeItems.filter(item => filters.user.includes(item.loaner_name))
-      }
-
-      if (res1 === null && res2 === null && res3 === null) {
-        // no filter selected
-        results = loaneeItems;
-      } else {
-        results = intersection(res1, res2);
-        results = intersection(results, res3)
-      }
-
-      if (filters.sortedItems.length > 0) {
-        results = intersection(filters.sortedItems, results)
-      }
-      
-
       setDisplayItems({
         ...displayItems,
         loaneeItems: results
@@ -522,7 +531,7 @@ const LoanerDashboard = (props) => {
       items = loaneeItems
     }
 
-    const resItems = items.filter(item => {
+    const resItems = intersection(getFilterRes(), items.filter(item => {
       if (
         (item.item_name && item.item_name.toLowerCase().includes(currText)) ||
         (item.category && item.category.toLowerCase().includes(currText)) ||
@@ -533,7 +542,7 @@ const LoanerDashboard = (props) => {
       } else {
         return null;
       }
-    })
+    }))
 
     // // console.log('search items', resItems)
 
