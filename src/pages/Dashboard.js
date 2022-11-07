@@ -122,7 +122,7 @@ const LoanerDashboard = (props) => {
     if (props.loggedIn !== true || props.uid == null) return;
     // console.log(props.uid)
 
-    checkAPI(
+    checkAPI(props.uid,
       () => {
         console.log("token valid -> fetch dashboard items");
 
@@ -190,7 +190,6 @@ const LoanerDashboard = (props) => {
       },
       () => {
       noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
     })
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -245,7 +244,7 @@ const LoanerDashboard = (props) => {
   const updateVisibility = async (id, visible) => {
     setLoading(true);
 
-    await checkAPI(
+    await checkAPI(props.uid,
       async () => {
         console.log("token valid -> hide/unhide item");
 
@@ -284,7 +283,6 @@ const LoanerDashboard = (props) => {
       },
       () => { // onFailure
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       });
 
   }

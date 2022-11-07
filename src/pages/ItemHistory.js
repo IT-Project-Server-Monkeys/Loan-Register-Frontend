@@ -27,17 +27,18 @@ const ItemHistory = (props) => {
   // const itemName = location.state ? location.state.item.item_name : '';
   // const itemOwner = location.state ? location.state.item.item_owner : null;
 
-  useEffect(() => {}, [props])
-
-  // get item
   // redirect user away from page if user is not logged in
   useEffect(() => {
-    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
     if (props.loggedIn === false) {
       noAccessRedirect("/login", navigate, setNoAccess);
     }
+  }, [props.loggedIn, navigate])
+
+  // get item
+  useEffect(() => {
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
     if (dbData === null) {
-      checkAPI(
+      checkAPI(props.uid,
         async () => {
           console.log("token valid -> fetch item from server");
           await fetchItem(itemId, setItem, () => {
@@ -47,7 +48,6 @@ const ItemHistory = (props) => {
         },
         () => {
           noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-          console.log("Session expired");
         }
       );
     }
@@ -64,7 +64,7 @@ const ItemHistory = (props) => {
       return;
     }
 
-    checkAPI(
+    checkAPI(props.uid,
       async () => {
         console.log("token valid -> fetch item history");
         
@@ -85,7 +85,6 @@ const ItemHistory = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
 

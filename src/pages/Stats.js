@@ -92,7 +92,7 @@ const Stats = (props) => {
   // get overall stats
   useEffect(() => {
     if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
-    checkAPI(
+    checkAPI(props.uid,
       async () => {
         console.log("token valid -> fetch stats");
         await fetchUserItems(props.uid, setAllItems);
@@ -101,7 +101,6 @@ const Stats = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
   }, [props, navigate]);

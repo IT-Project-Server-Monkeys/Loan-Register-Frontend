@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const SESSION_REFRESH = 900000; // 15min
+
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_BASE,
   headers: {
@@ -7,7 +9,7 @@ const API = axios.create({
   }
 });
 
-const checkAPI = async (onSuccess, onFailure) => {
+const checkAPI = async (uid, onSuccess, onFailure) => {
   const sessionStart = window.sessionStorage.getItem('sessionStart'); 
   const refreshToken = window.sessionStorage.getItem('refreshToken');
 
@@ -15,7 +17,7 @@ const checkAPI = async (onSuccess, onFailure) => {
     await axios(`/refreshToken`, {
       method: "post",
       baseURL: process.env.REACT_APP_API_BASE,
-      data: { token: refreshToken }
+      data: { token: refreshToken, uid: uid }
     })
       .then(res => {
         console.log("token refresh");
@@ -35,7 +37,7 @@ const checkAPI = async (onSuccess, onFailure) => {
   console.log(`${diff / 60000} minutes passed since session start/refresh`);
 
   // 12.5 minutes - 2.5 min leeway for slow internet connection
-  if (diff >= 750000) refreshAPI();
+  if (diff >= SESSION_REFRESH) refreshAPI();
   else onSuccess();
 }
 

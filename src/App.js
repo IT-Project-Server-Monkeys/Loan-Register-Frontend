@@ -30,15 +30,9 @@ function App() {
     }
     
   }, [])
-
-  // no longer need this function
-  const loginHandler = (uid) => {
-    // window.sessionStorage.setItem("loggedIn", true);
-    // setLoggedIn(true);
-    // setUid(uid);
-  }
   
   const logoutHandler = () => {
+    window.sessionStorage.removeItem("sessionStart"); 
     window.sessionStorage.removeItem("accessToken"); 
     window.sessionStorage.removeItem("refreshToken"); 
     setLoggedIn(false);

@@ -42,7 +42,7 @@ const Account = (props) => {
       return;
     }
 
-    await checkAPI(
+    await checkAPI(props.uid,
       async () => {
         console.log("token valid -> check for duplicate username & save username");
         
@@ -73,7 +73,6 @@ const Account = (props) => {
 
       () => { // invalid tokens
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
   }
@@ -89,7 +88,7 @@ const Account = (props) => {
     const failAlert = "There was an error saving your login email. Please try again later.";
     const onFail = () => { setNewEmail(userInfo.login_email); alert(failAlert); }
 
-    await checkAPI(
+    await checkAPI(props.uid,
       async () => {
         console.log("token valid -> check for duplicate email & save email");
     
@@ -118,7 +117,6 @@ const Account = (props) => {
       },
       () => { // invalid tokens
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
 
@@ -151,14 +149,13 @@ const Account = (props) => {
       setNewEmail(fetchedData.login_email);
     };
 
-    checkAPI(
+    checkAPI(props.uid,
       () => {
         console.log("token valid -> fetch user data") 
         fetchUser();
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
   }, [props, navigate]);

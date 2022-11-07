@@ -49,22 +49,23 @@ const ChangePassword = (props) => {
       };
       console.log(formData);
 
-      await checkAPI(async () => {
-        console.log("token valid -> change password");
-        await API(`/users`, {
-          method: "put", data: formData,
-          headers: { "Content-Type": "application/json" },
-        })
-          .then((res) => { console.log(res); navigate("/account"); })
-          .catch((err) => {
-            console.log(err);
-            setSubmitting(false);
-            alert("There was an error saving your password. Please try again later.");
-          });
-      }, () => {
-        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
-      });
+      await checkAPI(props.uid,
+        async () => {
+          console.log("token valid -> change password");
+          await API(`/users`, {
+            method: "put", data: formData,
+            headers: { "Content-Type": "application/json" },
+          })
+            .then((res) => { console.log(res); navigate("/account"); })
+            .catch((err) => {
+              console.log(err);
+              setSubmitting(false);
+              alert("There was an error saving your password. Please try again later.");
+            });
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        });
     }
   };
 
