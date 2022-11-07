@@ -60,7 +60,7 @@ const ItemEdit = (props) => {
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = async (categ) => {
     setCtgDeleting(true);
-    await checkAPI(
+    await checkAPI(props.uid,
       async () => {
         console.log("token valid -> delete category");
         await deleteCategory(categ, setCategList, props.uid);
@@ -68,7 +68,6 @@ const ItemEdit = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
   }
@@ -102,7 +101,7 @@ const ItemEdit = (props) => {
       });
     }
 
-    await checkAPI(
+    await checkAPI(props.uid,
       async () => {
         console.log("token valid -> save item");
 
@@ -117,7 +116,6 @@ const ItemEdit = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
 
@@ -129,7 +127,7 @@ const ItemEdit = (props) => {
     if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
 
     if (dbData === null) {
-      checkAPI(
+      checkAPI(props.uid,
         async () => {
           console.log("token valid -> fetch item from server, fetch category list");
           await fetchItem(itemId, setItem, () => {
@@ -141,7 +139,6 @@ const ItemEdit = (props) => {
         },
         () => {
           noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-          console.log("Session expired");
         }
       );
     }

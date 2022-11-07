@@ -64,26 +64,26 @@ const ItemDetails = (props) => {
   const handleCrtLn = async (input) => {
     setSubmitting(true);
 
-    await checkAPI(() => {
-      console.log("token valid -> create loan");
+    await checkAPI(props.uid,
+      () => {
+        console.log("token valid -> create loan");
+        createLoan(
+          { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
+          () => {
+            if (!item.visible) makeVisible(itemId);
+            navigate(`/item-details/${itemId}`, {state: null});
+            window.location.reload()
+          },
+          () => {
+            setSubmitting(false);
+            alert("There was an error saving your loan. Please try again later.");
+          }
+        )
 
-      createLoan(
-        { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
-        () => {
-          if (!item.visible) makeVisible(itemId);
-          navigate(`/item-details/${itemId}`, {state: null});
-          window.location.reload()
-        },
-        () => {
-          setSubmitting(false);
-          alert("There was an error saving your loan. Please try again later.");
-        }
-      )
-
-    }, () => {
-      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-      console.log("Session expired");
-    });
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      });
 
   };
 
@@ -91,7 +91,7 @@ const ItemDetails = (props) => {
   const handleEdtLn = async (input) => {
     setSubmitting(true);
 
-    await checkAPI(
+    await checkAPI(props.uid,
       () => {
         console.log("token valid -> edit loan");
 
@@ -110,7 +110,6 @@ const ItemDetails = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
 
@@ -120,7 +119,7 @@ const ItemDetails = (props) => {
   const handleRtnLn = async () => {
     setSubmitting(true);
 
-    await checkAPI(
+    await checkAPI(props.uid,
       async () => {
         console.log("token valid -> return loan");
         await returnLoan(
@@ -138,7 +137,6 @@ const ItemDetails = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
 
@@ -175,7 +173,7 @@ const ItemDetails = (props) => {
 
     console.log("dbData", dbData);
     if (dbData === null || dbData.item_name == null) {
-      checkAPI(
+      checkAPI(props.uid,
         async () => {
           console.log("token valid -> fetch item from server, get all loanee list & own name")
           await fetchItem(itemId, setItem, () => {
@@ -187,7 +185,6 @@ const ItemDetails = (props) => {
         },
         () => {
           noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-          console.log("Session expired");
         }
       );
     }
@@ -198,7 +195,7 @@ const ItemDetails = (props) => {
         loan_status: dbData.being_loaned ? <Loading /> : "Available",
       });
 
-      checkAPI(
+      checkAPI(props.uid,
         async () => {
           console.log("token valid -> get all loanee list & own name");
           fetchAllUsernames(setAllLoanees);
@@ -206,7 +203,6 @@ const ItemDetails = (props) => {
         },
         () => {
           noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-          console.log("Session expired");
         })
     }
 

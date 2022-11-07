@@ -37,27 +37,26 @@ const AddItem = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    if (props.uid == null || props.onLogout == null) return;
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
 
-    checkAPI(
+    checkAPI(props.uid,
       () => {
         console.log("token valid -> fetch category list");
         fetchCategs(props.uid, setCategList, setDelableCg);
       },
       () => { // invalid token
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
 
-  }, [props.uid, props.onLogout, navigate]);
+  }, [props, navigate]);
 
   // category changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
   const handleDelCg = async (categ) => {
     setCtgDeleting(true);
-    await checkAPI(
+    await checkAPI(props.uid,
       () => {
         console.log("token valid -> delete category");
         deleteCategory(categ, setCategList, props.uid);
@@ -65,7 +64,6 @@ const AddItem = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
   }
@@ -108,7 +106,7 @@ const AddItem = (props) => {
       });
     }
 
-    await checkAPI(
+    await checkAPI(props.uid,
       async () => {
         console.log("token valid -> save item");
 
@@ -123,7 +121,6 @@ const AddItem = (props) => {
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
-        console.log("Session expired");
       }
     );
   }
