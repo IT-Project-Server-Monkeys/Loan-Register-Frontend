@@ -1,7 +1,7 @@
 import React from "react";
 
-const Loading = () => {
-  return <span className="loading-text">Loading...</span>;
+const Loading = (props) => {
+  return <span style={props.style} className="loading-text">Loading...</span>;
 };
 
 export default Loading;

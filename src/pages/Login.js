@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import "../styles/Login.scss";
 import { Header, NoAccess, Submitting, TextBkgBox, TextButton } from '../components';
-import API from "../utils/api";
+import { API } from "../utils/api";
 import bcrypt from 'bcryptjs-react';
 import { useMediaQuery } from 'react-responsive';
 import { noAccessRedirect } from '../utils/helpers';
@@ -16,7 +16,7 @@ const Login = (props) => {
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
 
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   const isMobile = useMediaQuery({
@@ -26,8 +26,8 @@ const Login = (props) => {
 
   // automatically focus on first input box
   useEffect(() => {
-    emailRef.current.focus();
-  }, [])
+    if (!noAccess[0]) emailRef.current.focus();
+  }, [noAccess])
 
   // redirect user away from page if user is logged in
   useEffect(() => {
@@ -43,38 +43,54 @@ const Login = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    let uid = null;
     let hash = null;
+    let accessToken = null;
+    let refreshToken = null;
+
 
     setSubmitting(true);
 
-    // check if pwd given matches with hashed password
-    await API(`users?email=${email}`)
-    .then((res) => {
-
-      // if there is no data returned
-      if (res.data.length !== 0) {
-        hash = res.data[0].hashed_password;
-        uid = res.data[0]._id;
+    // get hased pwd and jwt tokens from backend
+    await API({
+      method: 'POST',
+      url: '/login',
+      data: {
+        login_email: email
       }
-
     })
-    .catch((err) => console.log(err));
+    .then((res) => {
+      console.log(res)
+      hash = res.data.hashed_password;
+      accessToken = res.data.accessToken
+      refreshToken = res.data.refreshToken
+    })
+    .catch((err) => {
+      console.log('error', err)
+    });
 
+    // check if pwd given matches with hashed password
     if (hash != null) {
       // if there is a password, compare both passwords
       bcrypt.compare(pwd, hash).then((res) => {
-        if (res === true) {
-          props.onLogin(uid);
-          window.location.href='/dashboard';
+        if (res === true) {          
           setEmail('');
           setPwd('');
+
+          // store jwt tokens
+          window.sessionStorage.setItem("sessionStart", Date.now());
+          window.sessionStorage.setItem("accessToken", accessToken);
+          window.sessionStorage.setItem("refreshToken", refreshToken);
+          
+          window.location.href = "/dashboard"
+
         } else {
+          // wrong password
           setErrMsg('Incorrect Credentials');
           errRef.current.focus();
         }
       });
     } else {
+      // user not exsit
       setErrMsg('Incorrect Credentials');
       errRef.current.focus();
     }
@@ -87,7 +103,7 @@ const Login = (props) => {
   
     return (
       <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-        {noAccess ? <NoAccess /> :
+        {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
           <div className={"login"}>
             <div className={"background"}>
               <TextBkgBox className={isMobile ? "mobile" : ""}>
@@ -126,7 +142,7 @@ const Login = (props) => {
 
     return (
       <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-        {noAccess ? <NoAccess /> :
+        {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
           <div className={"login"}>
             <div className={"background"}>
               <TextBkgBox>

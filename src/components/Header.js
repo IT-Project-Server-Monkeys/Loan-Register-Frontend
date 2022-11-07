@@ -16,6 +16,7 @@ const Header = (props) => {
   // individual nav link component, consisting of button with href
   const NavLink = (navProps) => {
     const location = useLocation();
+    const [isHovering, setIsHovering] = useState(false);
 
     // set component inline style to linkStyle (default value null)
     // upon first render, if link page is current page, set linkStyle to active style 
@@ -28,7 +29,9 @@ const Header = (props) => {
 
     return (
       <Link to={navProps.href}>
-        <button style={linkStyle} className="navlink" onClick={navProps.onClick} >
+        <button style={linkStyle} className={`navlink ${isHovering ? "hover" : ""}`} onClick={navProps.onClick}
+          onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+        >
           {navProps.children}
         </button>
       </Link>

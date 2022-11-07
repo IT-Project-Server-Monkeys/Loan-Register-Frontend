@@ -14,14 +14,11 @@ export const compArr = (arr1, arr2) => {
   return arr1.toString() === arr2.toString()
 }
 
-export const noAccessRedirect = (page, navigate, setPopupOpen) => {
-  setPopupOpen(true);
-  setTimeout(() => navigate(page), 3000);
+export const noAccessRedirect = (page, navigate, setNoAccess, logout = null) => {
+  setNoAccess([true, logout != null]);
+  setTimeout(() => { if (logout != null) logout(); navigate(page); }, 3000);
 }
 
-
-
-// VG TODO - use dateformat()
 // assume locale DD/MM/YYYY format
 export const toISO = (dateString) => {
   if (dateString.includes("-")) return dateString;

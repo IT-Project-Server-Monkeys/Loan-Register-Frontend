@@ -6,13 +6,15 @@ import { RiImageAddFill } from 'react-icons/ri'
 import { fetchItem, fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import { noAccessRedirect } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
+import { checkAPI } from "../utils/api";
 
 const ItemEdit = (props) => {
   // page navigation
   const navigate = useNavigate();
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const location = useLocation();
   const [submitting, setSubmitting] = useState(false);
+  const [initLoad, setInitLoad] = useState(false);
   
   // original item information
   const itemId = useParams().id;
@@ -36,6 +38,7 @@ const ItemEdit = (props) => {
   const [categOpen, setCategOpen] = useState(false);
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
+  const [ctgDeleting, setCtgDeleting] = useState(false);
 
   // item img changing
   const handleChgImg = (e) => {
@@ -55,14 +58,26 @@ const ItemEdit = (props) => {
   // typeable/selectable category changing via inputdropdown
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
-  const handleDelCg = (categ) => {
-    deleteCategory(categ, setCategList, props.uid);
+  const handleDelCg = async (categ) => {
+    setCtgDeleting(true);
+    await checkAPI(
+      async () => {
+        console.log("token valid -> delete category");
+        await deleteCategory(categ, setCategList, props.uid);
+        setCtgDeleting(false);
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
   }
 
   // save item and post to server
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+
     let imgString = "";
     
     // disallow leading/trailing spaces
@@ -87,35 +102,52 @@ const ItemEdit = (props) => {
       });
     }
 
-    if (await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false))
-      navigate(`/item-details/${itemId}`,
-      // {state: {item: {
-      //   ...item, image_url: displayImg,
-      //   item_name: newName, category: newCateg, description: newDesc,
-      // }}}
-      );
-    else {
-      setSubmitting(false);
+    await checkAPI(
+      async () => {
+        console.log("token valid -> save item");
 
-      // TODO nicer alert
-      alert("There was an error saving your item. Please try again later.");
-    }
+        if (await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false))
+          navigate(`/item-details/${itemId}`);
+        else {
+          setSubmitting(false);
+    
+          // TODO nicer alert
+          alert("There was an error saving your item. Please try again later.");
+        }
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      }
+    );
+
   }
-
-  // get list of potential categories for render & modification
-  useEffect(() => {
-    if (props.loggedIn !== true) return;
-    fetchCategs(props.uid, setCategList, setDelableCg);
-  }, [props.uid, props.loggedIn]);
   
   // get and show item data
+  // get list of potential categories for render & modification
   useEffect(() => {
-    if (props.loggedIn !== true) return;
-    if (dbData === null) fetchItem(itemId, setItem);
-    else {
-      setItem(dbData);
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
+
+    if (dbData === null) {
+      checkAPI(
+        async () => {
+          console.log("token valid -> fetch item from server, fetch category list");
+          await fetchItem(itemId, setItem, () => {
+            noAccessRedirect("/dashboard", navigate, setNoAccess);
+            return;
+          });
+          fetchCategs(props.uid, setCategList, setDelableCg);
+          setInitLoad(true);
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+          console.log("Session expired");
+        }
+      );
     }
-  }, [props.loggedIn, itemId, dbData, navigate]);
+    else { console.log("dbData", dbData); setItem(dbData); setInitLoad(true); }
+
+  }, [props, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
@@ -127,7 +159,7 @@ const ItemEdit = (props) => {
   // if user is not item owner, redirect them away from page
   // else, loan original information to display on page
   useEffect(() => {
-    if (props.loggedIn !== true) return;
+    if (props.loggedIn !== true || props.uid == null) return;
     if (item.item_owner == null) return;
     if (props.uid !== item.item_owner) {
       noAccessRedirect("/dashboard", navigate, setNoAccess);
@@ -142,7 +174,7 @@ const ItemEdit = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> : 
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"item-page"}>
           <div className={"item-details"}>
             <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
@@ -161,7 +193,9 @@ const ItemEdit = (props) => {
               <h4 className={"big-img-warn warning"}>Image must be under 250KB.</h4>
             : null}
             <div className={"item-info"}>
-              <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
+              <form id="editItem" disabled={!initLoad || ctgDeleting}
+                onSubmit={handleSaveItem} onChange={() => setWarning("")}
+              >
                 <table><tbody>
                   <tr>
                     <td>Name:</td>
@@ -212,7 +246,7 @@ const ItemEdit = (props) => {
             >
               <TextButton altStyle>Cancel</TextButton>
             </Link>
-            <TextButton form="editItem" type="submit">Save</TextButton>
+            <TextButton form="editItem" type="submit" disabled={!initLoad || ctgDeleting}>Save</TextButton>
           </div>
           
           {submitting ? <Submitting /> : null}

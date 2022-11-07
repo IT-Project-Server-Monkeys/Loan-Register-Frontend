@@ -1,7 +1,7 @@
 import React from 'react';
 import "../styles/Signup.scss";
 import { Header, NoAccess, Submitting, TextBkgBox, TextButton } from '../components';
-import API from "../utils/api";
+import { API } from "../utils/api";
 import { useState, useEffect } from 'react';
 import bcrypt from 'bcryptjs-react';
 import { useMediaQuery } from 'react-responsive';
@@ -16,7 +16,7 @@ const Signup = (props) => {
   const [errMsg, setErrMsg] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   const isMobile = useMediaQuery({
@@ -137,7 +137,7 @@ const Signup = (props) => {
   if (isMobile) {
     return (
       <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-        {noAccess ? <NoAccess /> :
+        {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
           <div className={"sign-up"}>
             <div className={"background"}>
               <TextBkgBox className={isMobile? "mobile" : ""}>
@@ -186,7 +186,7 @@ const Signup = (props) => {
 
     return (
       <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-        {noAccess ? <NoAccess /> :
+        {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
           <div className={"sign-up"}>
             <div className={"background"}>
               <TextBkgBox style={{height: "700px"}}>
@@ -204,7 +204,7 @@ const Signup = (props) => {
                         </div>
                       </td>
                       <td>
-                        <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} maxlength="20" required/>
+                        <input type="text" placeholder="Enter username" className={"input-box"} id="username" onChange={(e) => setUsername(e.target.value)} value={username} maxLength="20" required/>
                       </td>
                     </tr>
                     <tr>

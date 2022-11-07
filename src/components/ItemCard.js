@@ -17,6 +17,7 @@ const ItemCard = (props) => {
   
 
   const renderText = (text) => {
+    if (typeof(text) != "string") return text;
     return <Highlighter
               highlightStyle={{
                 backgroundColor: 'var(--orange-color)',
@@ -82,7 +83,7 @@ const ItemCard = (props) => {
                     <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                   </Col>
                   <Col xs='6' sm='6'>
-                    <p>{userName}</p>
+                    <p>{renderText(userName)}</p>
                   </Col>
                 </Row>
                 <Row>
@@ -133,7 +134,7 @@ const ItemCard = (props) => {
                       <p className='attribute'>Current {userView === LOANER ? 'loanee' : 'loaner'}: </p>
                     </Col>
                     <Col>
-                      <p>{userName}</p>
+                      <p>{renderText(userName)}</p>
                     </Col>
                   </Row>
                   <Row>

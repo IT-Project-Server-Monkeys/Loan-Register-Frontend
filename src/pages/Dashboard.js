@@ -6,7 +6,7 @@ import { AiOutlineUnorderedList, AiFillPlusCircle, AiOutlineUserSwitch } from 'r
 import { TbLayoutGrid } from 'react-icons/tb';
 import { MdQueryStats, MdOutlineKeyboardArrowDown, MdKeyboardArrowUp } from 'react-icons/md';
 import { Header, ItemCard, NoAccess } from '../components';
-import API from '../utils/api';
+import { checkAPI, API } from '../utils/api';
 import MultiSelect from 'react-multiple-select-dropdown-lite';
 import { userViewSwitch, compArr, noAccessRedirect, noCaseCmp } from '../utils/helpers';
 import { LOANER } from '../utils/constants';
@@ -52,7 +52,7 @@ const displayOptions = [
 const LoanerDashboard = (props) => {
   const searchRef = useRef();
 
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   const [gridView, setGridView] = useState(true);
@@ -118,70 +118,80 @@ const LoanerDashboard = (props) => {
   // get all items 
   useEffect(() => {
     setLoading(true);
+    // console.log('ehy', props.uid, props.loggedIn)
     if (props.loggedIn !== true || props.uid == null) return;
-    API.get('/dashboard?user_id=' + props.uid)
-      .then((res) => {
-        // console.log('dashboard api', res);
-        const items = res.data;
-        var loanerItemsLst = [];
-        var loaneeItemsLst = [];
-        // separate loaner and loanee items
-        for (var item of items) {
-          if (item.user_role === LOANER) {
-            loanerItemsLst.push(item);
+    // console.log(props.uid)
+
+    checkAPI(
+      () => {
+        console.log("token valid -> fetch dashboard items");
+
+        API.get('/dashboard?user_id=' + props.uid)
+        .then((res) => {
+          // console.log('dashboard api', res);
+          const items = res.data;
+          var loanerItemsLst = [];
+          var loaneeItemsLst = [];
+          // separate loaner and loanee items
+          for (var item of items) {
+            if (item.user_role === LOANER) {
+              loanerItemsLst.push(item);
+            }
+            else loaneeItemsLst.push(item);
           }
-          else loaneeItemsLst.push(item);
-        }
-        setLoanerItems(loanerItemsLst);
-        setLoaneeItems(loaneeItemsLst);
-        // setLoading(false);
-
-        // setDisplayItems({
-        //   loanerItems: loanerItemsLst,
-        //   loaneeItems: loaneeItemsLst
-        // })
-
-        // update visible items
-        setVisibilityController({
-          display: VISIBLE,
-          visibleItems: loanerItemsLst.filter(item => item.visible === true),
-          hiddenItems: loanerItemsLst.filter(item => item.visible === false),
+          setLoanerItems(loanerItemsLst);
+          setLoaneeItems(loaneeItemsLst);
+          // setLoading(false);
+    
+          setDisplayItems({
+            loanerItems: loanerItemsLst,
+            loaneeItems: loaneeItemsLst
+          })
+    
+          // update visible items
+          setVisibilityController({
+            display: VISIBLE,
+            visibleItems: loanerItemsLst.filter(item => item.visible === true),
+            hiddenItems: loanerItemsLst.filter(item => item.visible === false),
+          })
+          // console.log('ttt', loanerItemsLst)
+          
+          // get filter data
+          var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
+          var loanerOptions = loaneeItemsLst.map(item => item.loaner_name).filter(n => n)
+          
+          // update loaner cate and loanee opt
+          if (loanerItemsLst.length > 0) {
+            setLoanerFilters({
+              ...loanerFilters,
+              categoryOptions: [...new Set(loanerItemsLst[0].item_categories)].sort(noCaseCmp),
+              loaneeOptions: [...new Set(loaneeOptions)].sort(noCaseCmp),
+            })
+          }
+    
+          // update loanee cate and loaner opt
+          var loaneeCate = []  // get loanee cate
+          for (item of loaneeItemsLst) {
+            if (!loaneeCate.includes(item.category)) {
+              loaneeCate.push(item.category)
+            }
+          }
+          if (loaneeItemsLst.length > 0) {
+            setLoaneeFilters({
+              ...loaneeFilters,
+              categoryOptions: [...new Set(loaneeCate)].sort(noCaseCmp),
+              loanerOptions: [...new Set(loanerOptions)].sort(noCaseCmp),
+            })
+          }
+          
+          setInitLoad(true);
         })
-        // console.log('ttt', loanerItemsLst)
-        
-        // get filter data
-        var loaneeOptions = loanerItemsLst.map(item => item.loanee_name).filter(n => n) // remove null
-        var loanerOptions = loaneeItemsLst.map(item => item.loaner_name).filter(n => n)
-        
-        // update loaner cate and loanee opt
-        if (loanerItemsLst.length > 0) {
-          setLoanerFilters({
-            ...loanerFilters,
-            categoryOptions: [...new Set(loanerItemsLst[0].item_categories)].sort(noCaseCmp),
-            loaneeOptions: [...new Set(loaneeOptions)].sort(noCaseCmp),
-          })
-        }
-
-        // update loanee cate and loaner opt
-        var loaneeCate = []  // get loanee cate
-        for (item of loaneeItemsLst) {
-          if (!loaneeCate.includes(item.category)) {
-            loaneeCate.push(item.category)
-          }
-        }
-        if (loaneeItemsLst.length > 0) {
-          setLoaneeFilters({
-            ...loaneeFilters,
-            categoryOptions: [...new Set(loaneeCate)].sort(noCaseCmp),
-            loanerOptions: [...new Set(loanerOptions)].sort(noCaseCmp),
-          })
-        }
-        
-        setInitLoad(true);
-      })
-      .catch((e) => {
-        // console.log(e);
-      });
+        .catch((e) => console.log(e));
+      },
+      () => {
+      noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      console.log("Session expired");
+    })
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props]);
@@ -232,40 +242,50 @@ const LoanerDashboard = (props) => {
   };
 
   // update item's visibility
-  const updateVisibility = (id, visible) => {
+  const updateVisibility = async (id, visible) => {
     setLoading(true);
-    API({
-      method: 'PUT',
-      url: '/items',
-      data: {
-        _id: id,
-        visible: visible
-      }
-    }).then(res => {
-      setLoanerItems(lnrItems => lnrItems.map((i) => {
-        return i.item_id !== id ? i : {...i, visible: visible}
-      }))
-      // console.log(res)
-      const item = loanerItems.find(item => item.item_id === id);
-      if (visible) {
-        // show the item
-        setVisibilityController(visCon => {return {
-          ...visCon,
-          visibleItems: [...visCon.visibleItems, item],
-          hiddenItems: [...visCon.hiddenItems].filter(item => item.item_id !== id),
-        }})
 
-      } else {
-        // hide the item
-        setVisibilityController(visCon => {return {
-          ...visCon,
-          visibleItems: [...visCon.visibleItems].filter(item => item.item_id !== id),
-          hiddenItems: [...visCon.hiddenItems, item]
-        }})
-      }
-    }).catch(e => {
-      // console.log(e)
-    })
+    await checkAPI(
+      async () => {
+        console.log("token valid -> hide/unhide item");
+
+        await API({
+          method: 'PUT',
+          url: '/items',
+          data: {
+            _id: id,
+            visible: visible
+          }
+        }).then(res => {
+          setLoanerItems(lnrItems => lnrItems.map((i) => {
+            return i.item_id !== id ? i : {...i, visible: visible}
+          }))
+          // console.log(res)
+          const item = loanerItems.find(item => item.item_id === id);
+          if (visible) {
+            // show the item
+            setVisibilityController(visCon => {return {
+              ...visCon,
+              visibleItems: [...visCon.visibleItems, item],
+              hiddenItems: [...visCon.hiddenItems].filter(item => item.item_id !== id),
+            }})
+    
+          } else {
+            // hide the item
+            setVisibilityController(visCon => {return {
+              ...visCon,
+              visibleItems: [...visCon.visibleItems].filter(item => item.item_id !== id),
+              hiddenItems: [...visCon.hiddenItems, item]
+            }})
+          }
+        }).catch(e => {
+          console.log(e)
+        });
+      },
+      () => { // onFailure
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        console.log("Session expired");
+      });
 
   }
 
@@ -389,16 +409,15 @@ const LoanerDashboard = (props) => {
     })
   }
 
-  const applyFilters = (e) => {
+  const getFilterRes = () => {
     // null: no filter selected
     // empty array: filter selected but no matched result
     var res1 = null;     // status
     var res2 = null;     // category
     var res3 = null;     // user
     var results = null;  // final results
-      
-    if (userView === LOANER) {
 
+    if (userView === LOANER) {
       if (filters.status.length > 0) {
         res1 = loanerItems.filter(item => filters.status.includes(item.loan_status))
       }
@@ -423,7 +442,40 @@ const LoanerDashboard = (props) => {
         // // console.log('!!!')
         results = intersection(filters.sortedItems, results)
       }
+    } else {
+      if (filters.status.length > 0) {
+        res1 = loaneeItems.filter(item => filters.status.includes(item.loan_status))
+      }
+      if (filters.category.length > 0) {
+        res2 = loaneeItems.filter(item => filters.category.includes(item.category))
+      }
+      if (filters.user.length > 0) {
+        res3 = loaneeItems.filter(item => filters.user.includes(item.loaner_name))
+      }
 
+      if (res1 === null && res2 === null && res3 === null) {
+        // no filter selected
+        results = loaneeItems;
+      } else {
+        results = intersection(res1, res2);
+        results = intersection(results, res3)
+      }
+
+      if (filters.sortedItems.length > 0) {
+        results = intersection(filters.sortedItems, results)
+      }
+    }
+
+    return results;
+  }
+
+  const applyFilters = (e) => {
+    var results = null;  // final results
+    results = getFilterRes();
+
+    setSearchText("");
+      
+    if (userView === LOANER) {
       switch(visibilityController.display) {
         case ALL:
           setDisplayItems({
@@ -448,29 +500,6 @@ const LoanerDashboard = (props) => {
       }
 
     } else {
-      if (filters.status.length > 0) {
-        res1 = loaneeItems.filter(item => filters.status.includes(item.loan_status))
-      }
-      if (filters.category.length > 0) {
-        res2 = loaneeItems.filter(item => filters.category.includes(item.category))
-      }
-      if (filters.user.length > 0) {
-        res3 = loaneeItems.filter(item => filters.user.includes(item.loaner_name))
-      }
-
-      if (res1 === null && res2 === null && res3 === null) {
-        // no filter selected
-        results = loaneeItems;
-      } else {
-        results = intersection(res1, res2);
-        results = intersection(results, res3)
-      }
-
-      if (filters.sortedItems.length > 0) {
-        results = intersection(filters.sortedItems, results)
-      }
-      
-
       setDisplayItems({
         ...displayItems,
         loaneeItems: results
@@ -502,7 +531,7 @@ const LoanerDashboard = (props) => {
       items = loaneeItems
     }
 
-    const resItems = items.filter(item => {
+    const resItems = intersection(getFilterRes(), items.filter(item => {
       if (
         (item.item_name && item.item_name.toLowerCase().includes(currText)) ||
         (item.category && item.category.toLowerCase().includes(currText)) ||
@@ -513,7 +542,7 @@ const LoanerDashboard = (props) => {
       } else {
         return null;
       }
-    })
+    }))
 
     // // console.log('search items', resItems)
 
@@ -770,7 +799,7 @@ const LoanerDashboard = (props) => {
  
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :       
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :    
         <div className="page-margin dashboard">
           {
             isMobileView ?
