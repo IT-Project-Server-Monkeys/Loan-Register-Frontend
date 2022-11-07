@@ -139,7 +139,7 @@ const LoanForm = (props) => {
                           {props.suggestedLoanees.map((c) => {
                             return <Deletable field="loanee" key={`opt-${c}`}
                               canDel={false} hideOption={props.deleteLoanee}
-                              selectOption={(e) => { loaneeShow(); props.selectLoanee(e) }}
+                              selectOption={async (e) => { loaneeShow(); await props.selectLoanee(e); checkSubmittable() }}
                             >
                               {c}
                             </Deletable>
