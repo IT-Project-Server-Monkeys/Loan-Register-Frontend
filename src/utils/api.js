@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const MAX_SESSION = 1200000; // 20min
-const SESSION_REFRESH = 900000; // 15min
+const SESSION_REFRESH = 750000; // 12.5min
 
 const API = axios.create({
   baseURL: process.env.REACT_APP_API_BASE,
