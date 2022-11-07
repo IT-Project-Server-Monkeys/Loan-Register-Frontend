@@ -8,11 +8,8 @@ const API = axios.create({
 });
 
 const checkAPI = async (onSuccess, onFailure) => {
-  const accessToken = window.sessionStorage.getItem('accessToken');
+  const sessionStart = window.sessionStorage.getItem('sessionStart'); 
   const refreshToken = window.sessionStorage.getItem('refreshToken');
-
-  // console.log("accessToken", accessToken);
-  // console.log("refreshToken", refreshToken);
 
   const refreshAPI = async () => {
     await axios(`/refreshToken`, {
@@ -22,6 +19,7 @@ const checkAPI = async (onSuccess, onFailure) => {
     })
       .then(res => {
         console.log("token refresh");
+        window.sessionStorage.setItem("sessionStart", Date.now());
         window.sessionStorage.setItem("accessToken", res.data.accessToken);
         window.sessionStorage.setItem("refreshToken", res.data.refreshToken);
         onSuccess();
@@ -33,27 +31,12 @@ const checkAPI = async (onSuccess, onFailure) => {
       })
   }
 
-  await axios(`/posts`, {
-    method: "get",
-    baseURL: process.env.REACT_APP_API_BASE,
-    headers: {
-      Authorization: `Bearer ${accessToken}` 
-    }
-  })
-    .then(res => {
-      // console.log(res.data);
-      onSuccess();
-    })
-    .catch(async err => {
-      // console.log(err);
-      if (err.response.status === 400 || err.response.status === 403)
-        await refreshAPI();
-      else {
-        window.sessionStorage.removeItem("accessToken");
-        window.sessionStorage.removeItem("refreshToken");
-        onFailure();
-      }
-    });
+  const diff = Date.now() - parseInt(sessionStart);
+  console.log(`${diff / 60000} minutes passed since session start/refresh`);
+
+  // 12.5 minutes - 2.5 min leeway for slow internet connection
+  if (diff >= 750000) refreshAPI();
+  else onSuccess();
 }
 
 export { API, checkAPI };

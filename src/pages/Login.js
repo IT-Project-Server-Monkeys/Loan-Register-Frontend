@@ -77,6 +77,7 @@ const Login = (props) => {
           setPwd('');
 
           // store jwt tokens
+          window.sessionStorage.setItem("sessionStart", Date.now());
           window.sessionStorage.setItem("accessToken", accessToken);
           window.sessionStorage.setItem("refreshToken", refreshToken);
           
