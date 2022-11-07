@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+const MAX_SESSION = 1200000; // 20min
 const SESSION_REFRESH = 900000; // 15min
 
 const API = axios.create({
@@ -27,7 +28,6 @@ const checkAPI = async (uid, onSuccess, onFailure) => {
         onSuccess();
       })
       .catch(err => {
-        // console.log(err);
         console.log("refresh token expired")
         onFailure();
       })
@@ -36,8 +36,13 @@ const checkAPI = async (uid, onSuccess, onFailure) => {
   const diff = Date.now() - parseInt(sessionStart);
   console.log(`${diff / 60000} minutes passed since session start/refresh`);
 
-  // 12.5 minutes - 2.5 min leeway for slow internet connection
-  if (diff >= SESSION_REFRESH) refreshAPI();
+  if (diff >= SESSION_REFRESH) {
+    if (diff < MAX_SESSION) refreshAPI();
+    else {
+      console.log("refresh token expired")
+      onFailure();
+    }
+  }
   else onSuccess();
 }
 
