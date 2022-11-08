@@ -12,6 +12,8 @@ import { checkAPI } from '../utils/api';
 const Stats = (props) => {
   const [noAccess, setNoAccess] = useState([false, false]);
   const [initLoad, setInitLoad] = useState(false);
+  const [loadItems, setLoadItems] = useState(false);
+  const [loadLoans, setLoadLoans] = useState(false);
   const navigate = useNavigate();
   const isTablet = useMediaQuery({ maxDeviceWidth: 1320 });
   const isMobile = useMediaQuery({ maxDeviceWidth: 576 });
@@ -33,7 +35,7 @@ const Stats = (props) => {
     showlegend: false, font: {size: isTablet ? isMobile ? 12 : 16 : 20},
     margin: {pad: 20, t: 0, r: 25, b: 0, l: isTablet ? isMobile ? 75 : 125 : 175},
     xaxis: {constrain: "domain"},
-    width: isTablet ? isMobile ? 250 : 400 : 600, height: 225, autosize: false, bargap: 0.5
+    width: isTablet ? isMobile ? 250 : 400 : 600, height: 200, autosize: false, bargap: 0.5
   }
 
   const barData = {
@@ -95,9 +97,8 @@ const Stats = (props) => {
     checkAPI(props.uid,
       async () => {
         console.log("token valid -> fetch stats");
-        await fetchUserItems(props.uid, setAllItems);
-        await fetchUserLoans(props.uid, setAllLoans);
-        setInitLoad(true);
+        fetchUserItems(props.uid, setAllItems);
+        fetchUserLoans(props.uid, setAllLoans);
       },
       () => {
         noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
@@ -107,24 +108,28 @@ const Stats = (props) => {
 
   useEffect(() => {
     clearItems();
-    if (allItems === []) return;
+    if (allItems !== []) {
+      for (let i=0; i<allItems.length; i++) {
+        if (allItems[i].being_loaned) setItemVals(([unloaned, loaned]) => [unloaned, loaned+1])
+        else setItemVals(([unloaned, loaned]) => [unloaned+1, loaned])
+      }
 
-    for (let i=0; i<allItems.length; i++) {
-      if (allItems[i].being_loaned) setItemVals(([unloaned, loaned]) => [unloaned, loaned+1])
-      else setItemVals(([unloaned, loaned]) => [unloaned+1, loaned])
+      // reverse alphabet to ensure correct order
+      allItems.sort((i0, i1) => noCaseCmp(i1.item_name, i0.item_name));
+      allItems.sort((i0, i1) => (i0.loan_frequency >= i1.loan_frequency ? -1 : 1));
+      for (let i=0; i<Math.min(allItems.length, 3); i++) {
+        let iName = breakLine(allItems[i].item_name);
+
+        setFreqItems(fi => {return {
+          x: [allItems[i].loan_frequency].concat(fi["x"]),
+          y: [iName].concat(fi["y"]),
+        }});
+      }
     }
+    setLoadItems(true);
+    if (loadLoans) setInitLoad(true);
 
-    // reverse alphabet to ensure correct order
-    allItems.sort((i0, i1) => noCaseCmp(i1.item_name, i0.item_name));
-    allItems.sort((i0, i1) => (i0.loan_frequency >= i1.loan_frequency ? -1 : 1));
-    for (let i=0; i<Math.min(allItems.length, 3); i++) {
-      let iName = breakLine(allItems[i].item_name);
-
-      setFreqItems(fi => {return {
-        x: [allItems[i].loan_frequency].concat(fi["x"]),
-        y: [iName].concat(fi["y"]),
-      }});
-    }
+    // eslint-disable-next-line
   }, [allItems]);
 
   useEffect(() => {
@@ -133,40 +138,45 @@ const Stats = (props) => {
     let lneCounts = {};
     let sortedLnes = [];
 
-    if (allLoans === []) return;
+    if (allLoans !== []) {
 
-    for (let i=0; i<allLoans.length; i++) {
-      let loan = allLoans[i];
+      for (let i=0; i<allLoans.length; i++) {
+        let loan = allLoans[i];
 
-      if (loan.status === "On Loan" || loan.status === "Overdue")
-        setLoanVals(([returned, unreturned]) => [returned, unreturned+1]);
-      else {
-        setLoanVals(([returned, unreturned]) => [returned+1, unreturned]);
+        if (loan.status === "On Loan" || loan.status === "Overdue")
+          setLoanVals(([returned, unreturned]) => [returned, unreturned+1]);
+        else {
+          setLoanVals(([returned, unreturned]) => [returned+1, unreturned]);
 
-        if (loan.status === "Late Return")
-          setRtnLnVals(([timely, late]) => [timely, late+1]);
-        else setRtnLnVals(([timely, late]) => [timely+1, late]);
+          if (loan.status === "Late Return")
+            setRtnLnVals(([timely, late]) => [timely, late+1]);
+          else setRtnLnVals(([timely, late]) => [timely+1, late]);
+        }
+
+        if (Object.keys(lneCounts).includes(loan.loanee_name))
+          lneCounts[loan.loanee_name] += 1;
+        else lneCounts[loan.loanee_name] = 1;
       }
 
-      if (Object.keys(lneCounts).includes(loan.loanee_name))
-        lneCounts[loan.loanee_name] += 1;
-      else lneCounts[loan.loanee_name] = 1;
+      sortedLnes = Object.entries(lneCounts); // [loanee_name, loan_frequency] pairs
+      sortedLnes.sort((lne0, lne1) => noCaseCmp(lne0[0], lne1[0]));
+      sortedLnes.sort((lne0, lne1) => lne0[1] > lne1[1] ? -1 : 1);
+
+      for (let i=0; i<Math.min(sortedLnes.length, 3); i++) {
+        
+        let lName = breakLine(sortedLnes[i][0]);
+
+        setFreqLoanees(fl => {return {
+          x: [sortedLnes[i][1]].concat(fl["x"]),
+          y: [lName].concat(fl["y"]),
+        }});
+      }
     }
 
-    sortedLnes = Object.entries(lneCounts); // [loanee_name, loan_frequency] pairs
-    sortedLnes.sort((lne0, lne1) => noCaseCmp(lne0[0], lne1[0]));
-    sortedLnes.sort((lne0, lne1) => lne0[1] > lne1[1] ? -1 : 1);
+    setLoadLoans(true);
+    if (loadItems) setInitLoad(true);
 
-    for (let i=0; i<Math.min(sortedLnes.length, 3); i++) {
-      
-      let lName = breakLine(sortedLnes[i][0]);
-
-      setFreqLoanees(fl => {return {
-        x: [sortedLnes[i][1]].concat(fl["x"]),
-        y: [lName].concat(fl["y"]),
-      }});
-    }
-
+    // eslint-disable-next-line
   }, [allLoans])
 
   return (
@@ -174,44 +184,54 @@ const Stats = (props) => {
       {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"stats-page"}>
           <h1>Statistics</h1>
-          <ChartBox style={{gridArea: "ch1"}}>
-            { itemVals[0] === 0 && itemVals[1] === 0
-              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
+          <ChartBox style={{gridArea: "ch1"}}>{
+            !initLoad
+            ? <NoDataWrap><Loading /></NoDataWrap>
+            : itemVals[0] === 0 && itemVals[1] === 0
+              ? <NoDataWrap>No data</NoDataWrap>
               : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-                data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
-              />
-            }
-          </ChartBox>
-          <ChartBox style={{gridArea: "ch2"}}>
-            { loanVals[0] === 0 && loanVals[1] === 0
-              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
+                  data={[{...pieData, labels: ["Unloaned items", "Loaned items"], values: itemVals}]} 
+                />
+          }</ChartBox>
+          <ChartBox style={{gridArea: "ch2"}}>{
+            !initLoad
+            ? <NoDataWrap><Loading /></NoDataWrap>
+            : loanVals[0] === 0 && loanVals[1] === 0
+              ? <NoDataWrap>No data</NoDataWrap>
               : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-                data={[{...pieData, labels: ["Returned loans", "Unreturned loans"], values: loanVals}]}
-              />
-            }
-          </ChartBox>
-          <ChartBox style={{gridArea: "ch3"}}>
-            { rtnLnVals[0] === 0 && rtnLnVals[1] === 0
-              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
+                  data={[{...pieData, labels: ["Returned loans", "Unreturned loans"], values: loanVals}]}
+                />
+          }</ChartBox>
+          <ChartBox style={{gridArea: "ch3"}}>{
+            !initLoad
+            ? <NoDataWrap><Loading /></NoDataWrap>
+            : rtnLnVals[0] === 0 && rtnLnVals[1] === 0
+              ? <NoDataWrap>No data</NoDataWrap>
               : <Plot className="pie-chart" layout={pieLayout} useResizeHandler={true}
-                data={[{...pieData, labels: ["Timely loans", "Late loans"], values: rtnLnVals}]}
-              />
-            }
-          </ChartBox>
+                  data={[{...pieData, labels: ["Timely returns", "Late returns"], values: rtnLnVals}]}
+                />
+          }</ChartBox>
           <div className="bar-box">
-            { freqItems.x.length === 0 || Math.max(freqItems.x) === 0
-              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
-              : <Plot className="bar-plot"
-                data={[{...barData, ...freqItems}]}
-                layout={barLayout} useResizeHandler={true}
-              />
+            <h2>Frequently Loaned Items</h2>
+            { !initLoad
+              ? <NoDataWrap><Loading /></NoDataWrap>
+              : freqItems.x.length === 0 || Math.max(freqItems.x) === 0
+                ? <NoDataWrap>No data</NoDataWrap>
+                : <Plot className="bar-plot"
+                    data={[{...barData, ...freqItems}]}
+                    layout={barLayout} useResizeHandler={true}
+                  />
             }
-            { freqLoanees.x.length === 0 || Math.max(freqItems.x) === 0
-              ? <NoDataWrap>{initLoad ? "No data" : <Loading />}</NoDataWrap>
-              : <Plot className="bar-plot"
-                data={[{...barData, ...freqLoanees}]}
-                layout={barLayout} useResizeHandler={true}
-              />
+            <hr />
+            <h2>Frequent Loanees</h2>
+            { !initLoad
+              ? <NoDataWrap><Loading /></NoDataWrap>
+              : freqLoanees.x.length === 0 || Math.max(freqItems.x) === 0
+                ? <NoDataWrap>No data</NoDataWrap>
+                : <Plot className="bar-plot"
+                    data={[{...barData, ...freqLoanees}]}
+                    layout={barLayout} useResizeHandler={true}
+                  />
             }
           </div>
         </div>

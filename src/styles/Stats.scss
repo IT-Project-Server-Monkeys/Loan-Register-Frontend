@@ -67,6 +67,16 @@
     overflow: hidden;
     justify-content: space-around;
 
+    h2 {
+      font-weight: bold;
+      margin: 1rem auto auto auto;
+    }
+
+    hr {
+      width: 85%;
+      margin: auto;
+    }
+
     .no-data-wrap {
       height: 100%;
       display: flex;
