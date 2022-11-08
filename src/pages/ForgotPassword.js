@@ -10,7 +10,7 @@ const ForgotPassword = (props) => {
   const [email, setEmail] = useState('');
   const [errMsg, setErrMsg] = useState('');
 
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   // redirect user away from page if user is logged in
@@ -31,7 +31,7 @@ const ForgotPassword = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"forgot-pwd"}>
           <div className={"background"}>
             <TextBkgBox>

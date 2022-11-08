@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ChangePassword.scss";
 import { TextBkgBox, TextButton, Submitting, NoAccess, Header } from "../components";
-import API from '../utils/api';
+import { checkAPI, API } from '../utils/api';
 import bcrypt from 'bcryptjs-react';
 import { noAccessRedirect } from "../utils/helpers";
 import { useMediaQuery } from "react-responsive";
 
 const ChangePassword = (props) => {
   // page navigation
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
   
   // form submission
@@ -49,17 +49,23 @@ const ChangePassword = (props) => {
       };
       console.log(formData);
 
-      await API(`/users`, {
-        method: "put", data: formData,
-        headers: { "Content-Type": "application/json" },
-      })
-        .then((res) => { console.log(res); navigate("/account"); })
-        .catch((err) => {
-          console.log(err);
-          alert("There was an error saving your password. Please try again later.");
+      await checkAPI(props.uid,
+        async () => {
+          console.log("token valid -> change password");
+          await API(`/users`, {
+            method: "put", data: formData,
+            headers: { "Content-Type": "application/json" },
+          })
+            .then((res) => { console.log(res); navigate("/account"); })
+            .catch((err) => {
+              console.log(err);
+              setSubmitting(false);
+              alert("There was an error saving your password. Please try again later.");
+            });
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
         });
-
-      setSubmitting(false);
     }
   };
 
@@ -72,7 +78,7 @@ const ChangePassword = (props) => {
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={`change-password ${isMobile ? "mobile" : ""}`}>
           <TextBkgBox className={isMobile ? "mobile" : ""}>
             <h1>Change password</h1>
@@ -130,7 +136,7 @@ const ChangePassword = (props) => {
                       </td>
                     </tr>
                 }
-                <tr><td colspan="2" style={{textAlign: "center"}}>
+                <tr><td colSpan="2" style={{textAlign: "center"}}>
                   <TextButton disabled={!letSubmit} type="submit">Confirm</TextButton>
                 </td></tr>
               </tbody></table>
