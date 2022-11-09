@@ -85,14 +85,35 @@ const AddItem = (props) => {
 
     let imgString = "";
 
+    let newName = e.target.newName.value;
+    let newCateg = e.target.newCateg.value;
+    let newDesc = e.target.newDesc.value;
+
     // disallow leading/trailing spaces in names & categories
-    if (/^\s/.test(e.target.newName.value) || /\s$/.test(e.target.newName.value)) {
+    if (/^\s/.test(newName) || /\s$/.test(newName)) {
       setWarning("No trailing or leading whitespaces allowed in item name.");
       setSubmitting(false);
       return;
     }
-    if (/^\s/.test(e.target.newCateg.value) || /\s$/.test(e.target.newCateg.value)) {
+    if (/^\s/.test(newCateg) || /\s$/.test(newCateg)) {
       setWarning("No trailing or leading whitespaces allowed in item category.");
+      setSubmitting(false);
+      return;
+    }
+    
+    // disallow some special characters
+    if (/["\\/{};<>`]/.test(newName)) {
+      setWarning(`The special characters "\\/{};<>\` are not allowed in item name.`);
+      setSubmitting(false);
+      return;
+    }
+    if (/["\\/{};<>`]/.test(newCateg)) {
+      setWarning(`The special characters "\\/{};<>\` are not allowed in item category.`);
+      setSubmitting(false);
+      return;
+    }
+    if (/["\\/{};<>`]/.test(newDesc)) {
+      setWarning(`The special characters "\\/{};<>\` are not allowed in item description.`);
       setSubmitting(false);
       return;
     }
