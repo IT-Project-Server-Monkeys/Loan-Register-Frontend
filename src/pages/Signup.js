@@ -48,6 +48,12 @@ const Signup = (props) => {
       isValid = false;
     }
 
+    // disallow certain special characters in username
+    if (/[`!@#$%^&*()+\-=[\]{};':"\\|<>/?~]/.test(username)) {
+      setErrMsg("No special characters in usernames");
+      isValid = false;
+    }
+
     // check if it is a unique username
     await API(`users?display_name=${username}`)
       .then((res) => {
@@ -94,6 +100,9 @@ const Signup = (props) => {
       setErrMsg("Passwords don't match");
       isValid = false;
     } 
+
+    // for testing purposes
+    isValid = false;
 
     if (isValid === true) {
 
