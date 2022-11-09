@@ -41,7 +41,7 @@ const AddItem = (props) => {
 
     checkAPI(props.uid,
       () => {
-        console.log("token valid -> fetch category list");
+        // console.log("token valid -> fetch category list");
         fetchCategs(props.uid, setCategList, setDelableCg);
       },
       () => { // invalid token
@@ -58,7 +58,7 @@ const AddItem = (props) => {
     setCtgDeleting(true);
     await checkAPI(props.uid,
       () => {
-        console.log("token valid -> delete category");
+        // console.log("token valid -> delete category");
         deleteCategory(categ, setCategList, props.uid);
         setCtgDeleting(false);
       },
@@ -108,7 +108,7 @@ const AddItem = (props) => {
 
     await checkAPI(props.uid,
       async () => {
-        console.log("token valid -> save item");
+        // console.log("token valid -> save item");
 
         if (await saveItem(e, null, categList, setCategList, imgString, props.uid, true))
           navigate(`/dashboard`);

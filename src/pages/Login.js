@@ -59,7 +59,7 @@ const Login = (props) => {
       }
     })
     .then((res) => {
-      console.log(res)
+      // console.log(res)
       hash = res.data.hashed_password;
       accessToken = res.data.accessToken
       refreshToken = res.data.refreshToken

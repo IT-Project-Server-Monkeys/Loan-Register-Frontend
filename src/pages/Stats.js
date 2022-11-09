@@ -64,6 +64,7 @@ const Stats = (props) => {
   
   const clearLoanees = () => setFreqLoanees({x: [], y: []});
 
+  // splits long item/loanee names by spacebars for bar graph display
   const breakLine = (line) => {
     if (typeof(line) !== 'string') return line;
 
@@ -91,12 +92,12 @@ const Stats = (props) => {
     }
   }, [props.loggedIn, navigate])
 
-  // get overall stats
+  // retrieves all items and loans of the user
   useEffect(() => {
     if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
     checkAPI(props.uid,
       async () => {
-        console.log("token valid -> fetch stats");
+        // console.log("token valid -> fetch stats");
         fetchUserItems(props.uid, setAllItems);
         fetchUserLoans(props.uid, setAllLoans);
       },
@@ -106,6 +107,7 @@ const Stats = (props) => {
     );
   }, [props, navigate]);
 
+  // count unloaned/loaned items and frequent items
   useEffect(() => {
     clearItems();
     if (allItems !== []) {
@@ -114,7 +116,7 @@ const Stats = (props) => {
         else setItemVals(([unloaned, loaned]) => [unloaned+1, loaned])
       }
 
-      // reverse alphabet to ensure correct order
+      // reverse alphabet to ensure correct ordered when counting down
       allItems.sort((i0, i1) => noCaseCmp(i1.item_name, i0.item_name));
       allItems.sort((i0, i1) => (i0.loan_frequency >= i1.loan_frequency ? -1 : 1));
       for (let i=0; i<Math.min(allItems.length, 3); i++) {
@@ -132,6 +134,7 @@ const Stats = (props) => {
     // eslint-disable-next-line
   }, [allItems]);
 
+  // count ongoing/overdue loans, timely/late returns and frequent loans
   useEffect(() => {
     clearLoans();
     clearLoanees();
@@ -163,9 +166,7 @@ const Stats = (props) => {
       sortedLnes.sort((lne0, lne1) => lne0[1] > lne1[1] ? -1 : 1);
 
       for (let i=0; i<Math.min(sortedLnes.length, 3); i++) {
-        
         let lName = breakLine(sortedLnes[i][0]);
-
         setFreqLoanees(fl => {return {
           x: [sortedLnes[i][1]].concat(fl["x"]),
           y: [lName].concat(fl["y"]),

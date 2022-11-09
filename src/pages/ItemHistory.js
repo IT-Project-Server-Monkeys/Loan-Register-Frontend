@@ -40,7 +40,7 @@ const ItemHistory = (props) => {
     if (dbData === null) {
       checkAPI(props.uid,
         async () => {
-          console.log("token valid -> fetch item from server");
+          // console.log("token valid -> fetch item from server");
           await fetchItem(itemId, setItem, () => {
             noAccessRedirect("/dashboard", navigate, setNoAccess);
             return;
@@ -51,12 +51,12 @@ const ItemHistory = (props) => {
         }
       );
     }
-    else { console.log("dbData", dbData); setItem(dbData); }
+    else { /*console.log("dbData", dbData);*/ setItem(dbData); }
 
   }, [props, itemId, dbData, navigate])
 
   useEffect(() => {
-    console.log(item);
+    // console.log(item);
     
     if (item.item_owner == null || props.onLogout == null || props.uid == null) return;
     if (props.uid !== item.item_owner) {
@@ -66,7 +66,7 @@ const ItemHistory = (props) => {
 
     checkAPI(props.uid,
       async () => {
-        console.log("token valid -> fetch item history");
+        // console.log("token valid -> fetch item history");
         
         await API.get('/loans?item_id=' + itemId)
         .then((res) => {

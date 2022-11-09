@@ -47,16 +47,16 @@ const ChangePassword = (props) => {
         _id: props.uid,
         hashed_password: bcrypt.hashSync(newPwd)
       };
-      console.log(formData);
+      // console.log(formData);
 
       await checkAPI(props.uid,
         async () => {
-          console.log("token valid -> change password");
+          // console.log("token valid -> change password");
           await API(`/users`, {
             method: "put", data: formData,
             headers: { "Content-Type": "application/json" },
           })
-            .then((res) => { console.log(res); navigate("/account"); })
+            .then((res) => { /*console.log(res);*/ navigate("/account"); })
             .catch((err) => {
               console.log(err);
               setSubmitting(false);

@@ -62,7 +62,7 @@ const ItemEdit = (props) => {
     setCtgDeleting(true);
     await checkAPI(props.uid,
       async () => {
-        console.log("token valid -> delete category");
+        // console.log("token valid -> delete category");
         await deleteCategory(categ, setCategList, props.uid);
         setCtgDeleting(false);
       },
@@ -103,7 +103,7 @@ const ItemEdit = (props) => {
 
     await checkAPI(props.uid,
       async () => {
-        console.log("token valid -> save item");
+        // console.log("token valid -> save item");
 
         if (await saveItem(e, itemId, categList, setCategList, imgString, props.uid, false))
           navigate(`/item-details/${itemId}`);
@@ -129,7 +129,7 @@ const ItemEdit = (props) => {
     if (dbData === null) {
       checkAPI(props.uid,
         async () => {
-          console.log("token valid -> fetch item from server, fetch category list");
+          // console.log("token valid -> fetch item from server, fetch category list");
           await fetchItem(itemId, setItem, () => {
             noAccessRedirect("/dashboard", navigate, setNoAccess);
             return;
@@ -142,7 +142,7 @@ const ItemEdit = (props) => {
         }
       );
     }
-    else { console.log("dbData", dbData); setItem(dbData); setInitLoad(true); }
+    else { /*console.log("dbData", dbData);*/ setItem(dbData); setInitLoad(true); }
 
   }, [props, itemId, dbData, navigate]);
 

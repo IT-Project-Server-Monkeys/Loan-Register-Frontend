@@ -124,7 +124,7 @@ const LoanerDashboard = (props) => {
 
     checkAPI(props.uid,
       () => {
-        console.log("token valid -> fetch dashboard items");
+        // console.log("token valid -> fetch dashboard items");
 
         API.get('/dashboard?user_id=' + props.uid)
         .then((res) => {
@@ -246,7 +246,7 @@ const LoanerDashboard = (props) => {
 
     await checkAPI(props.uid,
       async () => {
-        console.log("token valid -> hide/unhide item");
+        // console.log("token valid -> hide/unhide item");
 
         await API({
           method: 'PUT',
