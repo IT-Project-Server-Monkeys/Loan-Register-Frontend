@@ -101,9 +101,6 @@ const Signup = (props) => {
       isValid = false;
     } 
 
-    // for testing purposes
-    isValid = false;
-
     if (isValid === true) {
 
       newUser.display_name = username;
