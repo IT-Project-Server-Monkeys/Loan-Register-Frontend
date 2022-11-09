@@ -42,6 +42,14 @@ const Account = (props) => {
       return;
     }
 
+    // disallow special characters
+    if (/[`!@#$%^&*()+\-=[\]{};':"\\|<>/?~]/.test(name)) {
+      setWarning("No special characters allowed in username.");
+      setNameSub(false);
+      setNewName(userInfo.display_name);
+      return;
+    }
+
     await checkAPI(props.uid,
       async () => {
         console.log("token valid -> check for duplicate username & save username");
