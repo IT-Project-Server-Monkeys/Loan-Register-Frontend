@@ -92,9 +92,9 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
     being_loaned: false, loan_frequency: 0
   } : { _id: itemId } ;
   if (imgString !== "") formData.image_enc = imgString;
-  if (newName !== "") formData.item_name = newName;
-  if (newCateg !== "") formData.category = newCateg;
-  formData.description = newDesc;
+  if (newName !== "") formData.item_name = newName.replace(/["'\\/{}<>`]/g,"");
+  if (newCateg !== "") formData.category = newCateg.replace(/["'\\/{}<>`]/g,"");
+  formData.description = newDesc.replace(/["'\\/{}<>`]/g,"");
 
   // If new category not currently in user's available categories, put a request to user to add it
   if (formData.category !== "" && !(categList.includes(formData.category))) {

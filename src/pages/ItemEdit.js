@@ -90,23 +90,6 @@ const ItemEdit = (props) => {
       setSubmitting(false);
       return;
     }
-    
-    // disallow some special characters
-    if (/["\\/{};<>`]/.test(newName)) {
-      setWarning(`The special characters "\\/{};<>\` are not allowed in item name.`);
-      setSubmitting(false);
-      return;
-    }
-    if (/["\\/{};<>`]/.test(newCateg)) {
-      setWarning(`The special characters "\\/{};<>\` are not allowed in item category.`);
-      setSubmitting(false);
-      return;
-    }
-    if (/["\\/{};<>`]/.test(newDesc)) {
-      setWarning(`The special characters "\\/{};<>\` are not allowed in item description.`);
-      setSubmitting(false);
-      return;
-    }
 
     // convert any new images into base64 string
     if (itemImg !== null) {
