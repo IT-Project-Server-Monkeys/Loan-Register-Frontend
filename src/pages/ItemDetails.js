@@ -66,7 +66,7 @@ const ItemDetails = (props) => {
 
     await checkAPI(props.uid,
       () => {
-        console.log("token valid -> create loan");
+        // console.log("token valid -> create loan");
         createLoan(
           { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
           () => {
@@ -93,7 +93,7 @@ const ItemDetails = (props) => {
 
     await checkAPI(props.uid,
       () => {
-        console.log("token valid -> edit loan");
+        // console.log("token valid -> edit loan");
 
         editLoan(
           { ...input, _id: item.loan_id, item_image: item.image_url },
@@ -121,7 +121,7 @@ const ItemDetails = (props) => {
 
     await checkAPI(props.uid,
       async () => {
-        console.log("token valid -> return loan");
+        // console.log("token valid -> return loan");
         await returnLoan(
           item,
           () => {
@@ -171,11 +171,11 @@ const ItemDetails = (props) => {
       setOwnName(fetchedData.display_name);
     };
 
-    console.log("dbData", dbData);
+    // console.log("dbData", dbData);
     if (dbData === null || dbData.item_name == null) {
       checkAPI(props.uid,
         async () => {
-          console.log("token valid -> fetch item from server, get all loanee list & own name")
+          // console.log("token valid -> fetch item from server, get all loanee list & own name")
           await fetchItem(itemId, setItem, () => {
             noAccessRedirect("/dashboard", navigate, setNoAccess);
             return;
@@ -189,7 +189,7 @@ const ItemDetails = (props) => {
       );
     }
     else {
-      console.log(dbData);
+      // console.log(dbData);
       setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
         loan_start_date: <Loading />, intended_return_date: <Loading />,
         loan_status: dbData.being_loaned ? <Loading /> : "Available",
@@ -197,7 +197,7 @@ const ItemDetails = (props) => {
 
       checkAPI(props.uid,
         async () => {
-          console.log("token valid -> get all loanee list & own name");
+          // console.log("token valid -> get all loanee list & own name");
           fetchAllUsernames(setAllLoanees);
           fetchUser();
         },
