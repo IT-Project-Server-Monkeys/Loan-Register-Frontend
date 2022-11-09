@@ -9,12 +9,12 @@ import { noAccessRedirect, toDDMMYYYY, noCaseCmp } from "../utils/helpers";
 import noImg from "../images/noImage_300x375.png";
 import dateFormat from 'dateformat';
 import ReactTooltip from "react-tooltip";
-import API from "../utils/api";
+import { checkAPI, API } from "../utils/api";
 
 const ItemDetails = (props) => {
   // page navigation
   const navigate = useNavigate();
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const [loaneeView, setLoaneeView] = useState(true);
 
   // eslint-disable-next-line
@@ -25,7 +25,7 @@ const ItemDetails = (props) => {
   const dbData = location.state ? location.state.item : null;
 
   const [item, setItem] = useState({
-    item_name: <Loading />, image_url: "",
+    item_name: <Loading />, image_url: "", item_owner: null,
     category: <Loading />, description: <Loading />, loan_status: <Loading />,
     being_loaned: false, loan_id: null, loanee_name: <Loading />,
     loan_start_date: <Loading />, intended_return_date: <Loading />
@@ -63,57 +63,98 @@ const ItemDetails = (props) => {
   // creates loan
   const handleCrtLn = async (input) => {
     setSubmitting(true);
-    createLoan(
-      { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
+
+    await checkAPI(props.uid,
       () => {
-        if (!item.visible) makeVisible(itemId);
-        navigate(`/item-details/${itemId}`, {state: null});
-        window.location.reload()
+        console.log("token valid -> create loan");
+        createLoan(
+          { ...input, item_id: itemId, loaner_id: props.uid, item_image: item.image_url },
+          () => {
+            if (!item.visible) makeVisible(itemId);
+            navigate(`/item-details/${itemId}`, {state: null});
+            window.location.reload()
+          },
+          () => {
+            setSubmitting(false);
+            alert("There was an error saving your loan. Please try again later.");
+          }
+        )
+
       },
       () => {
-        setSubmitting(false);
-        alert("There was an error saving your loan. Please try again later.");
-      }
-    )
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      });
+
   };
 
   // edits existing loan
   const handleEdtLn = async (input) => {
     setSubmitting(true);
-    await editLoan(
-      { ...input, _id: item.loan_id, item_image: item.image_url },
+
+    await checkAPI(props.uid,
       () => {
-        if (!item.visible) makeVisible(itemId);
-        navigate(`/item-details/${itemId}`, {state: null});
-        window.location.reload()
+        console.log("token valid -> edit loan");
+
+        editLoan(
+          { ...input, _id: item.loan_id, item_image: item.image_url },
+          () => {
+            if (!item.visible) makeVisible(itemId);
+            navigate(`/item-details/${itemId}`, {state: null});
+            window.location.reload()
+          },
+          () => {
+            setSubmitting(false);
+            alert("There was an error saving your loan. Please try again later.");
+          }
+        )
       },
       () => {
-        setSubmitting(false);
-        alert("There was an error saving your loan. Please try again later.");
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
       }
-    )
+    );
+
   }
 
   // returns existing loan
   const handleRtnLn = async () => {
     setSubmitting(true);
-    await returnLoan(
-      item,
-      () => {
-        if (!item.visible) makeVisible(itemId);
-        navigate(`/item-details/${itemId}`, {state: null});
-        window.location.reload()
+
+    await checkAPI(props.uid,
+      async () => {
+        console.log("token valid -> return loan");
+        await returnLoan(
+          item,
+          () => {
+            if (!item.visible) makeVisible(itemId);
+            navigate(`/item-details/${itemId}`, {state: null});
+            window.location.reload()
+          },
+          () => {
+            setSubmitting(false);
+            alert("There was an error saving your loan. Please try again later.");
+          }
+        );
       },
       () => {
-        setSubmitting(false);
-        alert("There was an error saving your loan. Please try again later.");
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
       }
-    )
+    );
+
   }
 
+
+  useEffect(() => {
+    if (ownName === "" || allLoanees === {}) return;
+
+    var loanees = allLoanees;
+    delete loanees[ownName];
+    setSuggestedLoanees(Object.keys(loanees).sort(noCaseCmp));
+  }, [ownName, allLoanees]);
+
+  // get and show item data
   // get all loanees & set loanee suggest list for loan form
   useEffect(() => {
-    if (props.loggedIn !== true) return;
+    if (props.loggedIn !== true || props.onLogout == null || props.uid == null) return;
 
     const fetchUser = async () => {
       let fetchedData = null;
@@ -129,33 +170,43 @@ const ItemDetails = (props) => {
       }];
       setOwnName(fetchedData.display_name);
     };
-    fetchUser();
 
-    setSubmitting(false);
-    fetchAllUsernames(setAllLoanees);
-  }, [props]);
-
-  useEffect(() => {
-    if (ownName === "" || allLoanees === {}) return;
-
-    var loanees = allLoanees;
-    delete loanees[ownName];
-    setSuggestedLoanees(Object.keys(loanees).sort(noCaseCmp));
-  }, [ownName, allLoanees]);
-
-  // get and show item data
-  useEffect(() => {
-    if (props.loggedIn !== true) return;
     console.log("dbData", dbData);
-    if (dbData === null || dbData.item_name == null) fetchItem(itemId, setItem);
+    if (dbData === null || dbData.item_name == null) {
+      checkAPI(props.uid,
+        async () => {
+          console.log("token valid -> fetch item from server, get all loanee list & own name")
+          await fetchItem(itemId, setItem, () => {
+            noAccessRedirect("/dashboard", navigate, setNoAccess);
+            return;
+          });
+          fetchAllUsernames(setAllLoanees);
+          fetchUser();
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        }
+      );
+    }
     else {
       console.log(dbData);
       setItem( {...dbData, loan_id: null, loanee_name: <Loading />,
         loan_start_date: <Loading />, intended_return_date: <Loading />,
         loan_status: dbData.being_loaned ? <Loading /> : "Available",
       });
+
+      checkAPI(props.uid,
+        async () => {
+          console.log("token valid -> get all loanee list & own name");
+          fetchAllUsernames(setAllLoanees);
+          fetchUser();
+        },
+        () => {
+          noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+        })
     }
-  }, [props.loggedIn, itemId, dbData]);
+
+  }, [props, itemId, dbData, navigate]);
 
   // redirect user away from page if user is not logged in
   useEffect(() => {
@@ -178,15 +229,16 @@ const ItemDetails = (props) => {
       setLoanDate(new Date().toLocaleDateString());
       setReturnDate("");
     }
-  }, [item, props.uid])
+    // eslint-disable-next-line
+  }, [item.item_owner, props.uid])
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"item-page"}>
 
           {loaneeView ? <></> :
-            <Link to={`/item-details/${itemId}/edit`} state={{item: item}}>
+            <Link to={`/item-details/${itemId}/edit`} state={{item: item}} reloadDocument={false}>
               <button id="edit-item" className={"edit-item icon-blue"} data-tip data-for="edit-item">
                 <MdEdit size={40} />
               </button>
@@ -245,12 +297,12 @@ const ItemDetails = (props) => {
 
           {loaneeView ? <></> :
             <div className={"btn-list"}>
-              <Link to="history" state={{itemId: item.item_id, itemName: item.item_name}} ><TextButton>History</TextButton></Link>
+              <Link to="history" state={{item: item}} reloadDocument={false}>
+                <TextButton>History</TextButton>
+              </Link>
               {item.being_loaned ? <>
-                {typeof(item.loan_id) != "string" ? <></> : <>
-                  <TextButton onClick={toggle}>Edit Loan</TextButton>
-                  <TextButton onClick={handleRtnLn}>{"Mark Return"}</TextButton>
-                </>}
+                <TextButton onClick={toggle} disabled={typeof(item.loan_id) != "string"}>Edit Loan</TextButton>
+                <TextButton onClick={handleRtnLn} disabled={typeof(item.loan_id) != "string"}>Mark Return</TextButton>
               </> :
                 <TextButton onClick={toggle}>Loan Item</TextButton>
               }

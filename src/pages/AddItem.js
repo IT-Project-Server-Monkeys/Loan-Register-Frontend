@@ -6,9 +6,10 @@ import { RiImageAddFill } from 'react-icons/ri'
 import { fetchCategs, selectCategory, changeCategory, deleteCategory, changeImage, saveItem } from "../utils/itemHelpers";
 import noImg from "../images/noImage_300x375.png";
 import { noAccessRedirect } from "../utils/helpers";
+import { checkAPI } from "../utils/api";
 
 const AddItem = (props) => {
-  const [noAccess, setNoAccess] = useState(false);
+  const [noAccess, setNoAccess] = useState([false, false]);
   const navigate = useNavigate();
 
   const [itemImg, setItemImg] = useState(null);
@@ -18,6 +19,7 @@ const AddItem = (props) => {
   const [categList, setCategList] = useState([]);
   const [delableCg, setDelableCg] = useState([]);
   const [newCateg, setNewCateg] = useState("");
+  const [ctgDeleting, setCtgDeleting] = useState(false);
   
   const [submitting, setSubmitting] = useState(false);
   const [warning, setWarning] = useState("");
@@ -35,14 +37,35 @@ const AddItem = (props) => {
 
   // get list of potential categs
   useEffect(() => {
-    fetchCategs(props.uid, setCategList, setDelableCg);
-  }, [props.uid]);
+    if (props.loggedIn !== true || props.uid == null || props.onLogout == null) return;
+
+    checkAPI(props.uid,
+      () => {
+        console.log("token valid -> fetch category list");
+        fetchCategs(props.uid, setCategList, setDelableCg);
+      },
+      () => { // invalid token
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      }
+    );
+
+  }, [props, navigate]);
 
   // category changing
   const handleSelCg = (categ) => selectCategory(categ, setNewCateg);
   const handleChgCg = (e) => changeCategory(e, setNewCateg);
-  const handleDelCg = (categ) => {
-    deleteCategory(categ, setCategList, props.uid);
+  const handleDelCg = async (categ) => {
+    setCtgDeleting(true);
+    await checkAPI(props.uid,
+      () => {
+        console.log("token valid -> delete category");
+        deleteCategory(categ, setCategList, props.uid);
+        setCtgDeleting(false);
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      }
+    );
   }
 
   // item img changing
@@ -59,6 +82,7 @@ const AddItem = (props) => {
   const handleSaveItem = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+
     let imgString = "";
 
     // disallow leading/trailing spaces in names & categories
@@ -82,13 +106,28 @@ const AddItem = (props) => {
       });
     }
 
-    await saveItem(e, null, categList, setCategList, imgString, props.uid, true);
-    navigate(`/dashboard`);
+    await checkAPI(props.uid,
+      async () => {
+        console.log("token valid -> save item");
+
+        if (await saveItem(e, null, categList, setCategList, imgString, props.uid, true))
+          navigate(`/dashboard`);
+        else {
+          setSubmitting(false);
+    
+          // TODO nicer alert
+          alert("There was an error saving your item. Please try again later.");
+        }
+      },
+      () => {
+        noAccessRedirect("/login", navigate, setNoAccess, props.onLogout);
+      }
+    );
   }
 
   return (
     <><Header loggedIn={props.loggedIn} onLogout={props.onLogout} />
-      {noAccess ? <NoAccess /> :
+      {noAccess[0] ? <NoAccess sessionExpired={noAccess[1]} /> :
         <div className={"item-page"}>
           <div className={"item-details"}>
             <div className={"item-image"} style={{backgroundImage: `url(${displayImg})`}}>
@@ -106,7 +145,9 @@ const AddItem = (props) => {
               <h4 className={"big-img-warn warning"}>Image must be under 250KB.</h4>
             : <span></span>}
             <div className={"item-info"}>
-              <form id="editItem" onSubmit={handleSaveItem} onChange={() => setWarning("")}>
+              <form id="editItem" disabled={ctgDeleting}
+                onSubmit={handleSaveItem} onChange={() => setWarning("")}
+              >
                 <table><tbody>
                   <tr>
                     <td>Name:</td>
@@ -153,7 +194,7 @@ const AddItem = (props) => {
             <TextButton altStyle
               onClick={() => navigate(`/dashboard`)}
             >Cancel</TextButton>
-            <TextButton form="editItem" type="submit">Save</TextButton>
+            <TextButton form="editItem" type="submit" disabled={ctgDeleting}>Save</TextButton>
           </div>
           {submitting ? <Submitting /> : null}
         </div>

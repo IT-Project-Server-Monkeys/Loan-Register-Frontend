@@ -4,6 +4,7 @@ import "../styles/InputDropdown.scss"; // component scoped style
 // a clickable and removable suggestion to be used in an InputDropdown
 const Deletable = (props) => {
   const [confirmRmv, setConfirmRmv] = useState();
+  const [loading, setLoading] = useState(false);
 
   // selecting this suggestion
   const handleSelect = (e) => {
@@ -14,6 +15,7 @@ const Deletable = (props) => {
   // removing this suggestion
   const handleRemove = (e) => {
     e.preventDefault();
+    setLoading(true);
     if (props.canDel) props.deleteOption(props.children);
     else props.hideOption(props.children);
   }
@@ -27,8 +29,10 @@ const Deletable = (props) => {
           ? <button onClick={handleRemove}>&#215;</button>
           : <>
             {confirmRmv
-              ? <button onClick={handleRemove} onBlurCapture={() => setConfirmRmv(false)}>
-                {props.canDel ? "Delete " : "Hide "}{props.field}?
+              ? <button onClick={handleRemove} onBlurCapture={() => setConfirmRmv(false)} disabled={loading}>
+                {loading ? "Loading..." :
+                  `${props.canDel ? "Delete " : "Hide "}${props.field}?`
+                }
               </button>
               : <button onClick={() => {setConfirmRmv(true)}}>&#215;</button>
             }
