@@ -69,7 +69,7 @@ const deleteCategory = async (categ, setCategList, uid) => {
     method: "put", data: { _id: uid, delete_category: categ },
     headers: { "Content-Type": "application/json" },
   })
-    .then((res) => console.log(res))
+    .then((res) => {/*console.log(res)*/})
     .catch((err) => console.log(err));
 }
 
@@ -105,7 +105,7 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
       data: { _id: uid, new_category: formData.category },
       headers: { "Content-Type": "application/json" },
     })
-      .then((res) => console.log(res))
+      .then((res) => {/*console.log(res)*/})
       .catch((err) => {console.log(err); return false;});
   }
 
@@ -114,9 +114,9 @@ const saveItem = async (e, itemId, categList, setCategList, imgString, uid, newI
     method: newItem ? "post" : "put", data: formData,
     headers: { "Content-Type": "application/json" },
   })
-    .then((res) => console.log(res))
+    .then((res) => {/*console.log(res)*/})
     .catch((err) => {console.log(err); return false;});
-  console.log(formData);
+  // console.log(formData);
 
   return true;
 }
@@ -128,7 +128,7 @@ const makeVisible = (itemId) => {
     url: '/items',
     data: { _id: itemId, visible: true }
   })
-  .then((res) => console.log(res))
+  .then((res) => {/*console.log(res)*/})
   .catch((err) => console.log(err));
 }
 

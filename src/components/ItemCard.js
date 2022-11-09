@@ -31,7 +31,7 @@ const ItemCard = (props) => {
 
   const cardStatusHandler = (e) => {
     e.preventDefault();  // prevent from navigating
-    console.log(item.visible)
+    // console.log(item.visible)
     if (item.visible === undefined || item.visible === true) {
       updateVisibility(item.item_id, false)
     } else {

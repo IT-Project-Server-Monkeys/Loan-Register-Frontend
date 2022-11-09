@@ -52,7 +52,7 @@ const Account = (props) => {
 
     await checkAPI(props.uid,
       async () => {
-        console.log("token valid -> check for duplicate username & save username");
+        // console.log("token valid -> check for duplicate username & save username");
         
         await API.get(`/users?display_name=${name}`)
           .then((res) => {fetchedData = res.data})
@@ -66,7 +66,7 @@ const Account = (props) => {
             headers: { "Content-Type": "application/json" },
           })
             .then((res) => {
-              console.log(res);
+              // console.log(res);
               setNewName(name);
               setUserInfo((info) => {return {...info, display_name: name}});
             })
@@ -98,7 +98,7 @@ const Account = (props) => {
 
     await checkAPI(props.uid,
       async () => {
-        console.log("token valid -> check for duplicate email & save email");
+        // console.log("token valid -> check for duplicate email & save email");
     
         await API.get(`/users?email=${email}`)
           .then((res) => {fetchedData = res.data})
@@ -112,7 +112,7 @@ const Account = (props) => {
             headers: { "Content-Type": "application/json" },
           })
             .then((res) => {
-              console.log(res);
+              // console.log(res);
               setNewEmail(email);
               setUserInfo((info) => {return {...info, login_email: email}});
             })
@@ -159,7 +159,7 @@ const Account = (props) => {
 
     checkAPI(props.uid,
       () => {
-        console.log("token valid -> fetch user data") 
+        // console.log("token valid -> fetch user data") 
         fetchUser();
       },
       () => {
